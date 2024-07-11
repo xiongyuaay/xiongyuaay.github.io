@@ -6,7 +6,7 @@ author_profile: true
 ---
 
 {% if site.author.googlescholar %}
-  <div class="wordwrap">None>my Google Scholar profile</a>.</div>
+  <div class="wordwrap">None.</div>
 {% endif %}
 
 {% include base_path %}
