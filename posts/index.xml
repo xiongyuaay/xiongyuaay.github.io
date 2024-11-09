@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Yuaay</title><link>https://xiongyuaay.github.io/posts/</link><description>Recent content in Posts on Yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sat, 09 Nov 2024 18:47:27 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>数学建模 层次分析法（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 18:47:27 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="ahp">AHP&lt;/h1>
+&lt;p>主观赋值评价方法，多指标&lt;/p>
+&lt;ul>
+&lt;li>构造判断矩阵&lt;/li>
+&lt;li>利用判断矩阵计算权重&lt;/li>
+&lt;li>判断一致性是否通过&lt;/li>
+&lt;li>得到该层相对于上一层的权重&lt;/li>
+&lt;li>最底层可直接将该层权重作为其相对与上一层指标的得分&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>具体计算权重与一致性公式使用时查阅&lt;/strong>&lt;/p>
+&lt;p>&lt;img src="../images/111586079287530.png" alt="santy赋值">&lt;/p>
+&lt;h2 id="流程">流程&lt;/h2>
+&lt;p>&lt;img src="../images/568745427628904.png" alt="流程图">&lt;/p></description></item></channel></rss>
