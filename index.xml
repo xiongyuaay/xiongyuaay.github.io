@@ -12,9 +12,9 @@
 &lt;li>根据灰色关联度的大小下结论&lt;/li>
 &lt;/ul>
 &lt;p>部分使用到的公式如下：&lt;br>
-&lt;img src="images/443974856105592.png" alt="1">
-&lt;img src="images/544484652480945.png" alt="2">
-&lt;img src="images/53064102515680.png" alt="3">&lt;/p></description></item><item><title>数学建模 Topsis（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:21 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="topsis">Topsis&lt;/h1>
+&lt;img src="https://xiongyuaay.github.io/images/443974856105592.png" alt="1">
+&lt;img src="https://xiongyuaay.github.io/images/544484652480945.png" alt="2">
+&lt;img src="https://xiongyuaay.github.io/images/53064102515680.png" alt="3">&lt;/p></description></item><item><title>数学建模 Topsis（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:21 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="topsis">Topsis&lt;/h1>
 &lt;p>本质上是针对多个指标，通过与最优解与最劣解间的距离来得到某个方案的评分&lt;/p>
 &lt;p>可以很好的得到每个方案间的差距&lt;/p>
 &lt;p>使用步骤：&lt;/p>
@@ -30,9 +30,9 @@
 &lt;/li>
 &lt;/ul>
 &lt;p>计算最优解、最劣解的公式：
-&lt;img src="images/337922171116636.png" alt="1">
+&lt;img src="https://xiongyuaay.github.io/images/337922171116636.png" alt="1">
 带权重的计算公式：
-&lt;img src="images/533552640375792.png" alt="2">&lt;/p></description></item><item><title>数学建模 熵权法（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="熵权法">熵权法&lt;/h1>
+&lt;img src="https://xiongyuaay.github.io/images/533552640375792.png" alt="2">&lt;/p></description></item><item><title>数学建模 熵权法（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="熵权法">熵权法&lt;/h1>
 &lt;p>一种基于数据本身的客观的赋予权重的方法
 利用信息熵，衡量了掌握信息的确切程度
 &lt;strong>值得注意的是，这种信息熵是基于方案的而不是基于指标。衡量了所有方案在这个指标的信息掌握程度。&lt;/strong>&lt;/p>
@@ -59,9 +59,9 @@
 &lt;li>根据信息熵得到权重&lt;/li>
 &lt;/ul>
 &lt;p>计算信息熵时所用公式：&lt;br>
-&lt;img src="images/222104284080536.png" alt="1">&lt;/p>
+&lt;img src="https://xiongyuaay.github.io/images/222104284080536.png" alt="1">&lt;/p>
 &lt;p>标准化时可以用到的一些示例方法：&lt;br>
-&lt;img src="images/587765196388639.png" alt="2">&lt;/p></description></item><item><title>数学建模 模糊评价（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:01 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="模糊评价">模糊评价&lt;/h1>
+&lt;img src="https://xiongyuaay.github.io/images/587765196388639.png" alt="2">&lt;/p></description></item><item><title>数学建模 模糊评价（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:01 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="模糊评价">模糊评价&lt;/h1>
 &lt;p>对某一个对象，有一个总的评判结果，
 可以将这个评判结果作为一个集合
 如{优， 良， 差}等&lt;/p>
@@ -69,7 +69,7 @@
 &lt;strong>注意：这些实际值都只是单个值&lt;/strong>&lt;/p>
 &lt;p>根据这些因素的实际意义，给出这些因素相对于不同评语的隶属函数
 &lt;strong>由F分布得到隶属函数&lt;/strong>
-&lt;img src="images/146262814940887.png" alt="隶属函数">
+&lt;img src="https://xiongyuaay.github.io/images/146262814940887.png" alt="隶属函数">
 从而可以得到这些因素对不同评语的隶属度&lt;/p>
 &lt;p>对这些因素之间，可以通过其他方法，&lt;strong>如：层次分析法、熵权法等&lt;/strong>，确定对总体研究对象的权重，
 借由这些权重，可以得到该总体对象在这个评语集的隶属度，
@@ -86,7 +86,14 @@
 &lt;p>&lt;strong>具体计算权重与一致性公式使用时查阅&lt;/strong>&lt;/p>
 &lt;p>&lt;img src="https://xiongyuaay.github.io/images/111586079287530.png" alt="santy赋值">&lt;/p>
 &lt;h2 id="流程">流程&lt;/h2>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/568745427628904.png" alt="流程图">&lt;/p></description></item><item><title>Creating a New Theme</title><link>https://xiongyuaay.github.io/posts/creating-a-new-theme/</link><pubDate>Sun, 28 Sep 2014 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/creating-a-new-theme/</guid><description>&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/568745427628904.png" alt="流程图">&lt;/p></description></item><item><title>关于我</title><link>https://xiongyuaay.github.io/about/</link><pubDate>Sat, 09 Nov 2024 18:44:47 +0800</pubDate><guid>https://xiongyuaay.github.io/about/</guid><description>&lt;p>这里是小莫，刚刚步入计算机的世界。&lt;/p>
+&lt;p>小莫来自于游戏《明日方舟》中的角色莫斯提马，有着长长的蓝发与不可捉摸的个性～&lt;/p>
+&lt;p>今后将会越来越多的使用这个平台来记录、展示学到的知识！&lt;/p>
+&lt;p>目前还有很多不完善的地方，在逐步完善中～&lt;/p>
+&lt;hr>
+&lt;h1 id="关于本站">关于本站&lt;/h1>
+&lt;p>想法来自与七碳喵，即以下链接：&lt;/p>
+&lt;p>&lt;a href="https://cascade.moe/">Cascade&lt;/a>&lt;/p></description></item><item><title>Creating a New Theme</title><link>https://xiongyuaay.github.io/posts/creating-a-new-theme/</link><pubDate>Sun, 28 Sep 2014 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/creating-a-new-theme/</guid><description>&lt;h2 id="introduction">Introduction&lt;/h2>
 &lt;p>This tutorial will show you how to create a simple theme in Hugo. I assume that you are familiar with HTML, the bash command line, and that you are comfortable using Markdown to format content. I&amp;rsquo;ll explain how Hugo uses templates and how you can organize your templates to create a theme. I won&amp;rsquo;t cover using CSS to style your theme.&lt;/p>
 &lt;p>We&amp;rsquo;ll start with creating a new site with a very basic template. Then we&amp;rsquo;ll add in a few pages and posts. With small variations on that, you will be able to create many different types of web sites.&lt;/p></description></item><item><title>(Hu)go Template Primer</title><link>https://xiongyuaay.github.io/posts/goisforlovers/</link><pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/goisforlovers/</guid><description>&lt;p>Hugo uses the excellent &lt;a href="https://golang.org/">Go&lt;/a> &lt;a href="https://golang.org/pkg/html/template/">html/template&lt;/a> library for
 its template engine. It is an extremely lightweight engine that provides a very
