@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Jekyll on Yuaay</title><link>https://xiongyuaay.github.io/tags/jekyll/</link><description>Recent content in Jekyll on Yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Mon, 10 Mar 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://xiongyuaay.github.io/tags/jekyll/index.xml" rel="self" type="application/rss+xml"/><item><title>Migrate to Hugo from Jekyll</title><link>https://xiongyuaay.github.io/posts/migrate-from-jekyll/</link><pubDate>Mon, 10 Mar 2014 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/migrate-from-jekyll/</guid><description>&lt;h2 id="move-static-content-to-static">Move static content to &lt;code>static&lt;/code>&lt;/h2>
+&lt;p>Jekyll has a rule that any directory not starting with &lt;code>_&lt;/code> will be copied as-is to the &lt;code>_site&lt;/code> output. Hugo keeps all static content under &lt;code>static&lt;/code>. You should therefore move it all there.
+With Jekyll, something that looked like&lt;/p>
+&lt;pre>&lt;code>▾ &amp;lt;root&amp;gt;/
+ ▾ images/
+ logo.png
+&lt;/code>&lt;/pre>
+&lt;p>should become&lt;/p>
+&lt;pre>&lt;code>▾ &amp;lt;root&amp;gt;/
+ ▾ static/
+ ▾ images/
+ logo.png
+&lt;/code>&lt;/pre>
+&lt;p>Additionally, you&amp;rsquo;ll want any files that should reside at the root (such as &lt;code>CNAME&lt;/code>) to be moved to &lt;code>static&lt;/code>.&lt;/p></description></item></channel></rss>

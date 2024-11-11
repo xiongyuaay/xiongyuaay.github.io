@@ -86,4 +86,78 @@
 &lt;p>&lt;strong>具体计算权重与一致性公式使用时查阅&lt;/strong>&lt;/p>
 &lt;p>&lt;img src="https://xiongyuaay.github.io/images/111586079287530.png" alt="santy赋值">&lt;/p>
 &lt;h2 id="流程">流程&lt;/h2>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/568745427628904.png" alt="流程图">&lt;/p></description></item></channel></rss>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/568745427628904.png" alt="流程图">&lt;/p></description></item><item><title>Creating a New Theme</title><link>https://xiongyuaay.github.io/posts/creating-a-new-theme/</link><pubDate>Sun, 28 Sep 2014 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/creating-a-new-theme/</guid><description>&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>This tutorial will show you how to create a simple theme in Hugo. I assume that you are familiar with HTML, the bash command line, and that you are comfortable using Markdown to format content. I&amp;rsquo;ll explain how Hugo uses templates and how you can organize your templates to create a theme. I won&amp;rsquo;t cover using CSS to style your theme.&lt;/p>
+&lt;p>We&amp;rsquo;ll start with creating a new site with a very basic template. Then we&amp;rsquo;ll add in a few pages and posts. With small variations on that, you will be able to create many different types of web sites.&lt;/p></description></item><item><title>(Hu)go Template Primer</title><link>https://xiongyuaay.github.io/posts/goisforlovers/</link><pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/goisforlovers/</guid><description>&lt;p>Hugo uses the excellent &lt;a href="https://golang.org/">Go&lt;/a> &lt;a href="https://golang.org/pkg/html/template/">html/template&lt;/a> library for
+its template engine. It is an extremely lightweight engine that provides a very
+small amount of logic. In our experience that it is just the right amount of
+logic to be able to create a good static website. If you have used other
+template systems from different languages or frameworks you will find a lot of
+similarities in Go templates.&lt;/p>
+&lt;p>This document is a brief primer on using Go templates. The &lt;a href="https://golang.org/pkg/html/template/">Go docs&lt;/a>
+provide more details.&lt;/p></description></item><item><title>Getting Started with Hugo</title><link>https://xiongyuaay.github.io/posts/hugoisforlovers/</link><pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/hugoisforlovers/</guid><description>&lt;h2 id="step-1-install-hugo">Step 1. Install Hugo&lt;/h2>
+&lt;p>Go to &lt;a href="https://github.com/spf13/hugo/releases">Hugo releases&lt;/a> and download the
+appropriate version for your OS and architecture.&lt;/p>
+&lt;p>Save it somewhere specific as we will be using it in the next step.&lt;/p>
+&lt;p>More complete instructions are available at &lt;a href="https://gohugo.io/getting-started/installing/">Install Hugo&lt;/a>&lt;/p>
+&lt;h2 id="step-2-build-the-docs">Step 2. Build the Docs&lt;/h2>
+&lt;p>Hugo has its own example site which happens to also be the documentation site
+you are reading right now.&lt;/p>
+&lt;p>Follow the following steps:&lt;/p>
+&lt;ol>
+&lt;li>Clone the &lt;a href="http://github.com/spf13/hugo">Hugo repository&lt;/a>&lt;/li>
+&lt;li>Go into the repo&lt;/li>
+&lt;li>Run hugo in server mode and build the docs&lt;/li>
+&lt;li>Open your browser to http://localhost:1313&lt;/li>
+&lt;/ol>
+&lt;p>Corresponding pseudo commands:&lt;/p></description></item><item><title>Migrate to Hugo from Jekyll</title><link>https://xiongyuaay.github.io/posts/migrate-from-jekyll/</link><pubDate>Mon, 10 Mar 2014 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/migrate-from-jekyll/</guid><description>&lt;h2 id="move-static-content-to-static">Move static content to &lt;code>static&lt;/code>&lt;/h2>
+&lt;p>Jekyll has a rule that any directory not starting with &lt;code>_&lt;/code> will be copied as-is to the &lt;code>_site&lt;/code> output. Hugo keeps all static content under &lt;code>static&lt;/code>. You should therefore move it all there.
+With Jekyll, something that looked like&lt;/p>
+&lt;pre>&lt;code>▾ &amp;lt;root&amp;gt;/
+ ▾ images/
+ logo.png
+&lt;/code>&lt;/pre>
+&lt;p>should become&lt;/p>
+&lt;pre>&lt;code>▾ &amp;lt;root&amp;gt;/
+ ▾ static/
+ ▾ images/
+ logo.png
+&lt;/code>&lt;/pre>
+&lt;p>Additionally, you&amp;rsquo;ll want any files that should reside at the root (such as &lt;code>CNAME&lt;/code>) to be moved to &lt;code>static&lt;/code>.&lt;/p></description></item><item><title>Test 9</title><link>https://xiongyuaay.github.io/posts/test-9/</link><pubDate>Thu, 09 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-9/</guid><description>&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut accumsan sem, imperdiet malesuada erat. Nam condimentum eu turpis a suscipit. Nulla leo arcu, feugiat ac orci eget, imperdiet posuere dui. In laoreet rutrum nisi vitae pretium. Aliquam id fermentum diam, et hendrerit mi. Praesent eget tristique augue. Donec a malesuada nulla, sit amet bibendum libero. Cras id eleifend enim.&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;em>You think you&amp;rsquo;ve got problems? What are you supposed to do if you are a manically depressed robot? No, don&amp;rsquo;t try to answer that. I&amp;rsquo;m fifty thousand times more intelligent than you and even I don&amp;rsquo;t know the answer. It gives me a headache just trying to think down to your level.&lt;/em>&lt;/p></description></item><item><title>Test 8</title><link>https://xiongyuaay.github.io/posts/test-8/</link><pubDate>Wed, 08 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-8/</guid><description>&lt;p>Test 8&lt;/p></description></item><item><title>Test 7</title><link>https://xiongyuaay.github.io/posts/test-7/</link><pubDate>Tue, 07 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-7/</guid><description>&lt;p>Test 7&lt;/p></description></item><item><title>Test 6</title><link>https://xiongyuaay.github.io/posts/test-6/</link><pubDate>Mon, 06 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-6/</guid><description>&lt;p>Test 6&lt;/p></description></item><item><title>Test 5</title><link>https://xiongyuaay.github.io/posts/test-5/</link><pubDate>Sun, 05 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-5/</guid><description>&lt;p>Test 5&lt;/p></description></item><item><title>Test 4</title><link>https://xiongyuaay.github.io/posts/test-4/</link><pubDate>Sat, 04 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-4/</guid><description>&lt;p>Test 4&lt;/p></description></item><item><title>Test 3</title><link>https://xiongyuaay.github.io/posts/test-3/</link><pubDate>Fri, 03 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-3/</guid><description>&lt;p>Test 3&lt;/p></description></item><item><title>Test 2</title><link>https://xiongyuaay.github.io/posts/test-2/</link><pubDate>Thu, 02 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-2/</guid><description>&lt;p>Test 2&lt;/p></description></item><item><title>Test 1</title><link>https://xiongyuaay.github.io/posts/test-1/</link><pubDate>Wed, 01 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-1/</guid><description>&lt;p>Test 1
+I am referencing a footnote&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1&lt;/span>&lt;span>&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2&lt;/span>&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3&lt;/span>&lt;span>&lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4&lt;/span>&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5&lt;/span>&lt;span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6&lt;/span>&lt;span> &lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;{linenos=inline}&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7&lt;/span>&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;{linenos=table}&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;pre tabindex="0">&lt;code>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in dictum tortor.
+Morbi laoreet enim id sem euismod lobortis. Donec quam libero, bibendum non cursus vitae, dictum vel eros.
+&lt;/code>&lt;/pre>&lt;div class="footnotes" role="doc-endnotes">
+&lt;hr>
+&lt;ol>
+&lt;li id="fn:1">
+&lt;p>I am the footnote&amp;#160;&lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p></description></item></channel></rss>
