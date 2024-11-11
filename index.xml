@@ -12,9 +12,9 @@
 &lt;li>根据灰色关联度的大小下结论&lt;/li>
 &lt;/ul>
 &lt;p>部分使用到的公式如下：&lt;br>
-![](images/443974856105592.png =930x)
-![](images/544484652480945.png =930x)
-![](images/53064102515680.png =930x)&lt;/p></description></item><item><title>数学建模 Topsis（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:21 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="topsis">Topsis&lt;/h1>
+![1](images/443974856105592.png =930x)
+![2](images/544484652480945.png =930x)
+![3](images/53064102515680.png =930x)&lt;/p></description></item><item><title>数学建模 Topsis（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:21 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="topsis">Topsis&lt;/h1>
 &lt;p>本质上是针对多个指标，通过与最优解与最劣解间的距离来得到某个方案的评分&lt;/p>
 &lt;p>可以很好的得到每个方案间的差距&lt;/p>
 &lt;p>使用步骤：&lt;/p>
@@ -30,9 +30,9 @@
 &lt;/li>
 &lt;/ul>
 &lt;p>计算最优解、最劣解的公式：
-![](images/337922171116636.png =960x)
+![1](images/337922171116636.png =960x)
 带权重的计算公式：
-![](images/533552640375792.png =480x)&lt;/p></description></item><item><title>数学建模 熵权法（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="熵权法">熵权法&lt;/h1>
+![2](images/533552640375792.png =480x)&lt;/p></description></item><item><title>数学建模 熵权法（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="熵权法">熵权法&lt;/h1>
 &lt;p>一种基于数据本身的客观的赋予权重的方法
 利用信息熵，衡量了掌握信息的确切程度
 &lt;strong>值得注意的是，这种信息熵是基于方案的而不是基于指标。衡量了所有方案在这个指标的信息掌握程度。&lt;/strong>&lt;/p>
@@ -59,9 +59,9 @@
 &lt;li>根据信息熵得到权重&lt;/li>
 &lt;/ul>
 &lt;p>计算信息熵时所用公式：&lt;br>
-![](images/222104284080536.png =960x)&lt;/p>
+![1](images/222104284080536.png =960x)&lt;/p>
 &lt;p>标准化时可以用到的一些示例方法：&lt;br>
-![](images/587765196388639.png =960x)&lt;/p></description></item><item><title>数学建模 模糊评价（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:01 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="模糊评价">模糊评价&lt;/h1>
+![2](images/587765196388639.png =960x)&lt;/p></description></item><item><title>数学建模 模糊评价（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:01 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="模糊评价">模糊评价&lt;/h1>
 &lt;p>对某一个对象，有一个总的评判结果，
 可以将这个评判结果作为一个集合
 如{优， 良， 差}等&lt;/p>
