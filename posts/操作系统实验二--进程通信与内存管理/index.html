@@ -1,579 +1,740 @@
-<!doctype html><html lang=en><head><title>操作系统实验二 进程通信与内存管理 // Yuaay</title>
-<link rel="shortcut icon" href=/favicon.ico><meta charset=utf-8><meta name=generator content="Hugo 0.138.0"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="yuaay"><meta name=description content><link rel=stylesheet href=/css/main.min.5b1fcc8902588589c4767187402a3c29f8b8d7a6fdef6d9f8f77045bb0d14fee.css><meta name=twitter:card content="summary"><meta name=twitter:title content="操作系统实验二  进程通信与内存管理"><meta name=twitter:description content='进程的软中断通信 查看帮助手册 fork系统调用 使用man命令查看fork系统调用结果如下图：
+<!doctype html>
+<html lang="en">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <title>操作系统实验二  进程通信与内存管理 // Yuaay</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.138.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="yuaay" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.5b1fcc8902588589c4767187402a3c29f8b8d7a6fdef6d9f8f77045bb0d14fee.css" />
+    
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="操作系统实验二  进程通信与内存管理">
+  <meta name="twitter:description" content="进程的软中断通信 查看帮助手册 fork系统调用 使用man命令查看fork系统调用结果如下图：
 可见结果显示没有相应的条目，猜测可能没有安装man帮助手册，通过以下资料查阅安装man手册。
 man手册安装 使用的安装命令及结果如下图：
 可见在安装好man手册，成功使用man fork命令，如下图： kill系统调用 结果如下图：
 signal系统调用 sleep系统调用 exit系统调用 软中断程序 openEuler系统下，使用命令kill -l查看所有信号及其编号的结果如下： 补充完成进程软中断的程序代码如下，其中对于等待时间的要求，考虑到sleep过程可以被信号打断，选择通过sleep函数实现：
-#include <stdio.h> #include <unistd.h> #include <sys/wait.h> #include <stdlib.h> #include <signal.h> int flag = 0; pid_t pid1 = -1, pid2 = -1; void inter_handler(int signum) { // 使用 kill() 发送整数值为 16 和 17 的信号 if (pid1 > 0) kill(pid1, 16); // 发送信号 16 给子进程1 if (pid2 > 0) kill(pid2, 17); // 发送信号 17 给子进程2 printf("Parent received signal %d, sending signals 16 and 17 to child processes\n", signum); } void waiting(int signum) { printf("Child process received signal %d, exiting...\n", signum); exit(0); } int main() { // 创建子进程1 while (pid1 == -1) pid1 = fork(); if (pid1 > 0) { // 创建子进程2 while (pid2 == -1) pid2 = fork(); if (pid2 > 0) { // 父进程 signal(SIGINT, inter_handler); signal(SIGQUIT, inter_handler); wait(NULL); wait(NULL); printf("\nParent process is killed!!\n"); } else { // 子进程2 signal(17, waiting); sleep(5); printf("\nChild process 2 is waiting for signal 17...\n"); } } else { // 子进程1 signal(16, waiting); sleep(5); printf("\nChild process 1 is waiting for signal 16...\n"); } return 0; } 分别在5s内进行操作和不进行操作，编译运行结果如下：'><meta property="og:url" content="https://xiongyuaay.github.io/posts/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%BA%8C--%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1%E4%B8%8E%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"><meta property="og:site_name" content="Yuaay"><meta property="og:title" content="操作系统实验二  进程通信与内存管理"><meta property="og:description" content='进程的软中断通信 查看帮助手册 fork系统调用 使用man命令查看fork系统调用结果如下图：
+#include &lt;stdio.h&gt; #include &lt;unistd.h&gt; #include &lt;sys/wait.h&gt; #include &lt;stdlib.h&gt; #include &lt;signal.h&gt; int flag = 0; pid_t pid1 = -1, pid2 = -1; void inter_handler(int signum) { // 使用 kill() 发送整数值为 16 和 17 的信号 if (pid1 &gt; 0) kill(pid1, 16); // 发送信号 16 给子进程1 if (pid2 &gt; 0) kill(pid2, 17); // 发送信号 17 给子进程2 printf(&#34;Parent received signal %d, sending signals 16 and 17 to child processes\n&#34;, signum); } void waiting(int signum) { printf(&#34;Child process received signal %d, exiting...\n&#34;, signum); exit(0); } int main() { // 创建子进程1 while (pid1 == -1) pid1 = fork(); if (pid1 &gt; 0) { // 创建子进程2 while (pid2 == -1) pid2 = fork(); if (pid2 &gt; 0) { // 父进程 signal(SIGINT, inter_handler); signal(SIGQUIT, inter_handler); wait(NULL); wait(NULL); printf(&#34;\nParent process is killed!!\n&#34;); } else { // 子进程2 signal(17, waiting); sleep(5); printf(&#34;\nChild process 2 is waiting for signal 17...\n&#34;); } } else { // 子进程1 signal(16, waiting); sleep(5); printf(&#34;\nChild process 1 is waiting for signal 16...\n&#34;); } return 0; } 分别在5s内进行操作和不进行操作，编译运行结果如下：">
+
+    <meta property="og:url" content="http://localhost:1313/posts/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%BA%8C--%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1%E4%B8%8E%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+  <meta property="og:site_name" content="Yuaay">
+  <meta property="og:title" content="操作系统实验二  进程通信与内存管理">
+  <meta property="og:description" content="进程的软中断通信 查看帮助手册 fork系统调用 使用man命令查看fork系统调用结果如下图：
 可见结果显示没有相应的条目，猜测可能没有安装man帮助手册，通过以下资料查阅安装man手册。
 man手册安装 使用的安装命令及结果如下图：
 可见在安装好man手册，成功使用man fork命令，如下图： kill系统调用 结果如下图：
 signal系统调用 sleep系统调用 exit系统调用 软中断程序 openEuler系统下，使用命令kill -l查看所有信号及其编号的结果如下： 补充完成进程软中断的程序代码如下，其中对于等待时间的要求，考虑到sleep过程可以被信号打断，选择通过sleep函数实现：
-#include <stdio.h> #include <unistd.h> #include <sys/wait.h> #include <stdlib.h> #include <signal.h> int flag = 0; pid_t pid1 = -1, pid2 = -1; void inter_handler(int signum) { // 使用 kill() 发送整数值为 16 和 17 的信号 if (pid1 > 0) kill(pid1, 16); // 发送信号 16 给子进程1 if (pid2 > 0) kill(pid2, 17); // 发送信号 17 给子进程2 printf("Parent received signal %d, sending signals 16 and 17 to child processes\n", signum); } void waiting(int signum) { printf("Child process received signal %d, exiting...\n", signum); exit(0); } int main() { // 创建子进程1 while (pid1 == -1) pid1 = fork(); if (pid1 > 0) { // 创建子进程2 while (pid2 == -1) pid2 = fork(); if (pid2 > 0) { // 父进程 signal(SIGINT, inter_handler); signal(SIGQUIT, inter_handler); wait(NULL); wait(NULL); printf("\nParent process is killed!!\n"); } else { // 子进程2 signal(17, waiting); sleep(5); printf("\nChild process 2 is waiting for signal 17...\n"); } } else { // 子进程1 signal(16, waiting); sleep(5); printf("\nChild process 1 is waiting for signal 16...\n"); } return 0; } 分别在5s内进行操作和不进行操作，编译运行结果如下：'><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2024-11-12T17:46:10+08:00"><meta property="article:modified_time" content="2024-11-12T17:46:10+08:00"></head><body><header class=app-header><a href=https://xiongyuaay.github.io/><img class=app-header-avatar src=/avatar.jpg alt=yuaay></a>
-<span class=app-header-title>Yuaay</span><nav class=app-header-menu><a class=app-header-menu-item href=/>Home</a>
--
-<a class=app-header-menu-item href=/tags/>Tags</a>
--
-<a class=app-header-menu-item href=/about/>About</a></nav><p>电子世界的幽灵</p><div class=app-header-social><a href=https://github.com/xiongyuaay target=_blank rel="noreferrer noopener me"><svg class="icon icon-brand-github" viewBox="0 0 24 24" fill="currentcolor"><title>GitHub</title><path d="M12 .297c-6.63.0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577.0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93.0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176.0.0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22.0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22.0 1.606-.015 2.896-.015 3.286.0.315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a></div></header><main class=app-container><article class=post><header class=post-header><h1 class=post-title>操作系统实验二 进程通信与内存管理</h1><div class=post-meta><div><svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-Nov 12, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-8 min read</div></div></header><div class=post-content><h1 id=进程的软中断通信>进程的软中断通信</h1><h2 id=查看帮助手册>查看帮助手册</h2><h3 id=fork系统调用>fork系统调用</h3><p>使用man命令查看fork系统调用结果如下图：</p><p><img src=/images/377594525772505.png alt=1></p><p>可见结果显示没有相应的条目，猜测可能没有安装man帮助手册，通过以下资料查阅安装man手册。</p><ul><li><a href="https://blog.csdn.net/weixin_61939442/article/details/142136016#:~:text=Man%20%E6%89%8B%E5%86%8C%E5%AE%89%E8%A3%851.%E9%85%8D%E7%BD%AEman%20%5Broot%40myEuler%20~%5D%23%20dnf%20-y%20install%20man,https%3A%2F%2Fmirrors.edge.kernel.org%2Fpub%2Flinux%2Fdocs%2Fman-pages%2Fman-pages-6.03.tar.gz%20%5Broot%40myEuler%20~%5D%23%20tar%20-xzvf%20man-pages-6.03.tar.gz4.%E5%AE%89%E8%A3%85man%E6%89%8B%E5%86%8C%23%E8%BF%9B%E5%85%A5%E7%9B%AE%E6%A0%87%E7%9B%AE%E5%BD%95%20%5Br_openeuler%20man%E6%89%8B%E5%86%8C%E5%AE%89%E8%A3%85">man手册安装</a></li></ul><p>使用的安装命令及结果如下图：<br><img src=/images/443453311011602.png alt=2></p><p>可见在安装好man手册，成功使用man fork命令，如下图：
-<img src=/images/167935907718258.png alt></p><h3 id=kill系统调用>kill系统调用</h3><p>结果如下图：<br><img src=/images/344455056047998.png alt></p><h3 id=signal系统调用>signal系统调用</h3><p><img src=/images/116624541508.png alt></p><h3 id=sleep系统调用>sleep系统调用</h3><p><img src=/images/427004511623406.png alt></p><h3 id=exit系统调用>exit系统调用</h3><p><img src=/images/62306574070474.png alt></p><h2 id=软中断程序>软中断程序</h2><p>openEuler系统下，使用命令kill -l查看所有信号及其编号的结果如下：
-<img src=/images/24568132916712.png alt></p><p>补充完成进程软中断的程序代码如下，其中对于等待时间的要求，考虑到sleep过程可以被信号打断，选择通过sleep函数实现：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unistd.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;sys/wait.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;signal.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> flag <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>pid_t</span> pid1 <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, pid2 <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>inter_handler</span>(<span style=color:#66d9ef>int</span> signum) 
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// 使用 kill() 发送整数值为 16 和 17 的信号
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> (pid1 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) <span style=color:#a6e22e>kill</span>(pid1, <span style=color:#ae81ff>16</span>);  <span style=color:#75715e>// 发送信号 16 给子进程1
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> (pid2 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) <span style=color:#a6e22e>kill</span>(pid2, <span style=color:#ae81ff>17</span>);  <span style=color:#75715e>// 发送信号 17 给子进程2
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Parent received signal %d, sending signals 16 and 17 to child processes</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, signum);
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>waiting</span>(<span style=color:#66d9ef>int</span> signum) 
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Child process received signal %d, exiting...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, signum);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>exit</span>(<span style=color:#ae81ff>0</span>);
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() 
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// 创建子进程1
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>while</span> (pid1 <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>) pid1 <span style=color:#f92672>=</span> <span style=color:#a6e22e>fork</span>();
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (pid1 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) 
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// 创建子进程2
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>while</span> (pid2 <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>) pid2 <span style=color:#f92672>=</span> <span style=color:#a6e22e>fork</span>();
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (pid2 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) 
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#75715e>// 父进程
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>signal</span>(SIGINT, inter_handler);  
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>signal</span>(SIGQUIT, inter_handler); 
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>wait</span>(NULL);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>wait</span>(NULL);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Parent process is killed!!</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
-</span></span><span style=display:flex><span>        } 
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> 
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#75715e>// 子进程2
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>signal</span>(<span style=color:#ae81ff>17</span>, waiting); 
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>sleep</span>(<span style=color:#ae81ff>5</span>); 
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Child process 2 is waiting for signal 17...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    } 
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span> 
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// 子进程1
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>signal</span>(<span style=color:#ae81ff>16</span>, waiting); 
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>sleep</span>(<span style=color:#ae81ff>5</span>); 
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Child process 1 is waiting for signal 16...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>分别在5s内进行操作和不进行操作，编译运行结果如下：</p><p><img src=/images/298716863018237.png alt> <img src=/images/242593518480004.png alt></p><p>可以发现在5s内进行操作后，父进程虽然发送了信号，但子进程没有接收到或者没有处理。考虑到在 UNIX 和 Linux 系统中，SIGINT 、SIGQUIT信号默认会发送给整个进程组（包含父进程和子进程）。当在shell进行操作时，由于子进程没有设置相应的信号处理程序，在缺省的情况下默认终止进程或者终止进程并进行内核映像转储，导致子进程在接受到父进程传递的16、17信号前已经先一步终止。
+#include &lt;stdio.h&gt; #include &lt;unistd.h&gt; #include &lt;sys/wait.h&gt; #include &lt;stdlib.h&gt; #include &lt;signal.h&gt; int flag = 0; pid_t pid1 = -1, pid2 = -1; void inter_handler(int signum) { // 使用 kill() 发送整数值为 16 和 17 的信号 if (pid1 &gt; 0) kill(pid1, 16); // 发送信号 16 给子进程1 if (pid2 &gt; 0) kill(pid2, 17); // 发送信号 17 给子进程2 printf(&#34;Parent received signal %d, sending signals 16 and 17 to child processes\n&#34;, signum); } void waiting(int signum) { printf(&#34;Child process received signal %d, exiting...\n&#34;, signum); exit(0); } int main() { // 创建子进程1 while (pid1 == -1) pid1 = fork(); if (pid1 &gt; 0) { // 创建子进程2 while (pid2 == -1) pid2 = fork(); if (pid2 &gt; 0) { // 父进程 signal(SIGINT, inter_handler); signal(SIGQUIT, inter_handler); wait(NULL); wait(NULL); printf(&#34;\nParent process is killed!!\n&#34;); } else { // 子进程2 signal(17, waiting); sleep(5); printf(&#34;\nChild process 2 is waiting for signal 17...\n&#34;); } } else { // 子进程1 signal(16, waiting); sleep(5); printf(&#34;\nChild process 1 is waiting for signal 16...\n&#34;); } return 0; } 分别在5s内进行操作和不进行操作，编译运行结果如下：">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-11-12T17:46:10+08:00">
+    <meta property="article:modified_time" content="2024-11-12T17:46:10+08:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="http://localhost:1313/"><img class="app-header-avatar" src="/avatar.jpg" alt="yuaay" /></a>
+      <span class="app-header-title">Yuaay</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about/">About</a>
+      </nav>
+      <p>电子世界的幽灵</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/xiongyuaay" target="_blank" rel="noreferrer noopener me">
+            <svg class="icon icon-brand-github" viewBox="0 0 24 24" fill="currentColor"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">操作系统实验二  进程通信与内存管理</h1>
+      <div class="post-meta">
+        <div>
+          <svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Nov 12, 2024
+        </div>
+        <div>
+          <svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          8 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="进程的软中断通信">进程的软中断通信</h1>
+<h2 id="查看帮助手册">查看帮助手册</h2>
+<h3 id="fork系统调用">fork系统调用</h3>
+<p>使用man命令查看fork系统调用结果如下图：</p>
+<p><img src="/images/377594525772505.png" alt="1"></p>
+<p>可见结果显示没有相应的条目，猜测可能没有安装man帮助手册，通过以下资料查阅安装man手册。</p>
+<ul>
+<li><a href="https://blog.csdn.net/weixin_61939442/article/details/142136016#:~:text=Man%20%E6%89%8B%E5%86%8C%E5%AE%89%E8%A3%851.%E9%85%8D%E7%BD%AEman%20%5Broot%40myEuler%20~%5D%23%20dnf%20-y%20install%20man,https%3A%2F%2Fmirrors.edge.kernel.org%2Fpub%2Flinux%2Fdocs%2Fman-pages%2Fman-pages-6.03.tar.gz%20%5Broot%40myEuler%20~%5D%23%20tar%20-xzvf%20man-pages-6.03.tar.gz4.%E5%AE%89%E8%A3%85man%E6%89%8B%E5%86%8C%23%E8%BF%9B%E5%85%A5%E7%9B%AE%E6%A0%87%E7%9B%AE%E5%BD%95%20%5Br_openeuler%20man%E6%89%8B%E5%86%8C%E5%AE%89%E8%A3%85">man手册安装</a></li>
+</ul>
+<p>使用的安装命令及结果如下图：<br>
+<img src="/images/443453311011602.png" alt="2"></p>
+<p>可见在安装好man手册，成功使用man fork命令，如下图：
+<img src="/images/167935907718258.png" alt=""></p>
+<h3 id="kill系统调用">kill系统调用</h3>
+<p>结果如下图：<br>
+<img src="/images/344455056047998.png" alt=""></p>
+<h3 id="signal系统调用">signal系统调用</h3>
+<p><img src="/images/116624541508.png" alt=""></p>
+<h3 id="sleep系统调用">sleep系统调用</h3>
+<p><img src="/images/427004511623406.png" alt=""></p>
+<h3 id="exit系统调用">exit系统调用</h3>
+<p><img src="/images/62306574070474.png" alt=""></p>
+<h2 id="软中断程序">软中断程序</h2>
+<p>openEuler系统下，使用命令kill -l查看所有信号及其编号的结果如下：
+<img src="/images/24568132916712.png" alt=""></p>
+<p>补充完成进程软中断的程序代码如下，其中对于等待时间的要求，考虑到sleep过程可以被信号打断，选择通过sleep函数实现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/wait.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;signal.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pid_t</span> pid1 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, pid2 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">inter_handler</span>(<span style="color:#66d9ef">int</span> signum) 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 使用 kill() 发送整数值为 16 和 17 的信号
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (pid1 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) <span style="color:#a6e22e">kill</span>(pid1, <span style="color:#ae81ff">16</span>);  <span style="color:#75715e">// 发送信号 16 给子进程1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (pid2 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) <span style="color:#a6e22e">kill</span>(pid2, <span style="color:#ae81ff">17</span>);  <span style="color:#75715e">// 发送信号 17 给子进程2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Parent received signal %d, sending signals 16 and 17 to child processes</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, signum);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">waiting</span>(<span style="color:#66d9ef">int</span> signum) 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Child process received signal %d, exiting...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, signum);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 创建子进程1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span> (pid1 <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) pid1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (pid1 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) 
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 创建子进程2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">while</span> (pid2 <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) pid2 <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (pid2 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) 
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 父进程
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">signal</span>(SIGINT, inter_handler);  
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">signal</span>(SIGQUIT, inter_handler); 
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">wait</span>(NULL);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">wait</span>(NULL);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Parent process is killed!!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        } 
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> 
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 子进程2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">signal</span>(<span style="color:#ae81ff">17</span>, waiting); 
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">5</span>); 
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Child process 2 is waiting for signal 17...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    } 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> 
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 子进程1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">signal</span>(<span style="color:#ae81ff">16</span>, waiting); 
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">5</span>); 
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Child process 1 is waiting for signal 16...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>分别在5s内进行操作和不进行操作，编译运行结果如下：</p>
+<p><img src="/images/298716863018237.png" alt=""> <img src="/images/242593518480004.png" alt=""></p>
+<p>可以发现在5s内进行操作后，父进程虽然发送了信号，但子进程没有接收到或者没有处理。考虑到在 UNIX 和 Linux 系统中，SIGINT 、SIGQUIT信号默认会发送给整个进程组（包含父进程和子进程）。当在shell进行操作时，由于子进程没有设置相应的信号处理程序，在缺省的情况下默认终止进程或者终止进程并进行内核映像转储，导致子进程在接受到父进程传递的16、17信号前已经先一步终止。
 故修改代码，在子进程中将SIGINT、SIGQUIT信号阻塞。
-修改后代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unistd.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;sys/wait.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;signal.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> flag <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>pid_t</span> pid1 <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, pid2 <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>inter_handler</span>(<span style=color:#66d9ef>int</span> signum) 
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// 使用 kill() 发送整数值为 16 和 17 的信号
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> (pid1 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) <span style=color:#a6e22e>kill</span>(pid1, <span style=color:#ae81ff>16</span>);  <span style=color:#75715e>// 发送信号 16 给子进程1
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> (pid2 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) <span style=color:#a6e22e>kill</span>(pid2, <span style=color:#ae81ff>17</span>);  <span style=color:#75715e>// 发送信号 17 给子进程2
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Parent received signal %d, sending signals 16 and 17 to child processes</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, signum);
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>child_handler</span>(<span style=color:#66d9ef>int</span> signum) 
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(signum <span style=color:#f92672>==</span> <span style=color:#ae81ff>17</span>)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        flag <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Child process%d received signal %d, exiting...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, flag<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span>, signum);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>exit</span>(<span style=color:#ae81ff>0</span>);
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() 
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>sigset_t</span> parent;
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>sigemptyset</span>(<span style=color:#f92672>&amp;</span>parent);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>sigaddset</span>(<span style=color:#f92672>&amp;</span>parent, SIGINT); 
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>sigaddset</span>(<span style=color:#f92672>&amp;</span>parent, SIGQUIT);
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// 创建子进程1
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>while</span> (pid1 <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>) pid1 <span style=color:#f92672>=</span> <span style=color:#a6e22e>fork</span>();
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (pid1 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) 
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// 创建子进程2
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>while</span> (pid2 <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>) pid2 <span style=color:#f92672>=</span> <span style=color:#a6e22e>fork</span>();
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (pid2 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) 
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#75715e>// 父进程
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>signal</span>(SIGINT, inter_handler);  
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>signal</span>(SIGQUIT, inter_handler); 
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>wait</span>(NULL);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>wait</span>(NULL);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Parent process is killed!!</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
-</span></span><span style=display:flex><span>        } 
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> 
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#75715e>// 子进程2
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>sigprocmask</span>(SIG_BLOCK, <span style=color:#f92672>&amp;</span>parent, NULL);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>signal</span>(<span style=color:#ae81ff>17</span>, child_handler); 
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>sleep</span>(<span style=color:#ae81ff>5</span>); 
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Child process 2 is waiting for signal 17...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    } 
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span> 
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// 子进程1
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>sigprocmask</span>(SIG_BLOCK, <span style=color:#f92672>&amp;</span>parent, NULL);
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>signal</span>(<span style=color:#ae81ff>16</span>, child_handler); 
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>sleep</span>(<span style=color:#ae81ff>5</span>); 
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Child process 1 is waiting for signal 16...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>此时，编译后在5s内分别进行操作与不进行操作的结果如下图：</p><p><img src=/images/505788889118187.png alt> <img src=/images/491475735561486.png alt></p><p>如图可见，子进程成功的接受到父进程的中断信号，结果符合猜想。
-考虑到实验指导书程序流程图中，要求在5s内不进行操作时，父进程接受SIGALRM信号，产生软中断SIGALRM，调用kill函数终止子进程，而不是使用sleep函数，修改代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unistd.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;sys/wait.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;signal.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> flag <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>pid_t</span> pid1 <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, pid2 <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>inter_handler</span>(<span style=color:#66d9ef>int</span> signum) 
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// 使用 kill() 发送整数值为 16 和 17 的信号
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> (pid1 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) <span style=color:#a6e22e>kill</span>(pid1, <span style=color:#ae81ff>16</span>);  <span style=color:#75715e>// 发送信号 16 给子进程1
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> (pid2 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) <span style=color:#a6e22e>kill</span>(pid2, <span style=color:#ae81ff>17</span>);  <span style=color:#75715e>// 发送信号 17 给子进程2
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Parent received signal %d, sending signals 16 and 17 to child processes</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, signum);
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>child_handler</span>(<span style=color:#66d9ef>int</span> signum) 
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(signum <span style=color:#f92672>==</span> <span style=color:#ae81ff>17</span>)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        flag <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Child process%d received signal %d, exiting...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, flag<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span>, signum);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>exit</span>(<span style=color:#ae81ff>0</span>);
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() 
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>sigset_t</span> parent;
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>sigemptyset</span>(<span style=color:#f92672>&amp;</span>parent);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>sigaddset</span>(<span style=color:#f92672>&amp;</span>parent, SIGINT); 
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>sigaddset</span>(<span style=color:#f92672>&amp;</span>parent, SIGQUIT);
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// 创建子进程1
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>while</span> (pid1 <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>) pid1 <span style=color:#f92672>=</span> <span style=color:#a6e22e>fork</span>();
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (pid1 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) 
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// 创建子进程2
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>while</span> (pid2 <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>) pid2 <span style=color:#f92672>=</span> <span style=color:#a6e22e>fork</span>();
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (pid2 <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) 
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#75715e>// 父进程
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>signal</span>(SIGINT, inter_handler);  
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>signal</span>(SIGQUIT, inter_handler); 
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>signal</span>(SIGALRM, inter_handler); 
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>alarm</span>(<span style=color:#ae81ff>5</span>);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>wait</span>(NULL);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>wait</span>(NULL);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Parent process is killed!!</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
-</span></span><span style=display:flex><span>        } 
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> 
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#75715e>// 子进程2
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>sigprocmask</span>(SIG_BLOCK, <span style=color:#f92672>&amp;</span>parent, NULL);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>signal</span>(<span style=color:#ae81ff>17</span>, child_handler); 
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span>(<span style=color:#ae81ff>1</span>);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Child process 2 is waiting for signal 17...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    } 
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span> 
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// 子进程1
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>sigprocmask</span>(SIG_BLOCK, <span style=color:#f92672>&amp;</span>parent, NULL);
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>signal</span>(<span style=color:#ae81ff>16</span>, child_handler); 
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span>(<span style=color:#ae81ff>1</span>);
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Child process 1 is waiting for signal 16...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>编译后，在5s内分别进行操作与不进行操作的结果如下：</p><p>![](/images/34975752365256.png =930x)</p><p>如图所示，可见结果符合预期。</p><h1 id=进程的管道通信>进程的管道通信</h1><h2 id=资料查阅>资料查阅</h2><p>考虑到在代码中需要使用pipe命令创建管道，使用lockf为创建的管道加锁，使用man命令查看帮助手册有：</p><p>![](/images/269836682600229.png =930x)</p><p>![](/images/485737103020915.png =930x)</p><p>同时查阅相关博客，链接如下：</p><ul><li><a href=https://blog.csdn.net/JMW1407/article/details/107700451>一文让你明白，什么是管道（pipe）？进程之间利用管道进行通信的具体流程？以及C++简单利用管道API函数的使用案例。</a></li><li><a href=https://blog.csdn.net/weixin_61857742/article/details/127975539>Linux——匿名管道、命名管道及进程池概念和实现原理</a></li></ul><h2 id=补充代码>补充代码</h2><p>根据注释补充代码后如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>/*管道通信实验程序残缺版 */</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unistd.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;signal.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;sys/wait.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;string.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> pid1,pid2; <span style=color:#75715e>// 定义两个进程变量
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>( ) 
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> fd[<span style=color:#ae81ff>2</span>];
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> InPipe[<span style=color:#ae81ff>1000</span>]; <span style=color:#75715e>// 定义读缓冲区
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>pipe</span>(fd); <span style=color:#75715e>// 创建管道
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>while</span>((pid1 <span style=color:#f92672>=</span> <span style=color:#a6e22e>fork</span>( )) <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>); <span style=color:#75715e>// 如果进程 1 创建不成功,则空循环
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span>(pid1 <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) 
-</span></span><span style=display:flex><span>    { <span style=color:#75715e>// 如果子进程 1 创建成功,pid1 为进程号
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>lockf</span>(fd[<span style=color:#ae81ff>1</span>],<span style=color:#ae81ff>1</span>,<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 锁定管道
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>char</span> OutPipe[<span style=color:#ae81ff>1000</span>] <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Child process 1 is sending message!&#34;</span>;
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>write</span>(fd[<span style=color:#ae81ff>1</span>], OutPipe, <span style=color:#66d9ef>sizeof</span>(OutPipe)<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>);
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>sleep</span>(<span style=color:#ae81ff>1</span>); <span style=color:#75715e>// 等待读进程读出数据
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>lockf</span>(fd[<span style=color:#ae81ff>1</span>],<span style=color:#ae81ff>0</span>,<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 解除管道的锁定
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>exit</span>(<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 结束进程 1
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span> 
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span>((pid2 <span style=color:#f92672>=</span> <span style=color:#a6e22e>fork</span>()) <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>); <span style=color:#75715e>// 若进程 2 创建不成功,则空循环
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>if</span>(pid2 <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) 
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>lockf</span>(fd[<span style=color:#ae81ff>1</span>],<span style=color:#ae81ff>1</span>,<span style=color:#ae81ff>0</span>);
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>char</span> OutPipe[<span style=color:#ae81ff>1000</span>] <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Child process 2 is sending message!&#34;</span>;
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>write</span>(fd[<span style=color:#ae81ff>1</span>], OutPipe, <span style=color:#66d9ef>sizeof</span>(OutPipe)<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>sleep</span>(<span style=color:#ae81ff>1</span>);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>lockf</span>(fd[<span style=color:#ae81ff>1</span>],<span style=color:#ae81ff>0</span>,<span style=color:#ae81ff>0</span>);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>exit</span>(<span style=color:#ae81ff>0</span>);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> 
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>wait</span>(<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 等待子进程 1 结束
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>wait</span>(<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 等待子进程 2 结束
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>close</span>(fd[<span style=color:#ae81ff>1</span>]);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>read</span>(fd[<span style=color:#ae81ff>0</span>], InPipe, <span style=color:#66d9ef>sizeof</span>(InPipe)<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>); <span style=color:#75715e>// 从管道中读出 4000 个字符
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            InPipe[<span style=color:#ae81ff>999</span>] <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; <span style=color:#75715e>// 加字符串结束符
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,InPipe); <span style=color:#75715e>// 显示读出的数据
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>exit</span>(<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 父进程结束
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>但是在已运行过程中发现：</p><p><img src=/images/203667313301401.png alt></p><p>可见运行后结果中只有一个子进程向管道发送的信息被读取。分析后可知，在使用sizeof函数时，返回的并非字符串的长度，而是字符串的最大长度，修改代码使用strlen后两个子进程的信息都能被读取，如下图：</p><p><img src=/images/35508514081999.png alt></p><p>此时两个信息都被正常读取，而由于子进程执行时间不一致，导致两个子进程写操作的先后顺序有差异。
-修改代码，去掉lockf函数后，运行结果如下图：</p><p><img src=/images/321479462060796.png alt></p><p>可以发现结果没有差异，查阅以下资料可知：</p><ul><li><a href=https://blog.csdn.net/JMW1407/article/details/107700451>一文让你明白，什么是管道（pipe）？进程之间利用管道进行通信的具体流程？以及C++简单利用管道API函数的使用案例。</a></li></ul><p>当要写入的数据量不大于管道容量（PIPE_BUF）时，linux会保证写入的原子性，而由于linux内部管道的缓冲区默认大小为4KB,远大于子进程发送的信息，故即使没有加锁，结果仍然会输出两个子进程发送的信息。</p><h2 id=修改代码>修改代码</h2><p>根据实验要求，修改代码，使得两个子进程分别单独的发送2000个字符，父进程读取。在加锁的情况下，修改后代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>/*管道通信实验程序残缺版 */</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unistd.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;signal.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;sys/wait.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> pid1,pid2; <span style=color:#75715e>// 定义两个进程变量
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>( ) 
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> fd[<span style=color:#ae81ff>2</span>];
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> InPipe[<span style=color:#ae81ff>4001</span>]; <span style=color:#75715e>// 定义读缓冲区
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>char</span> c1<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;1&#39;</span>, c2<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;2&#39;</span>;
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>pipe</span>(fd); <span style=color:#75715e>// 创建管道
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>while</span>((pid1 <span style=color:#f92672>=</span> <span style=color:#a6e22e>fork</span>( )) <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>); <span style=color:#75715e>// 如果进程 1 创建不成功,则空循环
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span>(pid1 <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) 
-</span></span><span style=display:flex><span>    { <span style=color:#75715e>// 如果子进程 1 创建成功,pid1 为进程号
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>lockf</span>(fd[<span style=color:#ae81ff>1</span>],<span style=color:#ae81ff>1</span>,<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 锁定管道
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>char</span> input[<span style=color:#ae81ff>2000</span>] <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#39;1&#39;</span>};
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>2000</span>; i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>write</span>(fd[<span style=color:#ae81ff>1</span>], input, <span style=color:#ae81ff>1</span>); <span style=color:#75715e>// 分 2000 次每次向管道写入字符’1’
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        }
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>sleep</span>(<span style=color:#ae81ff>5</span>); <span style=color:#75715e>// 等待读进程读出数据
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>lockf</span>(fd[<span style=color:#ae81ff>1</span>],<span style=color:#ae81ff>0</span>,<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 解除管道的锁定
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>exit</span>(<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 结束进程 1
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span> 
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span>((pid2 <span style=color:#f92672>=</span> <span style=color:#a6e22e>fork</span>()) <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>); <span style=color:#75715e>// 若进程 2 创建不成功,则空循环
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>if</span>(pid2 <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) 
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>lockf</span>(fd[<span style=color:#ae81ff>1</span>],<span style=color:#ae81ff>1</span>,<span style=color:#ae81ff>0</span>);
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>char</span> input[<span style=color:#ae81ff>2000</span>] <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#39;2&#39;</span>};
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>2000</span>; i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>            {
-</span></span><span style=display:flex><span>                <span style=color:#a6e22e>write</span>(fd[<span style=color:#ae81ff>1</span>], input, <span style=color:#ae81ff>1</span>); <span style=color:#75715e>// 分 2000 次每次向管道写入字符’2’
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            }
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>sleep</span>(<span style=color:#ae81ff>5</span>);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>lockf</span>(fd[<span style=color:#ae81ff>1</span>],<span style=color:#ae81ff>0</span>,<span style=color:#ae81ff>0</span>);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>exit</span>(<span style=color:#ae81ff>0</span>);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> 
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>wait</span>(<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 等待子进程 1 结束
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>wait</span>(<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 等待子进程 2 结束
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>close</span>(fd[<span style=color:#ae81ff>1</span>]);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>read</span>(fd[<span style=color:#ae81ff>0</span>], InPipe, <span style=color:#ae81ff>4000</span>); <span style=color:#75715e>// 从管道中读出 4000 个字符
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            InPipe[<span style=color:#ae81ff>4000</span>] <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; <span style=color:#75715e>// 加字符串结束符
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,InPipe); <span style=color:#75715e>// 显示读出的数据
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>exit</span>(<span style=color:#ae81ff>0</span>); <span style=color:#75715e>// 父进程结束
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>编译后运行结果如下：</p><p>![](/images/318163457589942.png =930x)</p><p>可见两个子进程发送的信息分别独立的输出，没有产生混合。修改代码为不加锁，运行结果如下：</p><p>![](/images/155641919392321.png =930x)</p><p>可见此时代码输出为两个子进程消息的混合。虽然Linux系统中管道的每一个操作此时仍然是原子的，但由于每次写入‘1’‘2’时是分开写入的，无法在保证每个子进程整体写入的原子性。</p><h1 id=页面的置换>页面的置换</h1><h2 id=fifo>FIFO</h2><p>根据算法的流程图编写代码有：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdbool.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _page
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>bool</span> InsideOrUsed; <span style=color:#75715e>// 是否在内存中或者是否被使用
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> PageNumber; <span style=color:#75715e>// ap中对应的页号或者pp中对应的页号
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}Page;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>()
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> pp <span style=color:#f92672>=</span> <span style=color:#ae81ff>10</span>; <span style=color:#75715e>// 进程总共的页面数
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> ap <span style=color:#f92672>=</span> <span style=color:#ae81ff>5</span>; <span style=color:#75715e>// 内存为此进程分配的页面数
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> length <span style=color:#f92672>=</span> <span style=color:#ae81ff>19</span>; <span style=color:#75715e>// 程序运行使用的页面序列长度
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> flag <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; <span style=color:#75715e>// 是否手动输入
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;请输入pp、ap值：&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>scanf</span>(<span style=color:#e6db74>&#34;%d,%d&#34;</span>, <span style=color:#f92672>&amp;</span>pp, <span style=color:#f92672>&amp;</span>ap);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;请输入运行序列长度：&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>scanf</span>(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>length);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;是否手动输入序列（1：手动，0：随机）：&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>scanf</span>(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>flag);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    Page page[pp];
-</span></span><span style=display:flex><span>    Page pageContrl[ap];
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span>(<span style=color:#66d9ef>int</span> i<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>;i<span style=color:#f92672>&lt;</span>pp;i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        page[i].InsideOrUsed <span style=color:#f92672>=</span> false;
-</span></span><span style=display:flex><span>        page[i].PageNumber <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span>(<span style=color:#66d9ef>int</span> i<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>;i<span style=color:#f92672>&lt;</span>ap;i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        pageContrl[i].InsideOrUsed <span style=color:#f92672>=</span> false;
-</span></span><span style=display:flex><span>        pageContrl[i].PageNumber <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> cur_ap <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; <span style=color:#75715e>//指向下一个内存待分配页面的指针
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> run[length]; <span style=color:#75715e>// 使用的页面序列
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span>(flag)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span>(<span style=color:#66d9ef>int</span> i<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>;i<span style=color:#f92672>&lt;</span>length;i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>scanf</span>(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>run[i]);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%d &#34;</span>, run[i]);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span>
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span>(<span style=color:#66d9ef>int</span> i<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>;i<span style=color:#f92672>&lt;</span>length;i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            run[i] <span style=color:#f92672>=</span> <span style=color:#a6e22e>rand</span>() <span style=color:#f92672>%</span> pp;
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%d &#34;</span>, run[i]);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> diseffect <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> length; i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> cur <span style=color:#f92672>=</span> run[i];
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (page[cur].InsideOrUsed <span style=color:#f92672>==</span> true)
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>page %d in frame %d already&#34;</span>, cur, page[cur].PageNumber);
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>continue</span>;
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>        page[cur].InsideOrUsed <span style=color:#f92672>=</span> true;
-</span></span><span style=display:flex><span>        page[cur].PageNumber <span style=color:#f92672>=</span> cur_ap;
-</span></span><span style=display:flex><span>        diseffect<span style=color:#f92672>++</span>;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (pageContrl[cur_ap].InsideOrUsed <span style=color:#f92672>==</span> false)
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            pageContrl[cur_ap].InsideOrUsed <span style=color:#f92672>=</span> true;
-</span></span><span style=display:flex><span>            pageContrl[cur_ap].PageNumber <span style=color:#f92672>=</span> cur;
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>page %d in frame %d&#34;</span>, cur, cur_ap);
-</span></span><span style=display:flex><span>            cur_ap <span style=color:#f92672>=</span> (cur_ap <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>%</span> ap;
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span>
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>page %d in frame %d replace page %d&#34;</span>, cur, cur_ap, pageContrl[cur_ap].PageNumber);
-</span></span><span style=display:flex><span>            page[pageContrl[cur_ap].PageNumber].InsideOrUsed <span style=color:#f92672>=</span> false;
-</span></span><span style=display:flex><span>            pageContrl[cur_ap].InsideOrUsed <span style=color:#f92672>=</span> true;
-</span></span><span style=display:flex><span>            pageContrl[cur_ap].PageNumber <span style=color:#f92672>=</span> cur;
-</span></span><span style=display:flex><span>            cur_ap <span style=color:#f92672>=</span> (cur_ap <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>%</span> ap;
-</span></span><span style=display:flex><span>        }        
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>double</span> rate <span style=color:#f92672>=</span> diseffect <span style=color:#f92672>/</span> (<span style=color:#66d9ef>double</span>)length;
-</span></span><span style=display:flex><span>    rate <span style=color:#f92672>=</span> rate <span style=color:#f92672>*</span> <span style=color:#ae81ff>100</span>;
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>rate = diseffect / total_instruction*100%% = %.2f%%</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, rate);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>考虑到在FIFO算法中，需要加入的页面无论是内存中有的，还是有空位新加入的，都可以添加到ap列表指针的当前位置，替换算法实现较为简便，此时运行结果如图：</p><p><img src=/images/302702198562310.png alt></p><p>可见结果与预期相符，符合FIFO算法的计算结果。</p><h2 id=lru>LRU</h2><p>对于LRU页面置换算法，在内存分配的页面数已经全部被使用，而下一个需要使用的页面还不在内存中时，需要将已经在内存中但距离上一次使用时间最短的页面替换出来。修改代码，使得对于内存分配的页面增添一个属性，即wait,衡量该页面未被使用的时间，在每一次替换页面或者加入页面时，使得未被使用的页面wait值加一。替换时则替换wait值最大的页面。</p><p>修改后代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdbool.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _page
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>bool</span> InsideOrUsed; <span style=color:#75715e>// 是否在内存中或者是否被使用
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> PageNumber; <span style=color:#75715e>// ap中对应的页号或者pp中对应的页号
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}Page;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _pagec
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>bool</span> InsideOrUsed; <span style=color:#75715e>// 是否在内存中或者是否被使用
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> PageNumber; <span style=color:#75715e>// ap中对应的页号或者pp中对应的页号
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> wait; <span style=color:#75715e>// 页面等待未使用的次数
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}PageC;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>()
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> LRU <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>; <span style=color:#75715e>// 使用的页面置换算法
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> pp <span style=color:#f92672>=</span> <span style=color:#ae81ff>10</span>; <span style=color:#75715e>// 进程总共的页面数
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> ap <span style=color:#f92672>=</span> <span style=color:#ae81ff>5</span>; <span style=color:#75715e>// 内存为此进程分配的页面数
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> length <span style=color:#f92672>=</span> <span style=color:#ae81ff>19</span>; <span style=color:#75715e>// 程序运行使用的页面序列长度
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> flag <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; <span style=color:#75715e>// 是否手动输入
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;选择使用的页面置换算法（1：LRU, 0：FIFO）：&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>scanf</span>(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>LRU);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;请输入pp、ap值：&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>scanf</span>(<span style=color:#e6db74>&#34;%d,%d&#34;</span>, <span style=color:#f92672>&amp;</span>pp, <span style=color:#f92672>&amp;</span>ap);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;请输入运行序列长度：&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>scanf</span>(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>length);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;是否手动输入序列（1：手动，0：随机）：&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>scanf</span>(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>flag);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    Page page[pp];
-</span></span><span style=display:flex><span>    PageC pageContrl[ap];
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span>(<span style=color:#66d9ef>int</span> i<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>;i<span style=color:#f92672>&lt;</span>pp;i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        page[i].InsideOrUsed <span style=color:#f92672>=</span> false;
-</span></span><span style=display:flex><span>        page[i].PageNumber <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span>(<span style=color:#66d9ef>int</span> i<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>;i<span style=color:#f92672>&lt;</span>ap;i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        pageContrl[i].InsideOrUsed <span style=color:#f92672>=</span> false;
-</span></span><span style=display:flex><span>        pageContrl[i].PageNumber <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
-</span></span><span style=display:flex><span>        pageContrl[i].wait <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> run[length]; <span style=color:#75715e>// 使用的页面序列
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span>(flag)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span>(<span style=color:#66d9ef>int</span> i<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>;i<span style=color:#f92672>&lt;</span>length;i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>scanf</span>(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>run[i]);
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%d &#34;</span>, run[i]);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span>
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span>(<span style=color:#66d9ef>int</span> i<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>;i<span style=color:#f92672>&lt;</span>length;i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            run[i] <span style=color:#f92672>=</span> <span style=color:#a6e22e>rand</span>() <span style=color:#f92672>%</span> pp;
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%d &#34;</span>, run[i]);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> diseffect <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (LRU)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> length; i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>int</span> cur <span style=color:#f92672>=</span> run[i];
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span>(<span style=color:#66d9ef>int</span> j<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>;j<span style=color:#f92672>&lt;</span>ap;j<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>            {
-</span></span><span style=display:flex><span>                pageContrl[j].wait<span style=color:#f92672>++</span>;
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span>(page[cur].InsideOrUsed <span style=color:#f92672>==</span> true)
-</span></span><span style=display:flex><span>            {
-</span></span><span style=display:flex><span>                pageContrl[page[cur].PageNumber].wait <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>                <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>page %d in frame %d already&#34;</span>, cur, page[cur].PageNumber);
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>continue</span>;
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            diseffect<span style=color:#f92672>++</span>;
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>int</span> maxWait <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>bool</span> hasEmpty <span style=color:#f92672>=</span> false;
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span>(<span style=color:#66d9ef>int</span> j<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>;j<span style=color:#f92672>&lt;</span>ap;j<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>            {
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span>(pageContrl[j].InsideOrUsed <span style=color:#f92672>==</span> false)
-</span></span><span style=display:flex><span>                {
-</span></span><span style=display:flex><span>                    maxWait <span style=color:#f92672>=</span> j;
-</span></span><span style=display:flex><span>                    hasEmpty <span style=color:#f92672>=</span> true;
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>break</span>;
-</span></span><span style=display:flex><span>                }
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span>(pageContrl[j].wait <span style=color:#f92672>&gt;</span> pageContrl[maxWait].wait)
-</span></span><span style=display:flex><span>                {
-</span></span><span style=display:flex><span>                    maxWait <span style=color:#f92672>=</span> j;
-</span></span><span style=display:flex><span>                }
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span>(hasEmpty)
-</span></span><span style=display:flex><span>            {
-</span></span><span style=display:flex><span>                <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>page %d in frame %d&#34;</span>, cur, maxWait);
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>else</span>
-</span></span><span style=display:flex><span>            {
-</span></span><span style=display:flex><span>                <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>page %d in frame %d replace page %d&#34;</span>, cur, maxWait, pageContrl[maxWait].PageNumber);
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>            pageContrl[maxWait].InsideOrUsed <span style=color:#f92672>=</span> true;
-</span></span><span style=display:flex><span>            pageContrl[maxWait].PageNumber <span style=color:#f92672>=</span> cur;
-</span></span><span style=display:flex><span>            pageContrl[maxWait].wait <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>            page[cur].InsideOrUsed <span style=color:#f92672>=</span> true;
-</span></span><span style=display:flex><span>            page[cur].PageNumber <span style=color:#f92672>=</span> maxWait;    
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span>
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> cur_ap <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; <span style=color:#75715e>//指向下一个内存待分配页面的指针
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> length; i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>int</span> cur <span style=color:#f92672>=</span> run[i];
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (page[cur].InsideOrUsed <span style=color:#f92672>==</span> true)
-</span></span><span style=display:flex><span>            {
-</span></span><span style=display:flex><span>                <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>page %d in frame %d already&#34;</span>, cur, page[cur].PageNumber);
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>continue</span>;
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            page[cur].InsideOrUsed <span style=color:#f92672>=</span> true;
-</span></span><span style=display:flex><span>            page[cur].PageNumber <span style=color:#f92672>=</span> cur_ap;
-</span></span><span style=display:flex><span>            diseffect<span style=color:#f92672>++</span>;
-</span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (pageContrl[cur_ap].InsideOrUsed <span style=color:#f92672>==</span> false)
-</span></span><span style=display:flex><span>            {
-</span></span><span style=display:flex><span>                pageContrl[cur_ap].InsideOrUsed <span style=color:#f92672>=</span> true;
-</span></span><span style=display:flex><span>                pageContrl[cur_ap].PageNumber <span style=color:#f92672>=</span> cur;
-</span></span><span style=display:flex><span>                <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>page %d in frame %d&#34;</span>, cur, cur_ap);
-</span></span><span style=display:flex><span>                cur_ap <span style=color:#f92672>=</span> (cur_ap <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>%</span> ap;
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>else</span>
-</span></span><span style=display:flex><span>            {
-</span></span><span style=display:flex><span>                <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>page %d in frame %d replace page %d&#34;</span>, cur, cur_ap, pageContrl[cur_ap].PageNumber);
-</span></span><span style=display:flex><span>                page[pageContrl[cur_ap].PageNumber].InsideOrUsed <span style=color:#f92672>=</span> false;
-</span></span><span style=display:flex><span>                pageContrl[cur_ap].InsideOrUsed <span style=color:#f92672>=</span> true;
-</span></span><span style=display:flex><span>                pageContrl[cur_ap].PageNumber <span style=color:#f92672>=</span> cur;
-</span></span><span style=display:flex><span>                cur_ap <span style=color:#f92672>=</span> (cur_ap <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>%</span> ap;
-</span></span><span style=display:flex><span>            }        
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>double</span> rate <span style=color:#f92672>=</span> diseffect <span style=color:#f92672>/</span> (<span style=color:#66d9ef>double</span>)length;
-</span></span><span style=display:flex><span>    rate <span style=color:#f92672>=</span> rate <span style=color:#f92672>*</span> <span style=color:#ae81ff>100</span>;
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>rate = diseffect / total_instruction*100%% = %.2f%%</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, rate);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>编译后运行结果如下：</p><p><img src=/images/315586100882146.png alt></p><p>可见运行结果符合题意，每次替换时，替换了最长时间没有使用的页面</p><p>该序列使用FIFO算法的结果如下：<br><img src=/images/175086235335823.png alt></p><p>可见使用LRU的结果缺页率更小。</p><h2 id=测试数据设计>测试数据设计</h2><h3 id=bleady>Bleady</h3><p>BLEADY现象（Belady&rsquo;s Anomaly）是指在某些页面置换算法（例如FIFO，即先进先出算法）中，给进程分配更多的物理页面并不会减少页面错误（Page Faults），反而可能增加页面错误次数的现象。
+修改后代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/wait.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;signal.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pid_t</span> pid1 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, pid2 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">inter_handler</span>(<span style="color:#66d9ef">int</span> signum) 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 使用 kill() 发送整数值为 16 和 17 的信号
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (pid1 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) <span style="color:#a6e22e">kill</span>(pid1, <span style="color:#ae81ff">16</span>);  <span style="color:#75715e">// 发送信号 16 给子进程1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (pid2 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) <span style="color:#a6e22e">kill</span>(pid2, <span style="color:#ae81ff">17</span>);  <span style="color:#75715e">// 发送信号 17 给子进程2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Parent received signal %d, sending signals 16 and 17 to child processes</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, signum);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">child_handler</span>(<span style="color:#66d9ef">int</span> signum) 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(signum <span style="color:#f92672">==</span> <span style="color:#ae81ff">17</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Child process%d received signal %d, exiting...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, flag<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, signum);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">sigset_t</span> parent;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sigemptyset</span>(<span style="color:#f92672">&amp;</span>parent);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sigaddset</span>(<span style="color:#f92672">&amp;</span>parent, SIGINT); 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sigaddset</span>(<span style="color:#f92672">&amp;</span>parent, SIGQUIT);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 创建子进程1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span> (pid1 <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) pid1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (pid1 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) 
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 创建子进程2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">while</span> (pid2 <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) pid2 <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (pid2 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) 
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 父进程
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">signal</span>(SIGINT, inter_handler);  
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">signal</span>(SIGQUIT, inter_handler); 
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">wait</span>(NULL);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">wait</span>(NULL);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Parent process is killed!!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        } 
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> 
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 子进程2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">sigprocmask</span>(SIG_BLOCK, <span style="color:#f92672">&amp;</span>parent, NULL);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">signal</span>(<span style="color:#ae81ff">17</span>, child_handler); 
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">5</span>); 
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Child process 2 is waiting for signal 17...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    } 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> 
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 子进程1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">sigprocmask</span>(SIG_BLOCK, <span style="color:#f92672">&amp;</span>parent, NULL);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">signal</span>(<span style="color:#ae81ff">16</span>, child_handler); 
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">5</span>); 
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Child process 1 is waiting for signal 16...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>此时，编译后在5s内分别进行操作与不进行操作的结果如下图：</p>
+<p><img src="/images/505788889118187.png" alt=""> <img src="/images/491475735561486.png" alt=""></p>
+<p>如图可见，子进程成功的接受到父进程的中断信号，结果符合猜想。
+考虑到实验指导书程序流程图中，要求在5s内不进行操作时，父进程接受SIGALRM信号，产生软中断SIGALRM，调用kill函数终止子进程，而不是使用sleep函数，修改代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/wait.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;signal.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pid_t</span> pid1 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, pid2 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">inter_handler</span>(<span style="color:#66d9ef">int</span> signum) 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 使用 kill() 发送整数值为 16 和 17 的信号
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (pid1 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) <span style="color:#a6e22e">kill</span>(pid1, <span style="color:#ae81ff">16</span>);  <span style="color:#75715e">// 发送信号 16 给子进程1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (pid2 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) <span style="color:#a6e22e">kill</span>(pid2, <span style="color:#ae81ff">17</span>);  <span style="color:#75715e">// 发送信号 17 给子进程2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Parent received signal %d, sending signals 16 and 17 to child processes</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, signum);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">child_handler</span>(<span style="color:#66d9ef">int</span> signum) 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(signum <span style="color:#f92672">==</span> <span style="color:#ae81ff">17</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Child process%d received signal %d, exiting...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, flag<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, signum);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">sigset_t</span> parent;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sigemptyset</span>(<span style="color:#f92672">&amp;</span>parent);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sigaddset</span>(<span style="color:#f92672">&amp;</span>parent, SIGINT); 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sigaddset</span>(<span style="color:#f92672">&amp;</span>parent, SIGQUIT);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 创建子进程1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span> (pid1 <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) pid1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (pid1 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) 
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 创建子进程2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">while</span> (pid2 <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) pid2 <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (pid2 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) 
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 父进程
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">signal</span>(SIGINT, inter_handler);  
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">signal</span>(SIGQUIT, inter_handler); 
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">signal</span>(SIGALRM, inter_handler); 
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">alarm</span>(<span style="color:#ae81ff">5</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">wait</span>(NULL);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">wait</span>(NULL);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Parent process is killed!!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        } 
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> 
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 子进程2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">sigprocmask</span>(SIG_BLOCK, <span style="color:#f92672">&amp;</span>parent, NULL);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">signal</span>(<span style="color:#ae81ff">17</span>, child_handler); 
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Child process 2 is waiting for signal 17...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    } 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> 
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 子进程1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">sigprocmask</span>(SIG_BLOCK, <span style="color:#f92672">&amp;</span>parent, NULL);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">signal</span>(<span style="color:#ae81ff">16</span>, child_handler); 
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Child process 1 is waiting for signal 16...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>编译后，在5s内分别进行操作与不进行操作的结果如下：</p>
+<p>![](/images/34975752365256.png =930x)</p>
+<p>如图所示，可见结果符合预期。</p>
+<h1 id="进程的管道通信">进程的管道通信</h1>
+<h2 id="资料查阅">资料查阅</h2>
+<p>考虑到在代码中需要使用pipe命令创建管道，使用lockf为创建的管道加锁，使用man命令查看帮助手册有：</p>
+<p>![](/images/269836682600229.png =930x)</p>
+<p>![](/images/485737103020915.png =930x)</p>
+<p>同时查阅相关博客，链接如下：</p>
+<ul>
+<li><a href="https://blog.csdn.net/JMW1407/article/details/107700451">一文让你明白，什么是管道（pipe）？进程之间利用管道进行通信的具体流程？以及C++简单利用管道API函数的使用案例。</a></li>
+<li><a href="https://blog.csdn.net/weixin_61857742/article/details/127975539">Linux——匿名管道、命名管道及进程池概念和实现原理</a></li>
+</ul>
+<h2 id="补充代码">补充代码</h2>
+<p>根据注释补充代码后如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/*管道通信实验程序残缺版 */</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;signal.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/wait.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> pid1,pid2; <span style="color:#75715e">// 定义两个进程变量
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>( ) 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> fd[<span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> InPipe[<span style="color:#ae81ff">1000</span>]; <span style="color:#75715e">// 定义读缓冲区
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">pipe</span>(fd); <span style="color:#75715e">// 创建管道
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span>((pid1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>( )) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">// 如果进程 1 创建不成功,则空循环
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>(pid1 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) 
+</span></span><span style="display:flex;"><span>    { <span style="color:#75715e">// 如果子进程 1 创建成功,pid1 为进程号
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">lockf</span>(fd[<span style="color:#ae81ff">1</span>],<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 锁定管道
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">char</span> OutPipe[<span style="color:#ae81ff">1000</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Child process 1 is sending message!&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">write</span>(fd[<span style="color:#ae81ff">1</span>], OutPipe, <span style="color:#66d9ef">sizeof</span>(OutPipe)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">1</span>); <span style="color:#75715e">// 等待读进程读出数据
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">lockf</span>(fd[<span style="color:#ae81ff">1</span>],<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 解除管道的锁定
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 结束进程 1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> 
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span>((pid2 <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>()) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">// 若进程 2 创建不成功,则空循环
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span>(pid2 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) 
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">lockf</span>(fd[<span style="color:#ae81ff">1</span>],<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">char</span> OutPipe[<span style="color:#ae81ff">1000</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Child process 2 is sending message!&#34;</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">write</span>(fd[<span style="color:#ae81ff">1</span>], OutPipe, <span style="color:#66d9ef">sizeof</span>(OutPipe)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">lockf</span>(fd[<span style="color:#ae81ff">1</span>],<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> 
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">wait</span>(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 等待子进程 1 结束
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">wait</span>(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 等待子进程 2 结束
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">close</span>(fd[<span style="color:#ae81ff">1</span>]);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">read</span>(fd[<span style="color:#ae81ff">0</span>], InPipe, <span style="color:#66d9ef">sizeof</span>(InPipe)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">// 从管道中读出 4000 个字符
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            InPipe[<span style="color:#ae81ff">999</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">// 加字符串结束符
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,InPipe); <span style="color:#75715e">// 显示读出的数据
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 父进程结束
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>但是在已运行过程中发现：</p>
+<p><img src="/images/203667313301401.png" alt=""></p>
+<p>可见运行后结果中只有一个子进程向管道发送的信息被读取。分析后可知，在使用sizeof函数时，返回的并非字符串的长度，而是字符串的最大长度，修改代码使用strlen后两个子进程的信息都能被读取，如下图：</p>
+<p><img src="/images/35508514081999.png" alt=""></p>
+<p>此时两个信息都被正常读取，而由于子进程执行时间不一致，导致两个子进程写操作的先后顺序有差异。
+修改代码，去掉lockf函数后，运行结果如下图：</p>
+<p><img src="/images/321479462060796.png" alt=""></p>
+<p>可以发现结果没有差异，查阅以下资料可知：</p>
+<ul>
+<li><a href="https://blog.csdn.net/JMW1407/article/details/107700451">一文让你明白，什么是管道（pipe）？进程之间利用管道进行通信的具体流程？以及C++简单利用管道API函数的使用案例。</a></li>
+</ul>
+<p>当要写入的数据量不大于管道容量（PIPE_BUF）时，linux会保证写入的原子性，而由于linux内部管道的缓冲区默认大小为4KB,远大于子进程发送的信息，故即使没有加锁，结果仍然会输出两个子进程发送的信息。</p>
+<h2 id="修改代码">修改代码</h2>
+<p>根据实验要求，修改代码，使得两个子进程分别单独的发送2000个字符，父进程读取。在加锁的情况下，修改后代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/*管道通信实验程序残缺版 */</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;signal.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/wait.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> pid1,pid2; <span style="color:#75715e">// 定义两个进程变量
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>( ) 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> fd[<span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> InPipe[<span style="color:#ae81ff">4001</span>]; <span style="color:#75715e">// 定义读缓冲区
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span> c1<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;1&#39;</span>, c2<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;2&#39;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pipe</span>(fd); <span style="color:#75715e">// 创建管道
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span>((pid1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>( )) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">// 如果进程 1 创建不成功,则空循环
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>(pid1 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) 
+</span></span><span style="display:flex;"><span>    { <span style="color:#75715e">// 如果子进程 1 创建成功,pid1 为进程号
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">lockf</span>(fd[<span style="color:#ae81ff">1</span>],<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 锁定管道
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">char</span> input[<span style="color:#ae81ff">2000</span>] <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;1&#39;</span>};
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">2000</span>; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">write</span>(fd[<span style="color:#ae81ff">1</span>], input, <span style="color:#ae81ff">1</span>); <span style="color:#75715e">// 分 2000 次每次向管道写入字符’1’
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">5</span>); <span style="color:#75715e">// 等待读进程读出数据
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">lockf</span>(fd[<span style="color:#ae81ff">1</span>],<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 解除管道的锁定
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 结束进程 1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> 
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span>((pid2 <span style="color:#f92672">=</span> <span style="color:#a6e22e">fork</span>()) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">// 若进程 2 创建不成功,则空循环
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span>(pid2 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) 
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">lockf</span>(fd[<span style="color:#ae81ff">1</span>],<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">char</span> input[<span style="color:#ae81ff">2000</span>] <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;2&#39;</span>};
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">2000</span>; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">write</span>(fd[<span style="color:#ae81ff">1</span>], input, <span style="color:#ae81ff">1</span>); <span style="color:#75715e">// 分 2000 次每次向管道写入字符’2’
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">5</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">lockf</span>(fd[<span style="color:#ae81ff">1</span>],<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> 
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">wait</span>(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 等待子进程 1 结束
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">wait</span>(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 等待子进程 2 结束
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">close</span>(fd[<span style="color:#ae81ff">1</span>]);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">read</span>(fd[<span style="color:#ae81ff">0</span>], InPipe, <span style="color:#ae81ff">4000</span>); <span style="color:#75715e">// 从管道中读出 4000 个字符
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            InPipe[<span style="color:#ae81ff">4000</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">// 加字符串结束符
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,InPipe); <span style="color:#75715e">// 显示读出的数据
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 父进程结束
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>编译后运行结果如下：</p>
+<p>![](/images/318163457589942.png =930x)</p>
+<p>可见两个子进程发送的信息分别独立的输出，没有产生混合。修改代码为不加锁，运行结果如下：</p>
+<p>![](/images/155641919392321.png =930x)</p>
+<p>可见此时代码输出为两个子进程消息的混合。虽然Linux系统中管道的每一个操作此时仍然是原子的，但由于每次写入‘1’‘2’时是分开写入的，无法在保证每个子进程整体写入的原子性。</p>
+<h1 id="页面的置换">页面的置换</h1>
+<h2 id="fifo">FIFO</h2>
+<p>根据算法的流程图编写代码有：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdbool.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _page
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">bool</span> InsideOrUsed; <span style="color:#75715e">// 是否在内存中或者是否被使用
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> PageNumber; <span style="color:#75715e">// ap中对应的页号或者pp中对应的页号
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}Page;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> pp <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>; <span style="color:#75715e">// 进程总共的页面数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> ap <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>; <span style="color:#75715e">// 内存为此进程分配的页面数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> length <span style="color:#f92672">=</span> <span style="color:#ae81ff">19</span>; <span style="color:#75715e">// 程序运行使用的页面序列长度
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">// 是否手动输入
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;请输入pp、ap值：&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%d,%d&#34;</span>, <span style="color:#f92672">&amp;</span>pp, <span style="color:#f92672">&amp;</span>ap);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;请输入运行序列长度：&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>length);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;是否手动输入序列（1：手动，0：随机）：&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>flag);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Page page[pp];
+</span></span><span style="display:flex;"><span>    Page pageContrl[ap];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>pp;i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        page[i].InsideOrUsed <span style="color:#f92672">=</span> false;
+</span></span><span style="display:flex;"><span>        page[i].PageNumber <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>ap;i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        pageContrl[i].InsideOrUsed <span style="color:#f92672">=</span> false;
+</span></span><span style="display:flex;"><span>        pageContrl[i].PageNumber <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> cur_ap <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//指向下一个内存待分配页面的指针
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> run[length]; <span style="color:#75715e">// 使用的页面序列
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>(flag)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>length;i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>run[i]);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%d &#34;</span>, run[i]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>length;i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            run[i] <span style="color:#f92672">=</span> <span style="color:#a6e22e">rand</span>() <span style="color:#f92672">%</span> pp;
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%d &#34;</span>, run[i]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> diseffect <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> length; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> cur <span style="color:#f92672">=</span> run[i];
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (page[cur].InsideOrUsed <span style="color:#f92672">==</span> true)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">page %d in frame %d already&#34;</span>, cur, page[cur].PageNumber);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        page[cur].InsideOrUsed <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>        page[cur].PageNumber <span style="color:#f92672">=</span> cur_ap;
+</span></span><span style="display:flex;"><span>        diseffect<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (pageContrl[cur_ap].InsideOrUsed <span style="color:#f92672">==</span> false)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            pageContrl[cur_ap].InsideOrUsed <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>            pageContrl[cur_ap].PageNumber <span style="color:#f92672">=</span> cur;
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">page %d in frame %d&#34;</span>, cur, cur_ap);
+</span></span><span style="display:flex;"><span>            cur_ap <span style="color:#f92672">=</span> (cur_ap <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> ap;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">page %d in frame %d replace page %d&#34;</span>, cur, cur_ap, pageContrl[cur_ap].PageNumber);
+</span></span><span style="display:flex;"><span>            page[pageContrl[cur_ap].PageNumber].InsideOrUsed <span style="color:#f92672">=</span> false;
+</span></span><span style="display:flex;"><span>            pageContrl[cur_ap].InsideOrUsed <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>            pageContrl[cur_ap].PageNumber <span style="color:#f92672">=</span> cur;
+</span></span><span style="display:flex;"><span>            cur_ap <span style="color:#f92672">=</span> (cur_ap <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> ap;
+</span></span><span style="display:flex;"><span>        }        
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">double</span> rate <span style="color:#f92672">=</span> diseffect <span style="color:#f92672">/</span> (<span style="color:#66d9ef">double</span>)length;
+</span></span><span style="display:flex;"><span>    rate <span style="color:#f92672">=</span> rate <span style="color:#f92672">*</span> <span style="color:#ae81ff">100</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">rate = diseffect / total_instruction*100%% = %.2f%%</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, rate);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>考虑到在FIFO算法中，需要加入的页面无论是内存中有的，还是有空位新加入的，都可以添加到ap列表指针的当前位置，替换算法实现较为简便，此时运行结果如图：</p>
+<p><img src="/images/302702198562310.png" alt=""></p>
+<p>可见结果与预期相符，符合FIFO算法的计算结果。</p>
+<h2 id="lru">LRU</h2>
+<p>对于LRU页面置换算法，在内存分配的页面数已经全部被使用，而下一个需要使用的页面还不在内存中时，需要将已经在内存中但距离上一次使用时间最短的页面替换出来。修改代码，使得对于内存分配的页面增添一个属性，即wait,衡量该页面未被使用的时间，在每一次替换页面或者加入页面时，使得未被使用的页面wait值加一。替换时则替换wait值最大的页面。</p>
+<p>修改后代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdbool.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _page
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">bool</span> InsideOrUsed; <span style="color:#75715e">// 是否在内存中或者是否被使用
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> PageNumber; <span style="color:#75715e">// ap中对应的页号或者pp中对应的页号
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}Page;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _pagec
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">bool</span> InsideOrUsed; <span style="color:#75715e">// 是否在内存中或者是否被使用
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> PageNumber; <span style="color:#75715e">// ap中对应的页号或者pp中对应的页号
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> wait; <span style="color:#75715e">// 页面等待未使用的次数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}PageC;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> LRU <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">// 使用的页面置换算法
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> pp <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>; <span style="color:#75715e">// 进程总共的页面数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> ap <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>; <span style="color:#75715e">// 内存为此进程分配的页面数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> length <span style="color:#f92672">=</span> <span style="color:#ae81ff">19</span>; <span style="color:#75715e">// 程序运行使用的页面序列长度
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">// 是否手动输入
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;选择使用的页面置换算法（1：LRU, 0：FIFO）：&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>LRU);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;请输入pp、ap值：&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%d,%d&#34;</span>, <span style="color:#f92672">&amp;</span>pp, <span style="color:#f92672">&amp;</span>ap);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;请输入运行序列长度：&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>length);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;是否手动输入序列（1：手动，0：随机）：&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>flag);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Page page[pp];
+</span></span><span style="display:flex;"><span>    PageC pageContrl[ap];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>pp;i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        page[i].InsideOrUsed <span style="color:#f92672">=</span> false;
+</span></span><span style="display:flex;"><span>        page[i].PageNumber <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>ap;i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        pageContrl[i].InsideOrUsed <span style="color:#f92672">=</span> false;
+</span></span><span style="display:flex;"><span>        pageContrl[i].PageNumber <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        pageContrl[i].wait <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> run[length]; <span style="color:#75715e">// 使用的页面序列
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>(flag)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>length;i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>run[i]);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%d &#34;</span>, run[i]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>length;i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            run[i] <span style="color:#f92672">=</span> <span style="color:#a6e22e">rand</span>() <span style="color:#f92672">%</span> pp;
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%d &#34;</span>, run[i]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> diseffect <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (LRU)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> length; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> cur <span style="color:#f92672">=</span> run[i];
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> j<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;j<span style="color:#f92672">&lt;</span>ap;j<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                pageContrl[j].wait<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span>(page[cur].InsideOrUsed <span style="color:#f92672">==</span> true)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                pageContrl[page[cur].PageNumber].wait <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">page %d in frame %d already&#34;</span>, cur, page[cur].PageNumber);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            diseffect<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> maxWait <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">bool</span> hasEmpty <span style="color:#f92672">=</span> false;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> j<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;j<span style="color:#f92672">&lt;</span>ap;j<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span>(pageContrl[j].InsideOrUsed <span style="color:#f92672">==</span> false)
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    maxWait <span style="color:#f92672">=</span> j;
+</span></span><span style="display:flex;"><span>                    hasEmpty <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span>(pageContrl[j].wait <span style="color:#f92672">&gt;</span> pageContrl[maxWait].wait)
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    maxWait <span style="color:#f92672">=</span> j;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span>(hasEmpty)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">page %d in frame %d&#34;</span>, cur, maxWait);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">page %d in frame %d replace page %d&#34;</span>, cur, maxWait, pageContrl[maxWait].PageNumber);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            pageContrl[maxWait].InsideOrUsed <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>            pageContrl[maxWait].PageNumber <span style="color:#f92672">=</span> cur;
+</span></span><span style="display:flex;"><span>            pageContrl[maxWait].wait <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>            page[cur].InsideOrUsed <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>            page[cur].PageNumber <span style="color:#f92672">=</span> maxWait;    
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> cur_ap <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//指向下一个内存待分配页面的指针
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> length; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> cur <span style="color:#f92672">=</span> run[i];
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (page[cur].InsideOrUsed <span style="color:#f92672">==</span> true)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">page %d in frame %d already&#34;</span>, cur, page[cur].PageNumber);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            page[cur].InsideOrUsed <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>            page[cur].PageNumber <span style="color:#f92672">=</span> cur_ap;
+</span></span><span style="display:flex;"><span>            diseffect<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (pageContrl[cur_ap].InsideOrUsed <span style="color:#f92672">==</span> false)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                pageContrl[cur_ap].InsideOrUsed <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>                pageContrl[cur_ap].PageNumber <span style="color:#f92672">=</span> cur;
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">page %d in frame %d&#34;</span>, cur, cur_ap);
+</span></span><span style="display:flex;"><span>                cur_ap <span style="color:#f92672">=</span> (cur_ap <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> ap;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">page %d in frame %d replace page %d&#34;</span>, cur, cur_ap, pageContrl[cur_ap].PageNumber);
+</span></span><span style="display:flex;"><span>                page[pageContrl[cur_ap].PageNumber].InsideOrUsed <span style="color:#f92672">=</span> false;
+</span></span><span style="display:flex;"><span>                pageContrl[cur_ap].InsideOrUsed <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>                pageContrl[cur_ap].PageNumber <span style="color:#f92672">=</span> cur;
+</span></span><span style="display:flex;"><span>                cur_ap <span style="color:#f92672">=</span> (cur_ap <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> ap;
+</span></span><span style="display:flex;"><span>            }        
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">double</span> rate <span style="color:#f92672">=</span> diseffect <span style="color:#f92672">/</span> (<span style="color:#66d9ef">double</span>)length;
+</span></span><span style="display:flex;"><span>    rate <span style="color:#f92672">=</span> rate <span style="color:#f92672">*</span> <span style="color:#ae81ff">100</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">rate = diseffect / total_instruction*100%% = %.2f%%</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, rate);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>编译后运行结果如下：</p>
+<p><img src="/images/315586100882146.png" alt=""></p>
+<p>可见运行结果符合题意，每次替换时，替换了最长时间没有使用的页面</p>
+<p>该序列使用FIFO算法的结果如下：<br>
+<img src="/images/175086235335823.png" alt=""></p>
+<p>可见使用LRU的结果缺页率更小。</p>
+<h2 id="测试数据设计">测试数据设计</h2>
+<h3 id="bleady">Bleady</h3>
+<p>BLEADY现象（Belady&rsquo;s Anomaly）是指在某些页面置换算法（例如FIFO，即先进先出算法）中，给进程分配更多的物理页面并不会减少页面错误（Page Faults），反而可能增加页面错误次数的现象。
 FIFO 算法在页面频繁切换时，会导致早期页面的置换。据此设计以下测试数据：
-pp = 10, ap = 3/4, length = 12, run = {1 2 3 4 1 2 5 1 2 3 4 5}</p><p>编译后运行结果如下：</p><p><img src=/images/241584958368759.png alt> <img src=/images/409142102442391.png alt></p><p>可见在页面框数增大的情况下，缺页率反而增加。</p><h3 id=局部性数据>局部性数据</h3><p>在LRU算法中，更体现了程序运行的局部性原理，为体现FIFO和LRU算法的差异，设计测试数据如下：</p><p>pp = 10, ap = 4, length = 20, run = {0 1 2 3 0 1 2 3 4 5 6 7 4 5 6 7 0 1 2 3}</p><p>两种不同的算法编译后运行结果如下：</p><p><img src=/images/402263885735160.png alt> <img src=/images/562816240229842.png alt></p><p>结果如图，可见LRU算法在针对有局部性特点的数据时，表现更优。</p></div><div class=post-footer></div></article></main></body></html>
+pp = 10, ap = 3/4, length = 12, run = {1 2 3 4 1 2 5 1 2 3 4 5}</p>
+<p>编译后运行结果如下：</p>
+<p><img src="/images/241584958368759.png" alt=""> <img src="/images/409142102442391.png" alt=""></p>
+<p>可见在页面框数增大的情况下，缺页率反而增加。</p>
+<h3 id="局部性数据">局部性数据</h3>
+<p>在LRU算法中，更体现了程序运行的局部性原理，为体现FIFO和LRU算法的差异，设计测试数据如下：</p>
+<p>pp = 10, ap = 4, length = 20, run = {0 1 2 3 0 1 2 3 4 5 6 7 4 5 6 7 0 1 2 3}</p>
+<p>两种不同的算法编译后运行结果如下：</p>
+<p><img src="/images/402263885735160.png" alt=""> <img src="/images/562816240229842.png" alt=""></p>
+<p>结果如图，可见LRU算法在针对有局部性特点的数据时，表现更优。</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
