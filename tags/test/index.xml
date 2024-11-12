@@ -1,38 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Test on Yuaay</title><link>https://xiongyuaay.github.io/tags/test/</link><description>Recent content in Test on Yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Thu, 09 Jan 1012 00:00:00 +0000</lastBuildDate><atom:link href="https://xiongyuaay.github.io/tags/test/index.xml" rel="self" type="application/rss+xml"/><item><title>Test 9</title><link>https://xiongyuaay.github.io/posts/test-9/</link><pubDate>Thu, 09 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-9/</guid><description>&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut accumsan sem, imperdiet malesuada erat. Nam condimentum eu turpis a suscipit. Nulla leo arcu, feugiat ac orci eget, imperdiet posuere dui. In laoreet rutrum nisi vitae pretium. Aliquam id fermentum diam, et hendrerit mi. Praesent eget tristique augue. Donec a malesuada nulla, sit amet bibendum libero. Cras id eleifend enim.&lt;/p>
-&lt;blockquote>
-&lt;p>&lt;em>You think you&amp;rsquo;ve got problems? What are you supposed to do if you are a manically depressed robot? No, don&amp;rsquo;t try to answer that. I&amp;rsquo;m fifty thousand times more intelligent than you and even I don&amp;rsquo;t know the answer. It gives me a headache just trying to think down to your level.&lt;/em>&lt;/p></description></item><item><title>Test 8</title><link>https://xiongyuaay.github.io/posts/test-8/</link><pubDate>Wed, 08 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-8/</guid><description>&lt;p>Test 8&lt;/p></description></item><item><title>Test 7</title><link>https://xiongyuaay.github.io/posts/test-7/</link><pubDate>Tue, 07 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-7/</guid><description>&lt;p>Test 7&lt;/p></description></item><item><title>Test 6</title><link>https://xiongyuaay.github.io/posts/test-6/</link><pubDate>Mon, 06 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-6/</guid><description>&lt;p>Test 6&lt;/p></description></item><item><title>Test 5</title><link>https://xiongyuaay.github.io/posts/test-5/</link><pubDate>Sun, 05 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-5/</guid><description>&lt;p>Test 5&lt;/p></description></item><item><title>Test 4</title><link>https://xiongyuaay.github.io/posts/test-4/</link><pubDate>Sat, 04 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-4/</guid><description>&lt;p>Test 4&lt;/p></description></item><item><title>Test 3</title><link>https://xiongyuaay.github.io/posts/test-3/</link><pubDate>Fri, 03 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-3/</guid><description>&lt;p>Test 3&lt;/p></description></item><item><title>Test 2</title><link>https://xiongyuaay.github.io/posts/test-2/</link><pubDate>Thu, 02 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-2/</guid><description>&lt;p>Test 2&lt;/p></description></item><item><title>Test 1</title><link>https://xiongyuaay.github.io/posts/test-1/</link><pubDate>Wed, 01 Jan 1012 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/test-1/</guid><description>&lt;p>Test 1
-I am referencing a footnote&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1&lt;/span>&lt;span>&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2&lt;/span>&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3&lt;/span>&lt;span>&lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;fmt&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4&lt;/span>&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5&lt;/span>&lt;span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6&lt;/span>&lt;span> &lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;{linenos=inline}&amp;#34;&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7&lt;/span>&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;fmt&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;{linenos=table}&amp;#34;&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;pre tabindex="0">&lt;code>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in dictum tortor.
-Morbi laoreet enim id sem euismod lobortis. Donec quam libero, bibendum non cursus vitae, dictum vel eros.
-&lt;/code>&lt;/pre>&lt;div class="footnotes" role="doc-endnotes">
-&lt;hr>
-&lt;ol>
-&lt;li id="fn:1">
-&lt;p>I am the footnote&amp;#160;&lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Test on Yuaay</title>
+    <link>http://localhost:1313/tags/test/</link>
+    <description>Recent content in Test on Yuaay</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <atom:link href="http://localhost:1313/tags/test/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>
