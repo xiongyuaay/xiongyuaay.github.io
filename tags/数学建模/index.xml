@@ -1,4 +1,52 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>数学建模 on Yuaay</title><link>https://xiongyuaay.github.io/tags/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/</link><description>Recent content in 数学建模 on Yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sat, 09 Nov 2024 19:08:32 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/tags/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/index.xml" rel="self" type="application/rss+xml"/><item><title>数学建模 灰色关联分析（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%81%B0%E8%89%B2%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:32 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%81%B0%E8%89%B2%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="灰色关联分析">灰色关联分析&lt;/h1>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>数学建模 on Yuaay</title><link>https://xiongyuaay.github.io/tags/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/</link><description>Recent content in 数学建模 on Yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 12 Nov 2024 18:20:52 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/tags/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/index.xml" rel="self" type="application/rss+xml"/><item><title>2021B_1--Rapid Bushfire Response for Emergency Response</title><link>https://xiongyuaay.github.io/posts/thesis/2021b_1/</link><pubDate>Tue, 12 Nov 2024 18:20:52 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/thesis/2021b_1/</guid><description>&lt;h1 id="rapid-bushfire-response-for-emergency-response">Rapid Bushfire Response for Emergency Response&lt;/h1>
+&lt;p>使用到的模型：&lt;/p>
+&lt;ul>
+&lt;li>AHP层次分析法
+&lt;ul>
+&lt;li>用来确定victoria不同地区发生火灾的危险程度&lt;/li>
+&lt;li>也可以结合模糊评价的方法，得到最终的评判结果&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>基于贪心算法的无线电中继无人机数量位置确定方法
+&lt;ul>
+&lt;li>论文中首先假设每一个需要防范的地区初始时可以部署中继无人机的范围&lt;/li>
+&lt;li>根据不同地区中继无人机的部署范围求交，&lt;/li>
+&lt;li>得到服务最多SSA无人机的中继无人机部署范围，&lt;/li>
+&lt;li>每次选取复用率最大的，同时删除已经被服务的区域&lt;/li>
+&lt;li>如此直到所有区域都被服务&lt;/li>
+&lt;li>&lt;strong>本质上是根据确定了的SSA无人机分布与数量确定中继无人机的部署&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>三元可匹配预测模型
+&lt;ul>
+&lt;li>根据过去特殊事件的发生来预测未来特殊事件的发生&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>SPM信号衰减模型
+&lt;ul>
+&lt;li>完善任务一所建立的模型&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>阅读论文想法&lt;/strong>
+在这篇论文中，我认为有以下几点值得注意：&lt;/p>
+&lt;ul>
+&lt;li>对任务目标的确定
+&lt;ul>
+&lt;li>论文中首先明确了SSA无人机是用以监视可能发生火灾的区域，而并非只在火灾发生时提供支持（在阅读题目过程中我对此有所误解）&lt;/li>
+&lt;li>在论文中简化了部分问题，如不考虑比较小的火灾、在任务一的建立过程中没有过于考虑地形等&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>任务目标的细化
+&lt;ul>
+&lt;li>将整个区域分类，针对不同区域分别考虑，简化了问题&lt;/li>
+&lt;li>分开考虑SSA无人机与中继无人机，更易于模型的建立&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>chat给出的三元可匹配模型示例&lt;/strong>&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/364574038403923.png" alt="1">&lt;/p>
+&lt;p>​&lt;img src="https://xiongyuaay.github.io/images/550871063099798.png" alt="2">&lt;/p></description></item><item><title>数学建模 灰色关联分析（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%81%B0%E8%89%B2%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:32 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%81%B0%E8%89%B2%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="灰色关联分析">灰色关联分析&lt;/h1>
 &lt;p>灰色关联分析用以分析影响目标的主要因素&lt;/p>
 &lt;p>其中，用以分析的数据类型为序列形式，
 需要确定原因的序列为母序列

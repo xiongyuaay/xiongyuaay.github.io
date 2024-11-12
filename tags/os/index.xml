@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Os on Yuaay</title><link>https://xiongyuaay.github.io/tags/os/</link><description>Recent content in Os on Yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 12 Nov 2024 17:46:10 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/tags/os/index.xml" rel="self" type="application/rss+xml"/><item><title>操作系统实验二 进程通信与内存管理</title><link>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%BA%8C--%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1%E4%B8%8E%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</link><pubDate>Tue, 12 Nov 2024 17:46:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%BA%8C--%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1%E4%B8%8E%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</guid><description>&lt;h1 id="进程的软中断通信">进程的软中断通信&lt;/h1>
+&lt;h2 id="查看帮助手册">查看帮助手册&lt;/h2>
+&lt;h3 id="fork系统调用">fork系统调用&lt;/h3>
+&lt;p>使用man命令查看fork系统调用结果如下图：&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/377594525772505.png" alt="1">&lt;/p>
+&lt;p>可见结果显示没有相应的条目，猜测可能没有安装man帮助手册，通过以下资料查阅安装man手册。&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://blog.csdn.net/weixin_61939442/article/details/142136016#:~:text=Man%20%E6%89%8B%E5%86%8C%E5%AE%89%E8%A3%851.%E9%85%8D%E7%BD%AEman%20%5Broot%40myEuler%20~%5D%23%20dnf%20-y%20install%20man,https%3A%2F%2Fmirrors.edge.kernel.org%2Fpub%2Flinux%2Fdocs%2Fman-pages%2Fman-pages-6.03.tar.gz%20%5Broot%40myEuler%20~%5D%23%20tar%20-xzvf%20man-pages-6.03.tar.gz4.%E5%AE%89%E8%A3%85man%E6%89%8B%E5%86%8C%23%E8%BF%9B%E5%85%A5%E7%9B%AE%E6%A0%87%E7%9B%AE%E5%BD%95%20%5Br_openeuler%20man%E6%89%8B%E5%86%8C%E5%AE%89%E8%A3%85">man手册安装&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>使用的安装命令及结果如下图：&lt;br>
+&lt;img src="https://xiongyuaay.github.io/images/443453311011602.png" alt="2">&lt;/p>
+&lt;p>可见在安装好man手册，成功使用man fork命令，如下图：
+&lt;img src="https://xiongyuaay.github.io/images/167935907718258.png" alt="">&lt;/p>
+&lt;h3 id="kill系统调用">kill系统调用&lt;/h3>
+&lt;p>结果如下图：&lt;br>
+&lt;img src="https://xiongyuaay.github.io/images/344455056047998.png" alt="">&lt;/p>
+&lt;h3 id="signal系统调用">signal系统调用&lt;/h3>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/116624541508.png" alt="">&lt;/p>
+&lt;h3 id="sleep系统调用">sleep系统调用&lt;/h3>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/427004511623406.png" alt="">&lt;/p>
+&lt;h3 id="exit系统调用">exit系统调用&lt;/h3>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/62306574070474.png" alt="">&lt;/p>
+&lt;h2 id="软中断程序">软中断程序&lt;/h2>
+&lt;p>openEuler系统下，使用命令kill -l查看所有信号及其编号的结果如下：
+&lt;img src="https://xiongyuaay.github.io/images/24568132916712.png" alt="">&lt;/p>
+&lt;p>补充完成进程软中断的程序代码如下，其中对于等待时间的要求，考虑到sleep过程可以被信号打断，选择通过sleep函数实现：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c" data-lang="c">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;stdio.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;unistd.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;sys/wait.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;stdlib.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;signal.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> flag &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">pid_t&lt;/span> pid1 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>, pid2 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">inter_handler&lt;/span>(&lt;span style="color:#66d9ef">int&lt;/span> signum) 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 使用 kill() 发送整数值为 16 和 17 的信号
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (pid1 &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#a6e22e">kill&lt;/span>(pid1, &lt;span style="color:#ae81ff">16&lt;/span>); &lt;span style="color:#75715e">// 发送信号 16 给子进程1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (pid2 &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#a6e22e">kill&lt;/span>(pid2, &lt;span style="color:#ae81ff">17&lt;/span>); &lt;span style="color:#75715e">// 发送信号 17 给子进程2
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">printf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Parent received signal %d, sending signals 16 and 17 to child processes&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, signum);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">waiting&lt;/span>(&lt;span style="color:#66d9ef">int&lt;/span> signum) 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">printf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Child process received signal %d, exiting...&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, signum);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">exit&lt;/span>(&lt;span style="color:#ae81ff">0&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 创建子进程1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">while&lt;/span> (pid1 &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>) pid1 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">fork&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (pid1 &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 创建子进程2
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">while&lt;/span> (pid2 &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>) pid2 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">fork&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (pid2 &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 父进程
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">signal&lt;/span>(SIGINT, inter_handler); 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">signal&lt;/span>(SIGQUIT, inter_handler); 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">wait&lt;/span>(NULL);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">wait&lt;/span>(NULL);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">printf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">Parent process is killed!!&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 子进程2
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">signal&lt;/span>(&lt;span style="color:#ae81ff">17&lt;/span>, waiting); 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">sleep&lt;/span>(&lt;span style="color:#ae81ff">5&lt;/span>); 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">printf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">Child process 2 is waiting for signal 17...&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 子进程1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">signal&lt;/span>(&lt;span style="color:#ae81ff">16&lt;/span>, waiting); 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">sleep&lt;/span>(&lt;span style="color:#ae81ff">5&lt;/span>); 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">printf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">Child process 1 is waiting for signal 16...&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>分别在5s内进行操作和不进行操作，编译运行结果如下：&lt;/p></description></item></channel></rss>
