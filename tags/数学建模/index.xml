@@ -109,7 +109,27 @@
 &lt;p>计算信息熵时所用公式：&lt;br>
 &lt;img src="https://xiongyuaay.github.io/images/222104284080536.png" alt="1">&lt;/p>
 &lt;p>标准化时可以用到的一些示例方法：&lt;br>
-&lt;img src="https://xiongyuaay.github.io/images/587765196388639.png" alt="2">&lt;/p></description></item><item><title>数学建模 模糊评价（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:01 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="模糊评价">模糊评价&lt;/h1>
+&lt;img src="https://xiongyuaay.github.io/images/587765196388639.png" alt="2">&lt;/p></description></item><item><title>数学建模 网络最大流</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/</guid><description>&lt;p>网络最大流都是建立在流网络上的，流网络可以被表示为一个有向图&lt;/p>
+&lt;p>并且在这个有向图中，每条边同时有两个属性：&lt;/p>
+&lt;ul>
+&lt;li>当前边的最大容量&lt;/li>
+&lt;li>当前边的已使用容量&lt;/li>
+&lt;/ul>
+&lt;p>同时对于图中的每一个节点，所有流入当前节点的容量等于所有流出该节点的容量&lt;/p>
+&lt;p>下边是一个流网络的示例：&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/320496241621225.png" alt="">&lt;/p>
+&lt;p>求解网络最大流问题就是求解网络的一种状态，使得源节点到目标节点的流量最大。&lt;/p>
+&lt;h2 id="求解方法">求解方法&lt;/h2>
+&lt;p>要求解这个问题只须依次找到该网络的所有增广路，并通过合适的方式消除增广路即可。
+增广路指的是网络中一条从源节点到目标节点的路径，在该路径上增加流量而不会使得某一条边的负载超出其最大负载。&lt;/p>
+&lt;p>在Ford Fulkerson求解算法中
+对于除源节点以外的任意一个节点$V_j$用标号$(+V_{i}, /Delta_{j})$，其中用‘+’表示前向弧，‘-’表示反向弧，$/Delta_{j}$表示改变量。其中，源节点用$(0, 正无穷大)$，即假定从源节点有源源不断的输入。&lt;/p>
+&lt;ul>
+&lt;li>从源节点出发，依次寻找源节点可以抵达的下一个节点，如果存在可用的容量，延伸到下一个节点，其中$/Delta_{j}$使用上一个节点与延伸节点中较小的值&lt;/li>
+&lt;li>重复进行直到延伸到目标节点，其中，在下方的例子中，通过该增广链可增加的量为$min(正无穷, 1, 1, 1) = 1$。最终使得该增广链上的每一条弧都+1。&lt;/li>
+&lt;li>重复进行直到网络中没有增广路，即为最终的最大流。
+&lt;img src="https://xiongyuaay.github.io/images/347707393535425.png" alt="">&lt;/li>
+&lt;/ul></description></item><item><title>数学建模 模糊评价（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:01 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="模糊评价">模糊评价&lt;/h1>
 &lt;p>对某一个对象，有一个总的评判结果，
 可以将这个评判结果作为一个集合
 如{优， 良， 差}等&lt;/p>
