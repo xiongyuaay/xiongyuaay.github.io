@@ -7,7 +7,7 @@
 &lt;li>初始化网络，对于所有当前已有负荷的边添加一条费用为该边相反数的反向边，对于当前负荷已达最大负荷的边，从边集合中删除。&lt;/li>
 &lt;li>选取流网络中，从源节点到目的节点的一条最小费用路径。&lt;/li>
 &lt;li>使用最大流问题中的Ford Fulkerson算法，求得该路径可以增加的负荷&lt;/li>
-&lt;li>重新初始化该网络，继续寻找最小费用路径，知道流网络中不存在从源节点到目的节点的路径&lt;/li>
+&lt;li>重新初始化该网络，继续寻找最小费用路径，直到流网络中不存在从源节点到目的节点的路径&lt;/li>
 &lt;/ul>
 &lt;p>通过这些步骤，便可求得一种最大流状态，且该最大流状态所用费用最小。&lt;/p></description></item><item><title>2021B_1--Rapid Bushfire Response for Emergency Response</title><link>https://xiongyuaay.github.io/posts/thesis/2021b_1/</link><pubDate>Tue, 12 Nov 2024 18:20:52 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/thesis/2021b_1/</guid><description>&lt;h1 id="rapid-bushfire-response-for-emergency-response">Rapid Bushfire Response for Emergency Response&lt;/h1>
 &lt;p>使用到的模型：&lt;/p>
