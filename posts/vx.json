@@ -10,10 +10,13 @@
             "name": "thesis"
         },
         {
-            "name": "数学建模"
+            "name": "math"
+        },
+        {
+            "name": "LeetCode"
         }
     ],
-    "id": "27",
+    "id": "35",
     "modified_time": "2024-11-12T11:33:26Z",
     "signature": "13060696142402239750",
     "version": 3

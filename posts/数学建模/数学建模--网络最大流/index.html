@@ -1,28 +1,124 @@
-<!doctype html><html lang=en><head><title>数学建模 网络最大流 // yuaay</title>
-<link rel="shortcut icon" href=/favicon.ico><meta charset=utf-8><meta name=generator content="Hugo 0.138.0"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="yuaay"><meta name=description content><link rel=stylesheet href=/css/main.min.6ebe00cfa7759a5c422430d5c2a659c696627ccf19379685a28a3aec1859af90.css><meta name=twitter:card content="summary"><meta name=twitter:title content="数学建模  网络最大流"><meta name=twitter:description content="网络最大流都是建立在流网络上的，流网络可以被表示为一个有向图
+<!doctype html>
+<html lang="en">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=36045&amp;path=livereload" data-no-instant defer></script>
+    <title>数学建模  网络最大流 // yuaay</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.138.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="yuaay" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.6ebe00cfa7759a5c422430d5c2a659c696627ccf19379685a28a3aec1859af90.css" />
+    
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="数学建模  网络最大流">
+  <meta name="twitter:description" content="网络最大流都是建立在流网络上的，流网络可以被表示为一个有向图
 并且在这个有向图中，每条边同时有两个属性：
 当前边的最大容量 当前边的已使用容量 同时对于图中的每一个节点，所有流入当前节点的容量等于所有流出该节点的容量
 下边是一个流网络的示例：
 求解网络最大流问题就是求解网络的一种状态，使得源节点到目标节点的流量最大。
 求解方法 要求解这个问题只须依次找到该网络的所有增广路，并通过合适的方式消除增广路即可。 增广路指的是网络中一条从源节点到目标节点的路径，在该路径上增加流量而不会使得某一条边的负载超出其最大负载。
-在Ford Fulkerson求解算法中 对于除源节点以外的任意一个节点$V_j$用标号$(+V_{i}, /Delta_{j})$，其中用‘+’表示前向弧，‘-’表示反向弧，$/Delta_{j}$表示改变量。其中，源节点用$(0, 正无穷大)$，即假定从源节点有源源不断的输入。
-从源节点出发，依次寻找源节点可以抵达的下一个节点，如果存在可用的容量，延伸到下一个节点，其中$/Delta_{j}$使用上一个节点与延伸节点中较小的值 重复进行直到延伸到目标节点，其中，在下方的例子中，通过该增广链可增加的量为$min(正无穷, 1, 1, 1) = 1$。最终使得该增广链上的每一条弧都+1。 重复进行直到网络中没有增广路，即为最终的最大流。"><meta property="og:url" content="https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/"><meta property="og:site_name" content="yuaay"><meta property="og:title" content="数学建模  网络最大流"><meta property="og:description" content="网络最大流都是建立在流网络上的，流网络可以被表示为一个有向图
+在Ford Fulkerson求解算法中 对于除源节点以外的任意一个节点$V_j$用标号$(&#43;V_{i}, /Delta_{j})$，其中用‘&#43;’表示前向弧，‘-’表示反向弧，$/Delta_{j}$表示改变量。其中，源节点用$(0, 正无穷大)$，即假定从源节点有源源不断的输入。
+从源节点出发，依次寻找源节点可以抵达的下一个节点，如果存在可用的容量，延伸到下一个节点，其中$/Delta_{j}$使用上一个节点与延伸节点中较小的值 重复进行直到延伸到目标节点，其中，在下方的例子中，通过该增广链可增加的量为$min(正无穷, 1, 1, 1) = 1$。最终使得该增广链上的每一条弧都&#43;1。 重复进行直到网络中没有增广路，即为最终的最大流。">
+
+    <meta property="og:url" content="http://localhost:36045/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/">
+  <meta property="og:site_name" content="yuaay">
+  <meta property="og:title" content="数学建模  网络最大流">
+  <meta property="og:description" content="网络最大流都是建立在流网络上的，流网络可以被表示为一个有向图
 并且在这个有向图中，每条边同时有两个属性：
 当前边的最大容量 当前边的已使用容量 同时对于图中的每一个节点，所有流入当前节点的容量等于所有流出该节点的容量
 下边是一个流网络的示例：
 求解网络最大流问题就是求解网络的一种状态，使得源节点到目标节点的流量最大。
 求解方法 要求解这个问题只须依次找到该网络的所有增广路，并通过合适的方式消除增广路即可。 增广路指的是网络中一条从源节点到目标节点的路径，在该路径上增加流量而不会使得某一条边的负载超出其最大负载。
-在Ford Fulkerson求解算法中 对于除源节点以外的任意一个节点$V_j$用标号$(+V_{i}, /Delta_{j})$，其中用‘+’表示前向弧，‘-’表示反向弧，$/Delta_{j}$表示改变量。其中，源节点用$(0, 正无穷大)$，即假定从源节点有源源不断的输入。
-从源节点出发，依次寻找源节点可以抵达的下一个节点，如果存在可用的容量，延伸到下一个节点，其中$/Delta_{j}$使用上一个节点与延伸节点中较小的值 重复进行直到延伸到目标节点，其中，在下方的例子中，通过该增广链可增加的量为$min(正无穷, 1, 1, 1) = 1$。最终使得该增广链上的每一条弧都+1。 重复进行直到网络中没有增广路，即为最终的最大流。"><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2024-11-09T19:08:10+08:00"><meta property="article:modified_time" content="2024-11-09T19:08:10+08:00"><meta property="article:tag" content="数学建模"></head><body><header class=app-header><a href=https://xiongyuaay.github.io/><img class=app-header-avatar src=/avatar.jpg alt=yuaay></a>
-<span class=app-header-title>yuaay</span><nav class=app-header-menu><a class=app-header-menu-item href=/>Home</a>
--
-<a class=app-header-menu-item href=/tags/>Tags</a>
--
-<a class=app-header-menu-item href=/about/>About</a></nav><p>电子世界的幽灵</p><div class=app-header-social><a href=https://github.com/xiongyuaay target=_blank rel="noreferrer noopener me"><svg class="icon icon-brand-github" viewBox="0 0 24 24" fill="currentcolor"><title>GitHub</title><path d="M12 .297c-6.63.0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577.0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93.0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176.0.0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22.0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22.0 1.606-.015 2.896-.015 3.286.0.315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-</a><a href=xiongyuaay@gmail.com target=_blank rel="noreferrer noopener me"><svg class="icon icon-mail" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>mail</title><path d="M4 4h16c1.1.0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1.0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a></div></header><main class=app-container><article class=post><header class=post-header><h1 class=post-title>数学建模 网络最大流</h1><div class=post-meta><div><svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-Nov 9, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-1 min read</div><div><svg class="icon icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-<a class=tag href=https://xiongyuaay.github.io/tags/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/>数学建模</a></div></div></header><div class=post-content><p>网络最大流都是建立在流网络上的，流网络可以被表示为一个有向图</p><p>并且在这个有向图中，每条边同时有两个属性：</p><ul><li>当前边的最大容量</li><li>当前边的已使用容量</li></ul><p>同时对于图中的每一个节点，所有流入当前节点的容量等于所有流出该节点的容量</p><p>下边是一个流网络的示例：</p><p><img src=/images/320496241621225.png alt></p><p>求解网络最大流问题就是求解网络的一种状态，使得源节点到目标节点的流量最大。</p><h2 id=求解方法>求解方法</h2><p>要求解这个问题只须依次找到该网络的所有增广路，并通过合适的方式消除增广路即可。
-增广路指的是网络中一条从源节点到目标节点的路径，在该路径上增加流量而不会使得某一条边的负载超出其最大负载。</p><p>在Ford Fulkerson求解算法中
-对于除源节点以外的任意一个节点$V_j$用标号$(+V_{i}, /Delta_{j})$，其中用‘+’表示前向弧，‘-’表示反向弧，$/Delta_{j}$表示改变量。其中，源节点用$(0, 正无穷大)$，即假定从源节点有源源不断的输入。</p><ul><li>从源节点出发，依次寻找源节点可以抵达的下一个节点，如果存在可用的容量，延伸到下一个节点，其中$/Delta_{j}$使用上一个节点与延伸节点中较小的值</li><li>重复进行直到延伸到目标节点，其中，在下方的例子中，通过该增广链可增加的量为$min(正无穷, 1, 1, 1) = 1$。最终使得该增广链上的每一条弧都+1。</li><li>重复进行直到网络中没有增广路，即为最终的最大流。
-<img src=/images/347707393535425.png alt></li></ul></div><div class=post-footer></div></article></main></body></html>
+在Ford Fulkerson求解算法中 对于除源节点以外的任意一个节点$V_j$用标号$(&#43;V_{i}, /Delta_{j})$，其中用‘&#43;’表示前向弧，‘-’表示反向弧，$/Delta_{j}$表示改变量。其中，源节点用$(0, 正无穷大)$，即假定从源节点有源源不断的输入。
+从源节点出发，依次寻找源节点可以抵达的下一个节点，如果存在可用的容量，延伸到下一个节点，其中$/Delta_{j}$使用上一个节点与延伸节点中较小的值 重复进行直到延伸到目标节点，其中，在下方的例子中，通过该增广链可增加的量为$min(正无穷, 1, 1, 1) = 1$。最终使得该增广链上的每一条弧都&#43;1。 重复进行直到网络中没有增广路，即为最终的最大流。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-11-09T19:08:10+08:00">
+    <meta property="article:modified_time" content="2024-11-09T19:08:10+08:00">
+    <meta property="article:tag" content="数学建模">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="http://localhost:36045/"><img class="app-header-avatar" src="/avatar.jpg" alt="yuaay" /></a>
+      <span class="app-header-title">yuaay</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about/">About</a>
+      </nav>
+      <p>电子世界的幽灵</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/xiongyuaay" target="_blank" rel="noreferrer noopener me">
+            <svg class="icon icon-brand-github" viewBox="0 0 24 24" fill="currentColor"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+        
+          <a href="xiongyuaay@gmail.com" target="_blank" rel="noreferrer noopener me">
+            <svg class="icon icon-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>mail</title><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">数学建模  网络最大流</h1>
+      <div class="post-meta">
+        <div>
+          <svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Nov 9, 2024
+        </div>
+        <div>
+          <svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          1 min read
+        </div>
+        <div>
+          <svg class="icon icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+              <a class="tag" href="http://localhost:36045/tags/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/">数学建模</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>网络最大流都是建立在流网络上的，流网络可以被表示为一个有向图</p>
+<p>并且在这个有向图中，每条边同时有两个属性：</p>
+<ul>
+<li>当前边的最大容量</li>
+<li>当前边的已使用容量</li>
+</ul>
+<p>同时对于图中的每一个节点，所有流入当前节点的容量等于所有流出该节点的容量</p>
+<p>下边是一个流网络的示例：</p>
+<p><img src="/images/320496241621225.png" alt=""></p>
+<p>求解网络最大流问题就是求解网络的一种状态，使得源节点到目标节点的流量最大。</p>
+<h2 id="求解方法">求解方法</h2>
+<p>要求解这个问题只须依次找到该网络的所有增广路，并通过合适的方式消除增广路即可。
+增广路指的是网络中一条从源节点到目标节点的路径，在该路径上增加流量而不会使得某一条边的负载超出其最大负载。</p>
+<p>在Ford Fulkerson求解算法中
+对于除源节点以外的任意一个节点$V_j$用标号$(+V_{i}, /Delta_{j})$，其中用‘+’表示前向弧，‘-’表示反向弧，$/Delta_{j}$表示改变量。其中，源节点用$(0, 正无穷大)$，即假定从源节点有源源不断的输入。</p>
+<ul>
+<li>从源节点出发，依次寻找源节点可以抵达的下一个节点，如果存在可用的容量，延伸到下一个节点，其中$/Delta_{j}$使用上一个节点与延伸节点中较小的值</li>
+<li>重复进行直到延伸到目标节点，其中，在下方的例子中，通过该增广链可增加的量为$min(正无穷, 1, 1, 1) = 1$。最终使得该增广链上的每一条弧都+1。</li>
+<li>重复进行直到网络中没有增广路，即为最终的最大流。
+<img src="/images/347707393535425.png" alt=""></li>
+</ul>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

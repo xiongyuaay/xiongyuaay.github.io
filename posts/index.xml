@@ -1,4 +1,15 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on yuaay</title><link>https://xiongyuaay.github.io/posts/</link><description>Recent content in Posts on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 12 Nov 2024 18:20:52 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>2021B_1--Rapid Bushfire Response for Emergency Response</title><link>https://xiongyuaay.github.io/posts/thesis/2021b_1/</link><pubDate>Tue, 12 Nov 2024 18:20:52 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/thesis/2021b_1/</guid><description>&lt;h1 id="rapid-bushfire-response-for-emergency-response">Rapid Bushfire Response for Emergency Response&lt;/h1>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on yuaay</title><link>https://xiongyuaay.github.io/posts/</link><description>Recent content in Posts on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Fri, 15 Nov 2024 20:50:54 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>数学建模 最小费用最大流</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%9C%80%E5%B0%8F%E8%B4%B9%E7%94%A8%E6%9C%80%E5%A4%A7%E6%B5%81/</link><pubDate>Fri, 15 Nov 2024 20:50:54 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%9C%80%E5%B0%8F%E8%B4%B9%E7%94%A8%E6%9C%80%E5%A4%A7%E6%B5%81/</guid><description>&lt;h2 id="什么是最小费用最大流问题">什么是最小费用最大流问题&lt;/h2>
+&lt;p>最小费用最大流同样建立在流网络上，可以看作最大流问题的一个拓展。不同的是，在最小费用最大流问题中，每条边同时包含三个属性，即最大流量，当前流量，该条边的费用。&lt;/p>
+&lt;p>求解最小费用最大流问题就是要求在一个流网络中求得一种状态，表示一种最大流的结果，并且在所有可能的最大流状态中，该最大流状态所使用的总费用最小。&lt;/p>
+&lt;h2 id="求解步骤">求解步骤&lt;/h2>
+&lt;p>求解最小费用最大流问题可通过以下步骤实现：&lt;/p>
+&lt;ul>
+&lt;li>初始化网络，对于所有当前已有负荷的边添加一条费用为该边相反数的反向边，对于当前负荷已达最大负荷的边，从边集合中删除。&lt;/li>
+&lt;li>选取流网络中，从源节点到目的节点的一条最小费用路径。&lt;/li>
+&lt;li>使用最大流问题中的Ford Fulkerson算法，求得该路径可以增加的负荷&lt;/li>
+&lt;li>重新初始化该网络，继续寻找最小费用路径，知道流网络中不存在从源节点到目的节点的路径&lt;/li>
+&lt;/ul>
+&lt;p>通过这些步骤，便可求得一种最大流状态，且该最大流状态所用费用最小。&lt;/p></description></item><item><title>2021B_1--Rapid Bushfire Response for Emergency Response</title><link>https://xiongyuaay.github.io/posts/thesis/2021b_1/</link><pubDate>Tue, 12 Nov 2024 18:20:52 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/thesis/2021b_1/</guid><description>&lt;h1 id="rapid-bushfire-response-for-emergency-response">Rapid Bushfire Response for Emergency Response&lt;/h1>
 &lt;p>使用到的模型：&lt;/p>
 &lt;ul>
 &lt;li>AHP层次分析法
@@ -227,7 +238,7 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>分别在5s内进行操作和不进行操作，编译运行结果如下：&lt;/p></description></item><item><title>数学建模 灰色关联分析（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%81%B0%E8%89%B2%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:32 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%81%B0%E8%89%B2%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="灰色关联分析">灰色关联分析&lt;/h1>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>分别在5s内进行操作和不进行操作，编译运行结果如下：&lt;/p></description></item><item><title>数学建模 灰色关联分析（一点感悟）</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%81%B0%E8%89%B2%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:32 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%81%B0%E8%89%B2%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="灰色关联分析">灰色关联分析&lt;/h1>
 &lt;p>灰色关联分析用以分析影响目标的主要因素&lt;/p>
 &lt;p>其中，用以分析的数据类型为序列形式，
 需要确定原因的序列为母序列
@@ -243,7 +254,7 @@
 &lt;p>部分使用到的公式如下：&lt;br>
 &lt;img src="https://xiongyuaay.github.io/images/443974856105592.png" alt="1">
 &lt;img src="https://xiongyuaay.github.io/images/544484652480945.png" alt="2">
-&lt;img src="https://xiongyuaay.github.io/images/53064102515680.png" alt="3">&lt;/p></description></item><item><title>数学建模 Topsis（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:21 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="topsis">Topsis&lt;/h1>
+&lt;img src="https://xiongyuaay.github.io/images/53064102515680.png" alt="3">&lt;/p></description></item><item><title>数学建模 Topsis（一点感悟）</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:21 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="topsis">Topsis&lt;/h1>
 &lt;p>本质上是针对多个指标，通过与最优解与最劣解间的距离来得到某个方案的评分&lt;/p>
 &lt;p>可以很好的得到每个方案间的差距&lt;/p>
 &lt;p>使用步骤：&lt;/p>
@@ -261,7 +272,7 @@
 &lt;p>计算最优解、最劣解的公式：
 &lt;img src="https://xiongyuaay.github.io/images/337922171116636.png" alt="1">
 带权重的计算公式：
-&lt;img src="https://xiongyuaay.github.io/images/533552640375792.png" alt="2">&lt;/p></description></item><item><title>数学建模 熵权法（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="熵权法">熵权法&lt;/h1>
+&lt;img src="https://xiongyuaay.github.io/images/533552640375792.png" alt="2">&lt;/p></description></item><item><title>数学建模 熵权法（一点感悟）</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="熵权法">熵权法&lt;/h1>
 &lt;p>一种基于数据本身的客观的赋予权重的方法
 利用信息熵，衡量了掌握信息的确切程度
 &lt;strong>值得注意的是，这种信息熵是基于方案的而不是基于指标。衡量了所有方案在这个指标的信息掌握程度。&lt;/strong>&lt;/p>
@@ -290,7 +301,7 @@
 &lt;p>计算信息熵时所用公式：&lt;br>
 &lt;img src="https://xiongyuaay.github.io/images/222104284080536.png" alt="1">&lt;/p>
 &lt;p>标准化时可以用到的一些示例方法：&lt;br>
-&lt;img src="https://xiongyuaay.github.io/images/587765196388639.png" alt="2">&lt;/p></description></item><item><title>数学建模 网络最大流</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/</guid><description>&lt;p>网络最大流都是建立在流网络上的，流网络可以被表示为一个有向图&lt;/p>
+&lt;img src="https://xiongyuaay.github.io/images/587765196388639.png" alt="2">&lt;/p></description></item><item><title>数学建模 网络最大流</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/</guid><description>&lt;p>网络最大流都是建立在流网络上的，流网络可以被表示为一个有向图&lt;/p>
 &lt;p>并且在这个有向图中，每条边同时有两个属性：&lt;/p>
 &lt;ul>
 &lt;li>当前边的最大容量&lt;/li>
@@ -310,7 +321,7 @@
 &lt;li>重复进行直到延伸到目标节点，其中，在下方的例子中，通过该增广链可增加的量为$min(正无穷, 1, 1, 1) = 1$。最终使得该增广链上的每一条弧都+1。&lt;/li>
 &lt;li>重复进行直到网络中没有增广路，即为最终的最大流。
 &lt;img src="https://xiongyuaay.github.io/images/347707393535425.png" alt="">&lt;/li>
-&lt;/ul></description></item><item><title>数学建模 模糊评价（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:01 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="模糊评价">模糊评价&lt;/h1>
+&lt;/ul></description></item><item><title>数学建模 模糊评价（一点感悟）</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:01 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%A8%A1%E7%B3%8A%E8%AF%84%E4%BB%B7%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="模糊评价">模糊评价&lt;/h1>
 &lt;p>对某一个对象，有一个总的评判结果，
 可以将这个评判结果作为一个集合
 如{优， 良， 差}等&lt;/p>
@@ -323,7 +334,7 @@
 &lt;p>对这些因素之间，可以通过其他方法，&lt;strong>如：层次分析法、熵权法等&lt;/strong>，确定对总体研究对象的权重，
 借由这些权重，可以得到该总体对象在这个评语集的隶属度，
 最后，根据隶属度，选择最高的可以判断该对象属于哪一个层次。&lt;/p>
-&lt;p>可以用以离散化的评价，结果为评语集的不同隶属度。&lt;/p></description></item><item><title>数学建模 层次分析法（一点感悟）</title><link>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 18:47:27 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="ahp">AHP&lt;/h1>
+&lt;p>可以用以离散化的评价，结果为评语集的不同隶属度。&lt;/p></description></item><item><title>数学建模 层次分析法（一点感悟）</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 18:47:27 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="ahp">AHP&lt;/h1>
 &lt;p>主观赋值评价方法，多指标&lt;/p>
 &lt;ul>
 &lt;li>构造判断矩阵&lt;/li>
