@@ -1,4 +1,23 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on yuaay</title><link>https://xiongyuaay.github.io/posts/</link><description>Recent content in Posts on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Fri, 15 Nov 2024 20:50:54 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>数学建模 最小费用最大流</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%9C%80%E5%B0%8F%E8%B4%B9%E7%94%A8%E6%9C%80%E5%A4%A7%E6%B5%81/</link><pubDate>Fri, 15 Nov 2024 20:50:54 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%9C%80%E5%B0%8F%E8%B4%B9%E7%94%A8%E6%9C%80%E5%A4%A7%E6%B5%81/</guid><description>&lt;h2 id="什么是最小费用最大流问题">什么是最小费用最大流问题&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on yuaay</title><link>https://xiongyuaay.github.io/posts/</link><description>Recent content in Posts on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sun, 17 Nov 2024 20:04:22 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>2020A_1--Forecasts for the Ecology and Fisheries Economy of Scottish herring and mackerel</title><link>https://xiongyuaay.github.io/posts/thesis/2020a_1/</link><pubDate>Sun, 17 Nov 2024 20:04:22 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/thesis/2020a_1/</guid><description>&lt;h1 id="问题描述">问题描述&lt;/h1>
+&lt;h2 id="背景">背景&lt;/h2>
+&lt;p>全球海洋温度会影响某些海洋生物物种的栖息地质量。当温度变化太大而无法继续繁衍生息时，这些物种会迁移到更适合它们现在和未来生活和繁殖成功的其他栖息地。该联盟希望更好地了解如果全球海洋温度升高，苏格兰鲱鱼和鲭鱼可能从苏格兰附近的当前栖息地迁移的相关问题。这两种鱼种代表了对苏格兰渔业的重大经济贡献。鲱鱼和鲭鱼种群位置的变化可能会使苏格兰的小型渔业公司在经济上不切实际，这些公司使用没有船上冷藏的渔船来捕捞新鲜鱼并将其运送到苏格兰渔港的市场。&lt;/p>
+&lt;h2 id="问题">问题&lt;/h2>
+&lt;ul>
+&lt;li>构建一个数学模型，以确定未来 50 年这两种鱼类最可能的位置。&lt;/li>
+&lt;li>根据海水温度变化的速度，使用您的模型来预测最佳情况、最坏情况和最可能经过的时间，如果小型渔业公司继续在其当前位置运营，这些种群将距离太远，小型渔业公司无法收获。（Based upon how rapidly the ocean water temperature change occurs, use your model to predict best case, worst case, and most likely elapsed time(s) until these populations will be too far away for small ﬁshing companies to harvest if the small ﬁshing companies continue to operate out of their current locations.）&lt;/li>
+&lt;li>根据您的预测分析，这些小型渔业公司是否应该改变他们的运营方式？&lt;/li>
+&lt;li>使用您的模型来解决如果一部分渔业进入另一个国家的领海（海），您的提案会受到怎样的影响。&lt;/li>
+&lt;/ul>
+&lt;h1 id="论文思路">论文思路&lt;/h1>
+&lt;p>在这篇论文中，作者将这些问题细化，通过一步步的分析原因，给出了每个问题的建模思路。
+在建模之前，论文首先收集数据给出了对应海域的平面图，将平面图划分为一个个点域，将原先连续的海域离散化，方便计算机处理与模拟。
+对于两种鱼类的位置，论文考虑到题目中影响鱼类迁移的因素为海洋温度，通过收集海域过去的温度变化，得到预测未来海域温度的模型。
+之后，从每一条鱼出发，考虑它们在面对海洋不同区域的温度时，选择的迁移方向与速度，并在这个过程中加入随机因素，模拟除温度之外的影响个体迁移方向的因素。
+此外，在建模时，个体的迁移变化扩展到某一个区域鱼类密度的变化，通过未来不同时间不同区域的鱼类密度，来体现迁移的结果。&lt;/p>
+&lt;p>之后，综合考虑温度变化以及鱼类在未来的每一个时间点的迁移趋势，得到问题一的鱼类位置预测模型
+对于问题二，论文建立了小型渔业公司的营收模型，考虑捕鱼船的捕鱼范围、单次航程、捕鱼区域的鱼类密度，可以得到一次捕鱼鱼类收获，之后更具市场价格与花费，得到营收。
+根据该营收模型，通过10000次的未来鱼类位置情况模拟，计算出小型渔业公司在最好、最坏、最可能情况下的未来经营情况。&lt;/p>
+&lt;p>根据模型结果，则可以给出适当的建议。在问题四中，限制问题三中计算方式，可重新得到结果并给出建议。&lt;/p></description></item><item><title>数学建模 最小费用最大流</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%9C%80%E5%B0%8F%E8%B4%B9%E7%94%A8%E6%9C%80%E5%A4%A7%E6%B5%81/</link><pubDate>Fri, 15 Nov 2024 20:50:54 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E6%9C%80%E5%B0%8F%E8%B4%B9%E7%94%A8%E6%9C%80%E5%A4%A7%E6%B5%81/</guid><description>&lt;h2 id="什么是最小费用最大流问题">什么是最小费用最大流问题&lt;/h2>
 &lt;p>最小费用最大流同样建立在流网络上，可以看作最大流问题的一个拓展。不同的是，在最小费用最大流问题中，每条边同时包含三个属性，即最大流量，当前流量，该条边的费用。&lt;/p>
 &lt;p>求解最小费用最大流问题就是要求在一个流网络中求得一种状态，表示一种最大流的结果，并且在所有可能的最大流状态中，该最大流状态所使用的总费用最小。&lt;/p>
 &lt;h2 id="求解步骤">求解步骤&lt;/h2>
@@ -7,7 +26,7 @@
 &lt;li>初始化网络，对于所有当前已有负荷的边添加一条费用为该边相反数的反向边，对于当前负荷已达最大负荷的边，从边集合中删除。&lt;/li>
 &lt;li>选取流网络中，从源节点到目的节点的一条最小费用路径。&lt;/li>
 &lt;li>使用最大流问题中的Ford Fulkerson算法，求得该路径可以增加的负荷&lt;/li>
-&lt;li>重新初始化该网络，继续寻找最小费用路径，直到流网络中不存在从源节点到目的节点的路径&lt;/li>
+&lt;li>重新初始化该网络，继续寻找最小费用路径，知道流网络中不存在从源节点到目的节点的路径&lt;/li>
 &lt;/ul>
 &lt;p>通过这些步骤，便可求得一种最大流状态，且该最大流状态所用费用最小。&lt;/p></description></item><item><title>2021B_1--Rapid Bushfire Response for Emergency Response</title><link>https://xiongyuaay.github.io/posts/thesis/2021b_1/</link><pubDate>Tue, 12 Nov 2024 18:20:52 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/thesis/2021b_1/</guid><description>&lt;h1 id="rapid-bushfire-response-for-emergency-response">Rapid Bushfire Response for Emergency Response&lt;/h1>
 &lt;p>使用到的模型：&lt;/p>
@@ -346,4 +365,4 @@
 &lt;p>&lt;strong>具体计算权重与一致性公式使用时查阅&lt;/strong>&lt;/p>
 &lt;p>&lt;img src="https://xiongyuaay.github.io/images/111586079287530.png" alt="santy赋值">&lt;/p>
 &lt;h2 id="流程">流程&lt;/h2>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/568745427628904.png" alt="流程图">&lt;/p></description></item></channel></rss>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/568745427628904.png" alt="流程图">&lt;/p></description></item><item><title/><link>https://xiongyuaay.github.io/posts/vx_recycle_bin/20241117/data-source.md/data-source/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/vx_recycle_bin/20241117/data-source.md/data-source/</guid><description>&lt;h1 id="data-source">data source&lt;/h1></description></item></channel></rss>
