@@ -392,7 +392,7 @@ Nov 12, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="no
 </span></span><span style=display:flex><span>        page[cur].InsideOrUsed <span style=color:#f92672>=</span> true;
 </span></span><span style=display:flex><span>        page[cur].PageNumber <span style=color:#f92672>=</span> cur_ap;
 </span></span><span style=display:flex><span>        diseffect<span style=color:#f92672>++</span>;
-</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (pageContrl[cur_ap].InsideOrUsed <span style=color:#f92672>==</span> false)
 </span></span><span style=display:flex><span>        {
 </span></span><span style=display:flex><span>            pageContrl[cur_ap].InsideOrUsed <span style=color:#f92672>=</span> true;
@@ -409,7 +409,7 @@ Nov 12, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="no
 </span></span><span style=display:flex><span>            cur_ap <span style=color:#f92672>=</span> (cur_ap <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>%</span> ap;
 </span></span><span style=display:flex><span>        }        
 </span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>double</span> rate <span style=color:#f92672>=</span> diseffect <span style=color:#f92672>/</span> (<span style=color:#66d9ef>double</span>)length;
 </span></span><span style=display:flex><span>    rate <span style=color:#f92672>=</span> rate <span style=color:#f92672>*</span> <span style=color:#ae81ff>100</span>;
 </span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>rate = diseffect / total_instruction*100%% = %.2f%%</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, rate);
@@ -516,7 +516,7 @@ Nov 12, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="no
 </span></span><span style=display:flex><span>                    maxWait <span style=color:#f92672>=</span> j;
 </span></span><span style=display:flex><span>                }
 </span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span>(hasEmpty)
 </span></span><span style=display:flex><span>            {
 </span></span><span style=display:flex><span>                <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>page %d in frame %d&#34;</span>, cur, maxWait);
@@ -547,7 +547,7 @@ Nov 12, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="no
 </span></span><span style=display:flex><span>            page[cur].InsideOrUsed <span style=color:#f92672>=</span> true;
 </span></span><span style=display:flex><span>            page[cur].PageNumber <span style=color:#f92672>=</span> cur_ap;
 </span></span><span style=display:flex><span>            diseffect<span style=color:#f92672>++</span>;
-</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (pageContrl[cur_ap].InsideOrUsed <span style=color:#f92672>==</span> false)
 </span></span><span style=display:flex><span>            {
 </span></span><span style=display:flex><span>                pageContrl[cur_ap].InsideOrUsed <span style=color:#f92672>=</span> true;
@@ -564,11 +564,11 @@ Nov 12, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="no
 </span></span><span style=display:flex><span>                cur_ap <span style=color:#f92672>=</span> (cur_ap <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>%</span> ap;
 </span></span><span style=display:flex><span>            }        
 </span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>double</span> rate <span style=color:#f92672>=</span> diseffect <span style=color:#f92672>/</span> (<span style=color:#66d9ef>double</span>)length;
 </span></span><span style=display:flex><span>    rate <span style=color:#f92672>=</span> rate <span style=color:#f92672>*</span> <span style=color:#ae81ff>100</span>;
 </span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>rate = diseffect / total_instruction*100%% = %.2f%%</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, rate);

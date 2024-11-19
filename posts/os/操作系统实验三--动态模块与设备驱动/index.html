@@ -1,19 +1,15 @@
 <!doctype html><html lang=en><head><title>操作系统实验三--动态模块与设备驱动 // yuaay</title><link rel="shortcut icon" href=/favicon.ico><meta charset=utf-8><meta name=generator content="Hugo 0.139.0"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="yuaay"><meta name=description content><link rel=stylesheet href=/css/main.min.6ebe00cfa7759a5c422430d5c2a659c696627ccf19379685a28a3aec1859af90.css><meta name=twitter:card content="summary"><meta name=twitter:title content="操作系统实验三--动态模块与设备驱动"><meta name=twitter:description content="在进行实验之前，查阅相关Makefile编写教程，链接如下： Makefile由浅入深–教程、干货
 部分常用的预定义变量记录如下：
-$* 不包含扩展名的目标文件名称 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件 $< 第一个依赖文件的名称 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚 $@ 目标的完整名称 $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件 $% 如果目标是归档成员，则该变量表示目标的归档成员名称
-注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。
+$* 不包含扩展名的目标文件名称 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件 $< 第一个依赖文件的名称 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚 $@ 目标的完整名称 $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件 $% 如果目标是归档成员，则该变量表示目标的归档成员名称 注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。
 如以下例子：
 target: dep1.o dep2.o echo $@ echo $^ echo $+ echo $< echo $? 运行 make 时：
-$@ → target $^ → dep1.o dep2.o （去重） $+ → dep1.o dep2.o （可以重复） $< → dep1.o （第一个依赖文件） $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
-V2.6动态模块示例加载 考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：
+$@ → target $^ → dep1.o dep2.o （去重） $+ → dep1.o dep2.o （可以重复） $< → dep1.o （第一个依赖文件） $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。 V2.6动态模块示例加载 考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：
 动态模块源代码存放位置是否有要求？ 没有要求。动态模块源代码应与Makefile文件在同一个文件夹下 如何开始动态模块源代码的编写？ 在任意位置编写动态模块源代码及Makefile文件 如何编译动态模块？ 编写Makefile文件编译 如何查看当前主机linux可用动态模块编译版本？ 使用uname -r查看当前版本 且当前版本的动态模块机制与 2.6 及其后的版本保持一致。 使用chatgpt询问后，部分疑惑解答如上，详细问答可查看以下链接： chatgpt询问动态模块疑惑"><meta property="og:url" content="https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/"><meta property="og:site_name" content="yuaay"><meta property="og:title" content="操作系统实验三--动态模块与设备驱动"><meta property="og:description" content="在进行实验之前，查阅相关Makefile编写教程，链接如下： Makefile由浅入深–教程、干货
 部分常用的预定义变量记录如下：
-$* 不包含扩展名的目标文件名称 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件 $< 第一个依赖文件的名称 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚 $@ 目标的完整名称 $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件 $% 如果目标是归档成员，则该变量表示目标的归档成员名称
-注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。
+$* 不包含扩展名的目标文件名称 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件 $< 第一个依赖文件的名称 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚 $@ 目标的完整名称 $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件 $% 如果目标是归档成员，则该变量表示目标的归档成员名称 注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。
 如以下例子：
 target: dep1.o dep2.o echo $@ echo $^ echo $+ echo $< echo $? 运行 make 时：
-$@ → target $^ → dep1.o dep2.o （去重） $+ → dep1.o dep2.o （可以重复） $< → dep1.o （第一个依赖文件） $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
-V2.6动态模块示例加载 考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：
+$@ → target $^ → dep1.o dep2.o （去重） $+ → dep1.o dep2.o （可以重复） $< → dep1.o （第一个依赖文件） $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。 V2.6动态模块示例加载 考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：
 动态模块源代码存放位置是否有要求？ 没有要求。动态模块源代码应与Makefile文件在同一个文件夹下 如何开始动态模块源代码的编写？ 在任意位置编写动态模块源代码及Makefile文件 如何编译动态模块？ 编写Makefile文件编译 如何查看当前主机linux可用动态模块编译版本？ 使用uname -r查看当前版本 且当前版本的动态模块机制与 2.6 及其后的版本保持一致。 使用chatgpt询问后，部分疑惑解答如上，详细问答可查看以下链接： chatgpt询问动态模块疑惑"><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2024-11-12T17:46:10+08:00"><meta property="article:modified_time" content="2024-11-12T17:46:10+08:00"><meta property="article:tag" content="Os"></head><body><header class=app-header><a href=https://xiongyuaay.github.io/><img class=app-header-avatar src=/avatar.jpg alt=yuaay></a>
 <span class=app-header-title>yuaay</span><nav class=app-header-menu><a class=app-header-menu-item href=/>Home</a>
 -
@@ -24,23 +20,23 @@ V2.6动态模块示例加载 考虑到在阅读课件ppt以及实验指导书后
 Nov 12, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
 7 min read</div><div><svg class="icon icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
 <a class=tag href=https://xiongyuaay.github.io/tags/os/>Os</a></div></div></header><div class=post-content><p>在进行实验之前，查阅相关Makefile编写教程，链接如下：
-<a href=https://zhuanlan.zhihu.com/p/47390641>Makefile由浅入深&ndash;教程、干货</a></p><p>部分常用的预定义变量记录如下：</p><p>$* 不包含扩展名的目标文件名称
+<a href=https://zhuanlan.zhihu.com/p/47390641>Makefile由浅入深&ndash;教程、干货</a></p><p>部分常用的预定义变量记录如下：</p><pre tabindex=0><code>$* 不包含扩展名的目标文件名称 
 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件
-$&lt; 第一个依赖文件的名称
+$&lt; 第一个依赖文件的名称 
 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚
-$@ 目标的完整名称
+$@ 目标的完整名称 
 $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件
-$% 如果目标是归档成员，则该变量表示目标的归档成员名称</p><p><strong>注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。</strong></p><p>如以下例子：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-makefile data-lang=makefile><span style=display:flex><span><span style=color:#a6e22e>target</span><span style=color:#f92672>:</span> dep1.o dep2.o
+$% 如果目标是归档成员，则该变量表示目标的归档成员名称
+</code></pre><p><strong>注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。</strong></p><p>如以下例子：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-makefile data-lang=makefile><span style=display:flex><span><span style=color:#a6e22e>target</span><span style=color:#f92672>:</span> dep1.o dep2.o
 </span></span><span style=display:flex><span>    echo $@
 </span></span><span style=display:flex><span>    echo $^
 </span></span><span style=display:flex><span>    echo $+
 </span></span><span style=display:flex><span>    echo $&lt;
 </span></span><span style=display:flex><span>    echo $?
-</span></span></code></pre></div><p>运行 make 时：</p><p>$@ → target
-$^ → dep1.o dep2.o （去重）
-$+ → dep1.o dep2.o （可以重复）
-$&lt; → dep1.o （第一个依赖文件）
-$? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。</p><h1 id=v26动态模块示例加载>V2.6动态模块示例加载</h1><p>考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：</p><ul><li>动态模块源代码存放位置是否有要求？<ul><li>没有要求。动态模块源代码应与Makefile文件在同一个文件夹下</li></ul></li><li>如何开始动态模块源代码的编写？<ul><li>在任意位置编写动态模块源代码及Makefile文件</li></ul></li><li>如何编译动态模块？<ul><li>编写Makefile文件编译</li></ul></li><li>如何查看当前主机linux可用动态模块编译版本？<ul><li>使用uname -r查看当前版本</li><li>且当前版本的动态模块机制与 2.6 及其后的版本保持一致。</li></ul></li></ul><p>使用chatgpt询问后，部分疑惑解答如上，详细问答可查看以下链接：
+</span></span></code></pre></div><p>运行 make 时：</p><pre tabindex=0><code>$@ → target $^ → dep1.o dep2.o （去重）
+$+ → dep1.o dep2.o （可以重复） $&lt; → dep1.o （第一个依赖文件）
+$? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
+</code></pre><h1 id=v26动态模块示例加载>V2.6动态模块示例加载</h1><p>考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：</p><ul><li>动态模块源代码存放位置是否有要求？<ul><li>没有要求。动态模块源代码应与Makefile文件在同一个文件夹下</li></ul></li><li>如何开始动态模块源代码的编写？<ul><li>在任意位置编写动态模块源代码及Makefile文件</li></ul></li><li>如何编译动态模块？<ul><li>编写Makefile文件编译</li></ul></li><li>如何查看当前主机linux可用动态模块编译版本？<ul><li>使用uname -r查看当前版本</li><li>且当前版本的动态模块机制与 2.6 及其后的版本保持一致。</li></ul></li></ul><p>使用chatgpt询问后，部分疑惑解答如上，详细问答可查看以下链接：
 <a href=https://chatgpt.com/share/673870fb-f134-8005-aa82-354020349f3f>chatgpt询问动态模块疑惑</a></p><p>使用相关命令查看本地主机版本，结果如下：</p><pre tabindex=0><code>[root@kp-test01 exper3]# uname -r
 4.19.90-2110.8.0.0119.oe1.aarch64
 </code></pre><p>由chat对话可知，该版本Linux内核使用动态模块规则与2.6版本保持一致。使用ppt提供的v2.6动态模块示例，源代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/init.h&gt;                                            /*必须要包含的头文件*/</span><span style=color:#75715e>
@@ -64,7 +60,7 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 </span></span><span style=display:flex><span>KERNELDIR <span style=color:#f92672>:=</span> /lib/modules/<span style=color:#66d9ef>$(</span>shell uname -r<span style=color:#66d9ef>)</span>/build  <span style=color:#75715e>#定义一个变量，指向内核目录</span>
 </span></span><span style=display:flex><span>PWD <span style=color:#f92672>:=</span> <span style=color:#66d9ef>$(</span>shell pwd<span style=color:#66d9ef>)</span>
 </span></span><span style=display:flex><span> modules:
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>$(</span>MAKE<span style=color:#66d9ef>)</span> -C <span style=color:#66d9ef>$(</span>KERNELDIR<span style=color:#66d9ef>)</span> M<span style=color:#f92672>=</span><span style=color:#66d9ef>$(</span>PWD<span style=color:#66d9ef>)</span> modules  <span style=color:#75715e>#编译内核模块</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>$(</span>MAKE<span style=color:#66d9ef>)</span> -C <span style=color:#66d9ef>$(</span>KERNELDIR<span style=color:#66d9ef>)</span> M<span style=color:#f92672>=</span><span style=color:#66d9ef>$(</span>PWD<span style=color:#66d9ef>)</span> modules  <span style=color:#75715e>#编译内核模块</span>
 </span></span><span style=display:flex><span> endif
 </span></span></code></pre></div><p>使用make命令编译结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 v26<span style=color:#f92672>]</span><span style=color:#75715e># make</span>
 </span></span><span style=display:flex><span>make -C /lib/modules/4.19.90-2110.8.0.0119.oe1.aarch64/build   M<span style=color:#f92672>=</span>/root/exper3/v26 modules  <span style=color:#75715e>#编译内核模块</span>
@@ -115,8 +111,8 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>
 </span></span><span style=display:flex><span>asmlinkage <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>hello</span>(<span style=color:#66d9ef>int</span> a,<span style=color:#66d9ef>int</span> b) <span style=color:#75715e>//new function
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>{
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;No 78  syscall has changed to hello&#34;</span>);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> a<span style=color:#f92672>+</span>b;
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;No 78  syscall has changed to hello&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> a<span style=color:#f92672>+</span>b;
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>modify_syscall</span>(<span style=color:#66d9ef>void</span>)                                                        
 </span></span><span style=display:flex><span>{                                                                            
@@ -152,7 +148,7 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 </span></span><span style=display:flex><span>    <span style=color:#a6e22e>syscall</span>(<span style=color:#ae81ff>78</span>,<span style=color:#f92672>&amp;</span>tv,NULL); <span style=color:#75715e>//before modify  syscall 78 :gettimeofday
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;tv_sec:%d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,tv.tv_sec);
 </span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;tv_usec:%d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,tv.tv_usec);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>modify_new_syscall.c
 </span></span><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
@@ -160,9 +156,9 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;unistd.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>()
 </span></span><span style=display:flex><span>{ 
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>int</span> ret<span style=color:#f92672>=</span><span style=color:#a6e22e>syscall</span>(<span style=color:#ae81ff>78</span>,<span style=color:#ae81ff>10</span>,<span style=color:#ae81ff>20</span>); <span style=color:#75715e>//after modify syscall 78
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,ret);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> ret<span style=color:#f92672>=</span><span style=color:#a6e22e>syscall</span>(<span style=color:#ae81ff>78</span>,<span style=color:#ae81ff>10</span>,<span style=color:#ae81ff>20</span>); <span style=color:#75715e>//after modify syscall 78
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,ret);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>这两个测试程序都为应用程序。
 编译动态模块的Makefile文件如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-makefile data-lang=makefile><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>ifneq</span> <span style=color:#960050;background-color:#1e0010>(</span><span style=color:#66d9ef>$(</span>KERNELRELEASE<span style=color:#66d9ef>)</span><span style=color:#960050;background-color:#1e0010>,)</span>
@@ -171,7 +167,7 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 </span></span><span style=display:flex><span>KERNELDIR <span style=color:#f92672>:=</span> /lib/modules/<span style=color:#66d9ef>$(</span>shell uname -r<span style=color:#66d9ef>)</span>/build  <span style=color:#75715e>#定义一个变量，指向内核目录</span>
 </span></span><span style=display:flex><span>PWD <span style=color:#f92672>:=</span> <span style=color:#66d9ef>$(</span>shell pwd<span style=color:#66d9ef>)</span>
 </span></span><span style=display:flex><span> modules:
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>$(</span>MAKE<span style=color:#66d9ef>)</span> -C <span style=color:#66d9ef>$(</span>KERNELDIR<span style=color:#66d9ef>)</span> M<span style=color:#f92672>=</span><span style=color:#66d9ef>$(</span>PWD<span style=color:#66d9ef>)</span> modules  <span style=color:#75715e>#编译内核模块</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>$(</span>MAKE<span style=color:#66d9ef>)</span> -C <span style=color:#66d9ef>$(</span>KERNELDIR<span style=color:#66d9ef>)</span> M<span style=color:#f92672>=</span><span style=color:#66d9ef>$(</span>PWD<span style=color:#66d9ef>)</span> modules  <span style=color:#75715e>#编译内核模块</span>
 </span></span><span style=display:flex><span> endif
 </span></span></code></pre></div><p>编译后结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># make</span>
 </span></span><span style=display:flex><span>make -C /lib/modules/4.19.90-2110.8.0.0119.oe1.aarch64/build   M<span style=color:#f92672>=</span>/root/exper3/modify_syscall modules  <span style=color:#75715e>#编译内核模块</span>
@@ -193,7 +189,7 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 </span></span></code></pre></div><p>加载模块后运行结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># insmod modify_syscall.ko </span>
 </span></span><span style=display:flex><span>Connection to 120.46.163.15 closed by remote host.
 </span></span><span style=display:flex><span>Connection to 120.46.163.15 closed.
-</span></span><span style=display:flex><span>                                                                                                                                                                                            
+</span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>~   88s
 </span></span></code></pre></div><p>尝试多次，发现在加载模块时会自动断开连接。
 <a href=https://chatgpt.com/share/673997a9-8290-8005-bce8-45eb9039576f>动态模块加载断连</a>
@@ -226,8 +222,8 @@ p_sys_call_table 地址可能导致访问非法内存，引发内核崩溃。
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>asmlinkage <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>hello</span>(<span style=color:#66d9ef>int</span> a,<span style=color:#66d9ef>int</span> b) <span style=color:#75715e>//new function
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>{
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;No 78  syscall has changed to hello&#34;</span>);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> a<span style=color:#f92672>+</span>b;
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;No 78  syscall has changed to hello&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> a<span style=color:#f92672>+</span>b;
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>modify_syscall</span>(<span style=color:#66d9ef>void</span>)                                                        
 </span></span><span style=display:flex><span>{                                                                            
@@ -294,15 +290,15 @@ p_sys_call_table 地址可能导致访问非法内存，引发内核崩溃。
 </span></span><span style=display:flex><span><span style=color:#75715e>//修改指定内核地址范围的内存属性为只读
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>inline</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>protect_memory</span>(<span style=color:#66d9ef>void</span>)
 </span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>update_mapping_prot</span>(<span style=color:#a6e22e>__pa_symbol</span>(start_rodata), (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)start_rodata,
-</span></span><span style=display:flex><span>			section_size, PAGE_KERNEL_RO);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>update_mapping_prot</span>(<span style=color:#a6e22e>__pa_symbol</span>(start_rodata), (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)start_rodata,
+</span></span><span style=display:flex><span>            section_size, PAGE_KERNEL_RO);
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#75715e>//修改指定内核地址范围的内存属性为可读可写等
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>inline</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>unprotect_memory</span>(<span style=color:#66d9ef>void</span>)
 </span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>update_mapping_prot</span>(<span style=color:#a6e22e>__pa_symbol</span>(start_rodata), (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)start_rodata,
-</span></span><span style=display:flex><span>			section_size, PAGE_KERNEL);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>update_mapping_prot</span>(<span style=color:#a6e22e>__pa_symbol</span>(start_rodata), (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)start_rodata,
+</span></span><span style=display:flex><span>            section_size, PAGE_KERNEL);
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
@@ -317,8 +313,8 @@ p_sys_call_table 地址可能导致访问非法内存，引发内核崩溃。
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>modify_syscall</span>(<span style=color:#66d9ef>void</span>) {
 </span></span><span style=display:flex><span>    update_mapping_prot <span style=color:#f92672>=</span> (<span style=color:#66d9ef>void</span> <span style=color:#f92672>*</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;update_mapping_prot&#34;</span>);
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	start_rodata <span style=color:#f92672>=</span> (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;__start_rodata&#34;</span>);
-</span></span><span style=display:flex><span>	init_begin <span style=color:#f92672>=</span> (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;__init_begin&#34;</span>);
+</span></span><span style=display:flex><span>    start_rodata <span style=color:#f92672>=</span> (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;__start_rodata&#34;</span>);
+</span></span><span style=display:flex><span>    init_begin <span style=color:#f92672>=</span> (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;__init_begin&#34;</span>);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    p_sys_call_table <span style=color:#f92672>=</span> (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;sys_call_table&#34;</span>);
 </span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;sys_call_addr: %p</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, p_sys_call_table);
@@ -416,4 +412,4 @@ p_sys_call_table 地址可能导致访问非法内存，引发内核崩溃。
 </span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3812.392056<span style=color:#f92672>]</span> a: 555941568, b: <span style=color:#ae81ff>14352384</span>
 </span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3815.407503<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
 </span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3815.407839<span style=color:#f92672>]</span> a: 558038720, b: <span style=color:#ae81ff>14352384</span>
-</span></span></code></pre></div><p>成功返回了a+b的值，说明加载内核正确。</p></div><div class=post-footer></div></article></main></body></html>
+</span></span></code></pre></div><p>其中，modify_new_syscall</p><p>成功返回了a+b的值，说明加载内核正确。</p><h1 id=字符设备>字符设备</h1></div><div class=post-footer></div></article></main></body></html>
