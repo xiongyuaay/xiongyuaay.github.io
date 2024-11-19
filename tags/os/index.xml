@@ -1,4 +1,54 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Os on yuaay</title><link>https://xiongyuaay.github.io/tags/os/</link><description>Recent content in Os on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 12 Nov 2024 17:46:10 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/tags/os/index.xml" rel="self" type="application/rss+xml"/><item><title>操作系统实验二 进程通信与内存管理</title><link>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%BA%8C--%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1%E4%B8%8E%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</link><pubDate>Tue, 12 Nov 2024 17:46:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%BA%8C--%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1%E4%B8%8E%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</guid><description>&lt;h1 id="进程的软中断通信">进程的软中断通信&lt;/h1>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Os on yuaay</title><link>https://xiongyuaay.github.io/tags/os/</link><description>Recent content in Os on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 12 Nov 2024 17:46:10 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/tags/os/index.xml" rel="self" type="application/rss+xml"/><item><title>操作系统实验三--动态模块与设备驱动</title><link>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/</link><pubDate>Tue, 12 Nov 2024 17:46:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/</guid><description>&lt;p>在进行实验之前，查阅相关Makefile编写教程，链接如下：
+&lt;a href="https://zhuanlan.zhihu.com/p/47390641">Makefile由浅入深&amp;ndash;教程、干货&lt;/a>&lt;/p>
+&lt;p>部分常用的预定义变量记录如下：&lt;/p>
+&lt;p>$* 不包含扩展名的目标文件名称
+$+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件
+$&amp;lt; 第一个依赖文件的名称
+$? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚
+$@ 目标的完整名称
+$^ 所有的依赖文件，以空格分开，不包含重复的依赖文件
+$% 如果目标是归档成员，则该变量表示目标的归档成员名称&lt;/p>
+&lt;p>&lt;strong>注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。&lt;/strong>&lt;/p>
+&lt;p>如以下例子：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-makefile" data-lang="makefile">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">target&lt;/span>&lt;span style="color:#f92672">:&lt;/span> dep1.o dep2.o
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo $@
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo $^
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo $+
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo $&amp;lt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo $?
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>运行 make 时：&lt;/p>
+&lt;p>$@ → target
+$^ → dep1.o dep2.o （去重）
+$+ → dep1.o dep2.o （可以重复）
+$&amp;lt; → dep1.o （第一个依赖文件）
+$? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。&lt;/p>
+&lt;h1 id="v26动态模块示例加载">V2.6动态模块示例加载&lt;/h1>
+&lt;p>考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：&lt;/p>
+&lt;ul>
+&lt;li>动态模块源代码存放位置是否有要求？
+&lt;ul>
+&lt;li>没有要求。动态模块源代码应与Makefile文件在同一个文件夹下&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>如何开始动态模块源代码的编写？
+&lt;ul>
+&lt;li>在任意位置编写动态模块源代码及Makefile文件&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>如何编译动态模块？
+&lt;ul>
+&lt;li>编写Makefile文件编译&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>如何查看当前主机linux可用动态模块编译版本？
+&lt;ul>
+&lt;li>使用uname -r查看当前版本&lt;/li>
+&lt;li>且当前版本的动态模块机制与 2.6 及其后的版本保持一致。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>使用chatgpt询问后，部分疑惑解答如上，详细问答可查看以下链接：
+&lt;a href="https://chatgpt.com/share/673870fb-f134-8005-aa82-354020349f3f">chatgpt询问动态模块疑惑&lt;/a>&lt;/p></description></item><item><title>操作系统实验二 进程通信与内存管理</title><link>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%BA%8C--%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1%E4%B8%8E%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</link><pubDate>Tue, 12 Nov 2024 17:46:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%BA%8C--%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1%E4%B8%8E%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</guid><description>&lt;h1 id="进程的软中断通信">进程的软中断通信&lt;/h1>
 &lt;h2 id="查看帮助手册">查看帮助手册&lt;/h2>
 &lt;h3 id="fork系统调用">fork系统调用&lt;/h3>
 &lt;p>使用man命令查看fork系统调用结果如下图：&lt;/p>

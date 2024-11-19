@@ -1,0 +1,419 @@
+<!doctype html><html lang=en><head><title>操作系统实验三--动态模块与设备驱动 // yuaay</title><link rel="shortcut icon" href=/favicon.ico><meta charset=utf-8><meta name=generator content="Hugo 0.139.0"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="yuaay"><meta name=description content><link rel=stylesheet href=/css/main.min.6ebe00cfa7759a5c422430d5c2a659c696627ccf19379685a28a3aec1859af90.css><meta name=twitter:card content="summary"><meta name=twitter:title content="操作系统实验三--动态模块与设备驱动"><meta name=twitter:description content="在进行实验之前，查阅相关Makefile编写教程，链接如下： Makefile由浅入深–教程、干货
+部分常用的预定义变量记录如下：
+$* 不包含扩展名的目标文件名称 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件 $< 第一个依赖文件的名称 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚 $@ 目标的完整名称 $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件 $% 如果目标是归档成员，则该变量表示目标的归档成员名称
+注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。
+如以下例子：
+target: dep1.o dep2.o echo $@ echo $^ echo $+ echo $< echo $? 运行 make 时：
+$@ → target $^ → dep1.o dep2.o （去重） $+ → dep1.o dep2.o （可以重复） $< → dep1.o （第一个依赖文件） $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
+V2.6动态模块示例加载 考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：
+动态模块源代码存放位置是否有要求？ 没有要求。动态模块源代码应与Makefile文件在同一个文件夹下 如何开始动态模块源代码的编写？ 在任意位置编写动态模块源代码及Makefile文件 如何编译动态模块？ 编写Makefile文件编译 如何查看当前主机linux可用动态模块编译版本？ 使用uname -r查看当前版本 且当前版本的动态模块机制与 2.6 及其后的版本保持一致。 使用chatgpt询问后，部分疑惑解答如上，详细问答可查看以下链接： chatgpt询问动态模块疑惑"><meta property="og:url" content="https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/"><meta property="og:site_name" content="yuaay"><meta property="og:title" content="操作系统实验三--动态模块与设备驱动"><meta property="og:description" content="在进行实验之前，查阅相关Makefile编写教程，链接如下： Makefile由浅入深–教程、干货
+部分常用的预定义变量记录如下：
+$* 不包含扩展名的目标文件名称 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件 $< 第一个依赖文件的名称 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚 $@ 目标的完整名称 $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件 $% 如果目标是归档成员，则该变量表示目标的归档成员名称
+注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。
+如以下例子：
+target: dep1.o dep2.o echo $@ echo $^ echo $+ echo $< echo $? 运行 make 时：
+$@ → target $^ → dep1.o dep2.o （去重） $+ → dep1.o dep2.o （可以重复） $< → dep1.o （第一个依赖文件） $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
+V2.6动态模块示例加载 考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：
+动态模块源代码存放位置是否有要求？ 没有要求。动态模块源代码应与Makefile文件在同一个文件夹下 如何开始动态模块源代码的编写？ 在任意位置编写动态模块源代码及Makefile文件 如何编译动态模块？ 编写Makefile文件编译 如何查看当前主机linux可用动态模块编译版本？ 使用uname -r查看当前版本 且当前版本的动态模块机制与 2.6 及其后的版本保持一致。 使用chatgpt询问后，部分疑惑解答如上，详细问答可查看以下链接： chatgpt询问动态模块疑惑"><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2024-11-12T17:46:10+08:00"><meta property="article:modified_time" content="2024-11-12T17:46:10+08:00"><meta property="article:tag" content="Os"></head><body><header class=app-header><a href=https://xiongyuaay.github.io/><img class=app-header-avatar src=/avatar.jpg alt=yuaay></a>
+<span class=app-header-title>yuaay</span><nav class=app-header-menu><a class=app-header-menu-item href=/>Home</a>
+-
+<a class=app-header-menu-item href=/tags/>Tags</a>
+-
+<a class=app-header-menu-item href=/about/>About</a></nav><p>电子世界的幽灵</p><div class=app-header-social><a href=https://github.com/xiongyuaay target=_blank rel="noreferrer noopener me"><svg class="icon icon-brand-github" viewBox="0 0 24 24" fill="currentcolor"><title>GitHub</title><path d="M12 .297c-6.63.0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577.0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93.0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176.0.0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22.0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22.0 1.606-.015 2.896-.015 3.286.0.315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+</a><a href=xiongyuaay@gmail.com target=_blank rel="noreferrer noopener me"><svg class="icon icon-mail" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>mail</title><path d="M4 4h16c1.1.0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1.0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a></div></header><main class=app-container><article class=post><header class=post-header><h1 class=post-title>操作系统实验三--动态模块与设备驱动</h1><div class=post-meta><div><svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Nov 12, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+7 min read</div><div><svg class="icon icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+<a class=tag href=https://xiongyuaay.github.io/tags/os/>Os</a></div></div></header><div class=post-content><p>在进行实验之前，查阅相关Makefile编写教程，链接如下：
+<a href=https://zhuanlan.zhihu.com/p/47390641>Makefile由浅入深&ndash;教程、干货</a></p><p>部分常用的预定义变量记录如下：</p><p>$* 不包含扩展名的目标文件名称
+$+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件
+$&lt; 第一个依赖文件的名称
+$? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚
+$@ 目标的完整名称
+$^ 所有的依赖文件，以空格分开，不包含重复的依赖文件
+$% 如果目标是归档成员，则该变量表示目标的归档成员名称</p><p><strong>注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。</strong></p><p>如以下例子：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-makefile data-lang=makefile><span style=display:flex><span><span style=color:#a6e22e>target</span><span style=color:#f92672>:</span> dep1.o dep2.o
+</span></span><span style=display:flex><span>    echo $@
+</span></span><span style=display:flex><span>    echo $^
+</span></span><span style=display:flex><span>    echo $+
+</span></span><span style=display:flex><span>    echo $&lt;
+</span></span><span style=display:flex><span>    echo $?
+</span></span></code></pre></div><p>运行 make 时：</p><p>$@ → target
+$^ → dep1.o dep2.o （去重）
+$+ → dep1.o dep2.o （可以重复）
+$&lt; → dep1.o （第一个依赖文件）
+$? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。</p><h1 id=v26动态模块示例加载>V2.6动态模块示例加载</h1><p>考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：</p><ul><li>动态模块源代码存放位置是否有要求？<ul><li>没有要求。动态模块源代码应与Makefile文件在同一个文件夹下</li></ul></li><li>如何开始动态模块源代码的编写？<ul><li>在任意位置编写动态模块源代码及Makefile文件</li></ul></li><li>如何编译动态模块？<ul><li>编写Makefile文件编译</li></ul></li><li>如何查看当前主机linux可用动态模块编译版本？<ul><li>使用uname -r查看当前版本</li><li>且当前版本的动态模块机制与 2.6 及其后的版本保持一致。</li></ul></li></ul><p>使用chatgpt询问后，部分疑惑解答如上，详细问答可查看以下链接：
+<a href=https://chatgpt.com/share/673870fb-f134-8005-aa82-354020349f3f>chatgpt询问动态模块疑惑</a></p><p>使用相关命令查看本地主机版本，结果如下：</p><pre tabindex=0><code>[root@kp-test01 exper3]# uname -r
+4.19.90-2110.8.0.0119.oe1.aarch64
+</code></pre><p>由chat对话可知，该版本Linux内核使用动态模块规则与2.6版本保持一致。使用ppt提供的v2.6动态模块示例，源代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/init.h&gt;                                            /*必须要包含的头文件*/</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/kernel.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/module.h&gt;                                    /*必须要包含的头文件*/</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>mymodule_init</span>(<span style=color:#66d9ef>void</span>)                                <span style=color:#75715e>//模块初始化函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>{
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;hello,my module wored! </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);                    <span style=color:#75715e>/*输出信息到内核日志*/</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>mymodule_exit</span>(<span style=color:#66d9ef>void</span>) <span style=color:#75715e>//模块清理函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>{ 
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;goodbye,unloading my module.</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);         <span style=color:#75715e>/*输出信息到内核日志*/</span>
+</span></span><span style=display:flex><span>}  
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_init</span>(mymodule_init);                                <span style=color:#75715e>//注册初始化函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#a6e22e>module_exit</span>(mymodule_exit);                              <span style=color:#75715e>//注册清理函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#a6e22e>MODULE_LICENSE</span>(<span style=color:#e6db74>&#34;GPL&#34;</span>);                              <span style=color:#75715e>//模块许可声明
+</span></span></span></code></pre></div><p>所用Makefile文件为：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-makefile data-lang=makefile><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>ifneq</span> <span style=color:#960050;background-color:#1e0010>(</span><span style=color:#66d9ef>$(</span>KERNELRELEASE<span style=color:#66d9ef>)</span><span style=color:#960050;background-color:#1e0010>,)</span>
+</span></span><span style=display:flex><span>obj-m <span style=color:#f92672>:=</span> mymodules.o       <span style=color:#75715e>#obj-m指编译成外部模块</span>
+</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>else</span>
+</span></span><span style=display:flex><span>KERNELDIR <span style=color:#f92672>:=</span> /lib/modules/<span style=color:#66d9ef>$(</span>shell uname -r<span style=color:#66d9ef>)</span>/build  <span style=color:#75715e>#定义一个变量，指向内核目录</span>
+</span></span><span style=display:flex><span>PWD <span style=color:#f92672>:=</span> <span style=color:#66d9ef>$(</span>shell pwd<span style=color:#66d9ef>)</span>
+</span></span><span style=display:flex><span> modules:
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>$(</span>MAKE<span style=color:#66d9ef>)</span> -C <span style=color:#66d9ef>$(</span>KERNELDIR<span style=color:#66d9ef>)</span> M<span style=color:#f92672>=</span><span style=color:#66d9ef>$(</span>PWD<span style=color:#66d9ef>)</span> modules  <span style=color:#75715e>#编译内核模块</span>
+</span></span><span style=display:flex><span> endif
+</span></span></code></pre></div><p>使用make命令编译结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 v26<span style=color:#f92672>]</span><span style=color:#75715e># make</span>
+</span></span><span style=display:flex><span>make -C /lib/modules/4.19.90-2110.8.0.0119.oe1.aarch64/build   M<span style=color:#f92672>=</span>/root/exper3/v26 modules  <span style=color:#75715e>#编译内核模块</span>
+</span></span><span style=display:flex><span>make<span style=color:#f92672>[</span>1<span style=color:#f92672>]</span>: Entering directory <span style=color:#e6db74>&#39;/usr/src/kernels/4.19.90-2110.8.0.0119.oe1.aarch64&#39;</span>
+</span></span><span style=display:flex><span>  CC <span style=color:#f92672>[</span>M<span style=color:#f92672>]</span>  /root/exper3/v26/mymodules.o
+</span></span><span style=display:flex><span>  Building modules, stage 2.
+</span></span><span style=display:flex><span>  MODPOST <span style=color:#ae81ff>1</span> modules
+</span></span><span style=display:flex><span>  CC      /root/exper3/v26/mymodules.mod.o
+</span></span><span style=display:flex><span>  LD <span style=color:#f92672>[</span>M<span style=color:#f92672>]</span>  /root/exper3/v26/mymodules.ko
+</span></span><span style=display:flex><span>make<span style=color:#f92672>[</span>1<span style=color:#f92672>]</span>: Leaving directory <span style=color:#e6db74>&#39;/usr/src/kernels/4.19.90-2110.8.0.0119.oe1.aarch64&#39;</span>
+</span></span></code></pre></div><p>可见编译结果正常且符合预期。</p><p>加载及查看模块的结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 v26<span style=color:#f92672>]</span><span style=color:#75715e># insmod mymodules.ko </span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 v26<span style=color:#f92672>]</span><span style=color:#75715e># lsmod</span>
+</span></span><span style=display:flex><span>Module                  Size  Used by
+</span></span><span style=display:flex><span>mymodules             <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>nf_log_ipv4           <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>nf_log_common         <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span> nf_log_ipv4
+</span></span><span style=display:flex><span>xt_LOG                <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>ipt_REJECT            <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>nf_reject_ipv4        <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span> ipt_REJECT
+</span></span><span style=display:flex><span>xt_set                <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>ip_set_hash_net       <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span>
+</span></span></code></pre></div><p>可见模块正确加载</p><p>卸载模块：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 v26<span style=color:#f92672>]</span><span style=color:#75715e># rmmod mymodules</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 v26<span style=color:#f92672>]</span><span style=color:#75715e># lsmod</span>
+</span></span><span style=display:flex><span>Module                  Size  Used by
+</span></span><span style=display:flex><span>nf_log_ipv4           <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>nf_log_common         <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span> nf_log_ipv4
+</span></span><span style=display:flex><span>xt_LOG                <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>ipt_REJECT            <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>nf_reject_ipv4        <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span> ipt_REJECT
+</span></span><span style=display:flex><span>xt_set                <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>ip_set_hash_net       <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>ip_set                <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>2</span> xt_set,ip_set_hash_net
+</span></span></code></pre></div><p>使用dmesg命令查看日志结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>[</span> 6833.222562<span style=color:#f92672>]</span> mymodules: loading out-of-tree module taints kernel.
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 6833.223120<span style=color:#f92672>]</span> mymodules: module verification failed: signature and/or required key missing - tainting kernel
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 6833.224461<span style=color:#f92672>]</span> hello,my module wored! 
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 6957.489659<span style=color:#f92672>]</span> goodbye,unloading my module.
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 7155.850430<span style=color:#f92672>]</span> hello,my module wored! 
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 7235.433122<span style=color:#f92672>]</span> goodbye,unloading my module.
+</span></span></code></pre></div><p>成功输出源代码中的信息，示例被成功运行。</p><h1 id=系统调用的篡改>系统调用的篡改</h1><p>用于系统调用篡改的动态模块源代码为：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/init.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/kernel.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/module.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>//original,syscall 78 function: gettimeofday
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// new syscall 78 function: print &#34;No 78 syscall has changed to hello&#34; and return a+b
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>#define sys_No 78 
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> old_sys_call_func;  
+</span></span><span style=display:flex><span><span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> p_sys_call_table<span style=color:#f92672>=</span><span style=color:#ae81ff>0xc0361860</span>; <span style=color:#75715e>// find in  /boot/System.map-&#39;uname -r&#39;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>asmlinkage <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>hello</span>(<span style=color:#66d9ef>int</span> a,<span style=color:#66d9ef>int</span> b) <span style=color:#75715e>//new function
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>{
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;No 78  syscall has changed to hello&#34;</span>);
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> a<span style=color:#f92672>+</span>b;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>modify_syscall</span>(<span style=color:#66d9ef>void</span>)                                                        
+</span></span><span style=display:flex><span>{                                                                            
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>sys_call_addr;                                            
+</span></span><span style=display:flex><span>    sys_call_addr<span style=color:#f92672>=</span>(<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>)(p_sys_call_table<span style=color:#f92672>+</span>sys_No<span style=color:#f92672>*</span><span style=color:#ae81ff>4</span>);   
+</span></span><span style=display:flex><span>    old_sys_call_func<span style=color:#f92672>=*</span>(sys_call_addr);                                      
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span>(sys_call_addr)<span style=color:#f92672>=</span>(<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)<span style=color:#f92672>&amp;</span>hello;                <span style=color:#75715e>//  point to new function
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}                                                                              
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>restore_syscall</span>(<span style=color:#66d9ef>void</span>)                                                         
+</span></span><span style=display:flex><span>{                                                                              
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>sys_call_addr;                                              
+</span></span><span style=display:flex><span>    sys_call_addr<span style=color:#f92672>=</span>(<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>)(p_sys_call_table<span style=color:#f92672>+</span>sys_No<span style=color:#f92672>*</span><span style=color:#ae81ff>4</span>); 
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span>(sys_call_addr)<span style=color:#f92672>=</span>old_sys_call_func;                <span style=color:#75715e>// point to original function
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}   
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>mymodule_init</span>(<span style=color:#66d9ef>void</span>)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>modify_syscall</span>();
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>mymodule_exit</span>(<span style=color:#66d9ef>void</span>)
+</span></span><span style=display:flex><span>{ 
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>restore_syscall</span>();
+</span></span><span style=display:flex><span>}  
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_init</span>(mymodule_init);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_exit</span>(mymodule_exit);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_LICENSE</span>(<span style=color:#e6db74>&#34;GPL&#34;</span>);
+</span></span></code></pre></div><p>使用的测试程序如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;sys/time.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;unistd.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span>  timeval    tv; 
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>syscall</span>(<span style=color:#ae81ff>78</span>,<span style=color:#f92672>&amp;</span>tv,NULL); <span style=color:#75715e>//before modify  syscall 78 :gettimeofday
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;tv_sec:%d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,tv.tv_sec);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;tv_usec:%d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,tv.tv_usec);
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>modify_new_syscall.c
+</span></span><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;sys/time.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;unistd.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>()
+</span></span><span style=display:flex><span>{ 
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>int</span> ret<span style=color:#f92672>=</span><span style=color:#a6e22e>syscall</span>(<span style=color:#ae81ff>78</span>,<span style=color:#ae81ff>10</span>,<span style=color:#ae81ff>20</span>); <span style=color:#75715e>//after modify syscall 78
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,ret);
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>这两个测试程序都为应用程序。
+编译动态模块的Makefile文件如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-makefile data-lang=makefile><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>ifneq</span> <span style=color:#960050;background-color:#1e0010>(</span><span style=color:#66d9ef>$(</span>KERNELRELEASE<span style=color:#66d9ef>)</span><span style=color:#960050;background-color:#1e0010>,)</span>
+</span></span><span style=display:flex><span>obj-m <span style=color:#f92672>:=</span> modify_syscall.o       <span style=color:#75715e>#obj-m指编译成外部模块</span>
+</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>else</span>
+</span></span><span style=display:flex><span>KERNELDIR <span style=color:#f92672>:=</span> /lib/modules/<span style=color:#66d9ef>$(</span>shell uname -r<span style=color:#66d9ef>)</span>/build  <span style=color:#75715e>#定义一个变量，指向内核目录</span>
+</span></span><span style=display:flex><span>PWD <span style=color:#f92672>:=</span> <span style=color:#66d9ef>$(</span>shell pwd<span style=color:#66d9ef>)</span>
+</span></span><span style=display:flex><span> modules:
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>$(</span>MAKE<span style=color:#66d9ef>)</span> -C <span style=color:#66d9ef>$(</span>KERNELDIR<span style=color:#66d9ef>)</span> M<span style=color:#f92672>=</span><span style=color:#66d9ef>$(</span>PWD<span style=color:#66d9ef>)</span> modules  <span style=color:#75715e>#编译内核模块</span>
+</span></span><span style=display:flex><span> endif
+</span></span></code></pre></div><p>编译后结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># make</span>
+</span></span><span style=display:flex><span>make -C /lib/modules/4.19.90-2110.8.0.0119.oe1.aarch64/build   M<span style=color:#f92672>=</span>/root/exper3/modify_syscall modules  <span style=color:#75715e>#编译内核模块</span>
+</span></span><span style=display:flex><span>make<span style=color:#f92672>[</span>1<span style=color:#f92672>]</span>: Entering directory <span style=color:#e6db74>&#39;/usr/src/kernels/4.19.90-2110.8.0.0119.oe1.aarch64&#39;</span>
+</span></span><span style=display:flex><span>  CC <span style=color:#f92672>[</span>M<span style=color:#f92672>]</span>  /root/exper3/modify_syscall/modify_syscall.o
+</span></span><span style=display:flex><span>  Building modules, stage 2.
+</span></span><span style=display:flex><span>  MODPOST <span style=color:#ae81ff>1</span> modules
+</span></span><span style=display:flex><span>  CC      /root/exper3/modify_syscall/modify_syscall.mod.o
+</span></span><span style=display:flex><span>  LD <span style=color:#f92672>[</span>M<span style=color:#f92672>]</span>  /root/exper3/modify_syscall/modify_syscall.ko
+</span></span><span style=display:flex><span>make<span style=color:#f92672>[</span>1<span style=color:#f92672>]</span>: Leaving directory <span style=color:#e6db74>&#39;/usr/src/kernels/4.19.90-2110.8.0.0119.oe1.aarch64&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># ls</span>
+</span></span><span style=display:flex><span>Makefile              modify_old_syscall.c  modify_syscall.ko     modify_syscall.mod.o  modules.order
+</span></span><span style=display:flex><span>modify_new_syscall.c  modify_syscall.c      modify_syscall.mod.c  modify_syscall.o      Module.symvers
+</span></span></code></pre></div><p>在加载模块前后分别运行测试程序结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># gcc -o modify_old_syscall ./modify_old_syscall.c </span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># gcc -o modify_new_syscall ./modify_new_syscall.c </span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># ./modify_old_syscall </span>
+</span></span><span style=display:flex><span>tv_sec:4196032
+</span></span><span style=display:flex><span>tv_usec:0
+</span></span></code></pre></div><p>加载模块后运行结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># insmod modify_syscall.ko </span>
+</span></span><span style=display:flex><span>Connection to 120.46.163.15 closed by remote host.
+</span></span><span style=display:flex><span>Connection to 120.46.163.15 closed.
+</span></span><span style=display:flex><span>                                                                                                                                                                                            
+</span></span><span style=display:flex><span>~   88s
+</span></span></code></pre></div><p>尝试多次，发现在加载模块时会自动断开连接。
+<a href=https://chatgpt.com/share/673997a9-8290-8005-bce8-45eb9039576f>动态模块加载断连</a>
+查阅上述资料后判断，可能有以下原因：</p><ol><li>内核安全机制（如内核模块签名或防篡改）<ol><li>现代 Linux 内核通常启用了以下机制来防止内核模块篡改：<ol><li>内核模块签名验证： 默认要求模块经过签名。如果未正确签名，模块可能无法加载。</li><li>只读内存保护： 修改 sys_call_table 直接操作内核内存是受保护的。</li><li>SELinux/AppArmor： 这些机制可能限制模块加载或内核内存修改。</li></ol></li></ol></li><li>地址错误或不兼容的内核版本
+硬编码了 p_sys_call_table 的地址，但这个地址可能不适用于本地内核版本或编译配置。</li></ol><p>考虑到之前加载未签名的v2.6动态模块示例未报错，猜测为地址错误。
+查阅资料知：
+sys_call_table 地址通常被隐藏。动态查找是推荐方式，例如通过 kallsyms。
+p_sys_call_table 地址可能导致访问非法内存，引发内核崩溃。
+考虑使用动态获取 sys_call_table 的地址的方法：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/kallsyms.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>p_sys_call_table <span style=color:#f92672>=</span> NULL;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>p_sys_call_table <span style=color:#f92672>=</span> (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;sys_call_table&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>p_sys_call_table) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(KERN_ERR <span style=color:#e6db74>&#34;Failed to find sys_call_table</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>修改代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/init.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/kernel.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/module.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>//original,syscall 78 function: gettimeofday
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// new syscall 78 function: print &#34;No 78 syscall has changed to hello&#34; and return a+b
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>#define sys_No 78 
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> old_sys_call_func;  
+</span></span><span style=display:flex><span><span style=color:#75715e>// unsigned long p_sys_call_table=0xc0361860; // find in  /boot/System.map-&#39;uname -r&#39;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/kallsyms.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>p_sys_call_table <span style=color:#f92672>=</span> NULL;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>asmlinkage <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>hello</span>(<span style=color:#66d9ef>int</span> a,<span style=color:#66d9ef>int</span> b) <span style=color:#75715e>//new function
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>{
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;No 78  syscall has changed to hello&#34;</span>);
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> a<span style=color:#f92672>+</span>b;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>modify_syscall</span>(<span style=color:#66d9ef>void</span>)                                                        
+</span></span><span style=display:flex><span>{                                                                            
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>sys_call_addr;                                            
+</span></span><span style=display:flex><span>    sys_call_addr<span style=color:#f92672>=</span>(<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>)(p_sys_call_table<span style=color:#f92672>+</span>sys_No);   
+</span></span><span style=display:flex><span>    old_sys_call_func<span style=color:#f92672>=*</span>(sys_call_addr);                                      
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span>(sys_call_addr)<span style=color:#f92672>=</span>(<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)<span style=color:#f92672>&amp;</span>hello;                <span style=color:#75715e>//  point to new function
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}                                                                              
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>restore_syscall</span>(<span style=color:#66d9ef>void</span>)                                                         
+</span></span><span style=display:flex><span>{                                                                              
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>sys_call_addr;                                              
+</span></span><span style=display:flex><span>    sys_call_addr<span style=color:#f92672>=</span>(<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>)(p_sys_call_table<span style=color:#f92672>+</span>sys_No); 
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span>(sys_call_addr)<span style=color:#f92672>=</span>old_sys_call_func;                <span style=color:#75715e>// point to original function
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}   
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>mymodule_init</span>(<span style=color:#66d9ef>void</span>)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  p_sys_call_table <span style=color:#f92672>=</span> (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;sys_call_table&#34;</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>p_sys_call_table) {
+</span></span><span style=display:flex><span>      <span style=color:#a6e22e>printk</span>(KERN_ERR <span style=color:#e6db74>&#34;Failed to find sys_call_table</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>modify_syscall</span>();
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>mymodule_exit</span>(<span style=color:#66d9ef>void</span>)
+</span></span><span style=display:flex><span>{ 
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>restore_syscall</span>();
+</span></span><span style=display:flex><span>}  
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_init</span>(mymodule_init);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_exit</span>(mymodule_exit);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_LICENSE</span>(<span style=color:#e6db74>&#34;GPL&#34;</span>);
+</span></span></code></pre></div><p>编译运行后，仍然在加载模块时断开连接，查看/boot/System.map-&lsquo;uname -r&rsquo;文件中sys_call_table的地址，结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>ffff000008af0670 r str__raw_syscalls__trace_system_name
+</span></span><span style=display:flex><span>ffff000008af0680 r __func__.41796
+</span></span><span style=display:flex><span>ffff000008af0698 R sys_call_table
+</span></span><span style=display:flex><span>ffff000008af0fc8 r __func__.38273
+</span></span></code></pre></div><p>替换后重新编译，在加载模块时仍然断开连接，内核崩溃。之后查阅以下资料：</p><ul><li><a href=https://blog.csdn.net/hushrush/article/details/121866652>动态模块和篡改系统调用</a></li><li><a href=https://blog.csdn.net/u013250169/article/details/114374228>linux内核hook技术之函数地址替换</a></li><li><a href=https://www.cnblogs.com/glodears/p/16488529.html>Linux系统调用hook</a></li><li><a href=https://blog.csdn.net/weixin_45030965/article/details/129203081>Linux ARM64 hook系统调用</a></li><li><a href=https://man7.org/linux/man-pages/man2/syscall.2.html>syscall.2.html</a></li><li><a href=https://blog.csdn.net/whatday/article/details/96989214>Linux Rootkit 系列二：基于修改 sys_call_table 的系统调用挂钩</a></li><li><a href=https://en.wikipedia.org/wiki/Control_register#CR0>Control_register#CR0</a></li><li><a href=https://blog.csdn.net/XYH_233/article/details/126600823>Linux中型实验：三、OpenEuler下添加新的系统调用</a></li></ul><p>可知在修改系统调用时，需要先修改系统调用页表的可写性，关闭写保护。根据上述资料，考虑到实验环境中华为云openEuler操作系统为arm架构，最终在多次尝试下，使用update_mapping_prot函数修改整个.rodata segment为可写。该函数可从以下链接查看：<br><a href=https://blog.csdn.net/weixin_45030965/article/details/129212657>Linux ARM64 update_mapping_prot函数</a></p><p>修改后动态模块源代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/init.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/kernel.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/module.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/mm.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/fs.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/syscalls.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;asm/io.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;asm/unistd.h&gt;  // 包含系统调用号等相关定义</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;asm/pgtable.h&gt;  // 为了访问页面表相关的函数和定义</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/uaccess.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;asm/paravirt.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/kallsyms.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#define sys_No 78  </span><span style=color:#75715e>// 需要修改的系统调用号
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> old_sys_call_func;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>p_sys_call_table <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;  <span style=color:#75715e>// 查找到的 sys_call_table 地址，依据 /boot/System.map 确定
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// ffff000008af0698 R sys_call_table
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// ffff000008af3a98 R a32_sys_call_table
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>void</span> (<span style=color:#f92672>*</span>update_mapping_prot)(<span style=color:#66d9ef>phys_addr_t</span> phys, <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> virt, <span style=color:#66d9ef>phys_addr_t</span> size, <span style=color:#66d9ef>pgprot_t</span> prot);
+</span></span><span style=display:flex><span><span style=color:#75715e>// .rodata segment 区间
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> start_rodata;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> init_begin;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#define section_size init_begin - start_rodata
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>//修改指定内核地址范围的内存属性为只读
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>inline</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>protect_memory</span>(<span style=color:#66d9ef>void</span>)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>update_mapping_prot</span>(<span style=color:#a6e22e>__pa_symbol</span>(start_rodata), (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)start_rodata,
+</span></span><span style=display:flex><span>			section_size, PAGE_KERNEL_RO);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>//修改指定内核地址范围的内存属性为可读可写等
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>inline</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>unprotect_memory</span>(<span style=color:#66d9ef>void</span>)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>update_mapping_prot</span>(<span style=color:#a6e22e>__pa_symbol</span>(start_rodata), (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)start_rodata,
+</span></span><span style=display:flex><span>			section_size, PAGE_KERNEL);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 新的系统调用函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>asmlinkage <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>hello</span>(<span style=color:#66d9ef>int</span> a, <span style=color:#66d9ef>int</span> b) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;No 78 syscall has changed to hello</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;a: %d, b: %d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, a, b);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> a <span style=color:#f92672>+</span> b;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 修改系统调用
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>modify_syscall</span>(<span style=color:#66d9ef>void</span>) {
+</span></span><span style=display:flex><span>    update_mapping_prot <span style=color:#f92672>=</span> (<span style=color:#66d9ef>void</span> <span style=color:#f92672>*</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;update_mapping_prot&#34;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	start_rodata <span style=color:#f92672>=</span> (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;__start_rodata&#34;</span>);
+</span></span><span style=display:flex><span>	init_begin <span style=color:#f92672>=</span> (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;__init_begin&#34;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    p_sys_call_table <span style=color:#f92672>=</span> (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> <span style=color:#f92672>*</span>)<span style=color:#a6e22e>kallsyms_lookup_name</span>(<span style=color:#e6db74>&#34;sys_call_table&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;sys_call_addr: %p</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, p_sys_call_table);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    old_sys_call_func <span style=color:#f92672>=</span> (p_sys_call_table[sys_No]);  <span style=color:#75715e>// 保存原始系统调用函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;old_sys_call_func: %lx</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, old_sys_call_func);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>unprotect_memory</span>();
+</span></span><span style=display:flex><span>    p_sys_call_table[sys_No] <span style=color:#f92672>=</span> (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>)<span style=color:#f92672>&amp;</span>hello;
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>protect_memory</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;syscall 78 replaced successfully with hello function</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 恢复原始的 sys_78 系统调用
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>restore_syscall</span>(<span style=color:#66d9ef>void</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>unprotect_memory</span>();
+</span></span><span style=display:flex><span>    p_sys_call_table[sys_No] <span style=color:#f92672>=</span> old_sys_call_func;  <span style=color:#75715e>// 恢复为原始的系统调用函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>protect_memory</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;syscall 78 restored to original</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 模块初始化
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>mymodule_init</span>(<span style=color:#66d9ef>void</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;Module loading...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>modify_syscall</span>();
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 模块退出
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>mymodule_exit</span>(<span style=color:#66d9ef>void</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;Module unloading...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>restore_syscall</span>();
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_init</span>(mymodule_init);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_exit</span>(mymodule_exit);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_LICENSE</span>(<span style=color:#e6db74>&#34;GPL&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_AUTHOR</span>(<span style=color:#e6db74>&#34;yuaay&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_DESCRIPTION</span>(<span style=color:#e6db74>&#34;A simple syscall hook module for openEuler ARM&#34;</span>);
+</span></span></code></pre></div><p><strong>注意：这里获得sys_call_table的地址时，使用的是kallsyms_lookup_name，这是因为System.map中显示的是内核编译时的静态地址，在运行时地址可能经过了动态调整，直接使用会访问错误的内存地址，导致内核崩溃。</strong></p><p>此时重新编译代码加载模块，成功加载：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># make</span>
+</span></span><span style=display:flex><span>make -C /lib/modules/4.19.90-2110.8.0.0119.oe1.aarch64/build   M<span style=color:#f92672>=</span>/root/exper3/modify_syscall modules  <span style=color:#75715e>#编译内核模块</span>
+</span></span><span style=display:flex><span>make<span style=color:#f92672>[</span>1<span style=color:#f92672>]</span>: Entering directory <span style=color:#e6db74>&#39;/usr/src/kernels/4.19.90-2110.8.0.0119.oe1.aarch64&#39;</span>
+</span></span><span style=display:flex><span>  CC <span style=color:#f92672>[</span>M<span style=color:#f92672>]</span>  /root/exper3/modify_syscall/modify_syscall.o
+</span></span><span style=display:flex><span>  Building modules, stage 2.
+</span></span><span style=display:flex><span>  MODPOST <span style=color:#ae81ff>1</span> modules
+</span></span><span style=display:flex><span>  CC      /root/exper3/modify_syscall/modify_syscall.mod.o
+</span></span><span style=display:flex><span>  LD <span style=color:#f92672>[</span>M<span style=color:#f92672>]</span>  /root/exper3/modify_syscall/modify_syscall.ko
+</span></span><span style=display:flex><span>make<span style=color:#f92672>[</span>1<span style=color:#f92672>]</span>: Leaving directory <span style=color:#e6db74>&#39;/usr/src/kernels/4.19.90-2110.8.0.0119.oe1.aarch64&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># insmod modify_syscall.ko </span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># lsmod</span>
+</span></span><span style=display:flex><span>Module                  Size  Used by
+</span></span><span style=display:flex><span>modify_syscall        <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>aes_ce_blk            <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>crypto_simd           <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span> aes_ce_blk
+</span></span><span style=display:flex><span>cryptd                <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span> crypto_simd
+</span></span></code></pre></div><p>日志如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span> 3604.213062<span style=color:#f92672>]</span> Module loading...
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.228647<span style=color:#f92672>]</span> sys_call_addr: 00000000bca137c4
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.228941<span style=color:#f92672>]</span> old_sys_call_func: ffff0000083735e0
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.229251<span style=color:#f92672>]</span> syscall <span style=color:#ae81ff>78</span> replaced successfully with hello <span style=color:#66d9ef>function</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.231748<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.232071<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.232340<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.232629<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.232867<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.233152<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.233383<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.233667<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.233916<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span></code></pre></div><p>其中tail的内容为：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># dmesg | tail</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.259986<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.260293<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.260540<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.260834<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.261076<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.261369<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.261616<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.261905<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.262161<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.262453<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span></code></pre></div><p>此时运行modify_new_syscall程序有结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># ./modify_new_syscall </span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>570293952</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># ./modify_new_syscall </span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>572391104</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># dmesg | tail</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.261076<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.261369<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.261616<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.261905<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.262161<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3604.262453<span style=color:#f92672>]</span> a: 537460416, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3812.391724<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3812.392056<span style=color:#f92672>]</span> a: 555941568, b: <span style=color:#ae81ff>14352384</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3815.407503<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3815.407839<span style=color:#f92672>]</span> a: 558038720, b: <span style=color:#ae81ff>14352384</span>
+</span></span></code></pre></div><p>成功返回了a+b的值，说明加载内核正确。</p></div><div class=post-footer></div></article></main></body></html>
