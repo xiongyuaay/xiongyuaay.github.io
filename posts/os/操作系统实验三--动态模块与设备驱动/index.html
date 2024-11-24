@@ -1,12 +1,13 @@
-<!doctype html><html lang=en><head><title>操作系统实验三--动态模块与设备驱动 // yuaay</title><link rel="shortcut icon" href=/favicon.ico><meta charset=utf-8><meta name=generator content="Hugo 0.139.0"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="yuaay"><meta name=description content><link rel=stylesheet href=/css/main.min.6ebe00cfa7759a5c422430d5c2a659c696627ccf19379685a28a3aec1859af90.css><meta name=twitter:card content="summary"><meta name=twitter:title content="操作系统实验三--动态模块与设备驱动"><meta name=twitter:description content="在进行实验之前，查阅相关Makefile编写教程，链接如下： Makefile由浅入深–教程、干货
+<!doctype html><html lang=en><head><title>操作系统实验三--动态模块与设备驱动 // yuaay</title>
+<link rel="shortcut icon" href=/favicon.ico><meta charset=utf-8><meta name=generator content="Hugo 0.139.2"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="yuaay"><meta name=description content><link rel=stylesheet href=/css/main.min.6ebe00cfa7759a5c422430d5c2a659c696627ccf19379685a28a3aec1859af90.css><meta name=twitter:card content="summary"><meta name=twitter:title content="操作系统实验三--动态模块与设备驱动"><meta name=twitter:description content="在进行实验之前，查阅相关Makefile编写教程，链接如下： Makefile由浅入深–教程、干货
 部分常用的预定义变量记录如下：
-$* 不包含扩展名的目标文件名称 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件 $< 第一个依赖文件的名称 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚 $@ 目标的完整名称 $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件 $% 如果目标是归档成员，则该变量表示目标的归档成员名称 注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。
+$* 不包含扩展名的目标文件名称 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件 $< 第一个依赖文件的名称 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚 $@ 目标的完整名称 **** $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件 $% 如果目标是归档成员，则该变量表示目标的归档成员名称 注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。
 如以下例子：
 target: dep1.o dep2.o echo $@ echo $^ echo $+ echo $< echo $? 运行 make 时：
 $@ → target $^ → dep1.o dep2.o （去重） $+ → dep1.o dep2.o （可以重复） $< → dep1.o （第一个依赖文件） $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。 V2.6动态模块示例加载 考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：
 动态模块源代码存放位置是否有要求？ 没有要求。动态模块源代码应与Makefile文件在同一个文件夹下 如何开始动态模块源代码的编写？ 在任意位置编写动态模块源代码及Makefile文件 如何编译动态模块？ 编写Makefile文件编译 如何查看当前主机linux可用动态模块编译版本？ 使用uname -r查看当前版本 且当前版本的动态模块机制与 2.6 及其后的版本保持一致。 使用chatgpt询问后，部分疑惑解答如上，详细问答可查看以下链接： chatgpt询问动态模块疑惑"><meta property="og:url" content="https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/"><meta property="og:site_name" content="yuaay"><meta property="og:title" content="操作系统实验三--动态模块与设备驱动"><meta property="og:description" content="在进行实验之前，查阅相关Makefile编写教程，链接如下： Makefile由浅入深–教程、干货
 部分常用的预定义变量记录如下：
-$* 不包含扩展名的目标文件名称 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件 $< 第一个依赖文件的名称 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚 $@ 目标的完整名称 $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件 $% 如果目标是归档成员，则该变量表示目标的归档成员名称 注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。
+$* 不包含扩展名的目标文件名称 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件 $< 第一个依赖文件的名称 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚 $@ 目标的完整名称 **** $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件 $% 如果目标是归档成员，则该变量表示目标的归档成员名称 注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。
 如以下例子：
 target: dep1.o dep2.o echo $@ echo $^ echo $+ echo $< echo $? 运行 make 时：
 $@ → target $^ → dep1.o dep2.o （去重） $+ → dep1.o dep2.o （可以重复） $< → dep1.o （第一个依赖文件） $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。 V2.6动态模块示例加载 考虑到在阅读课件ppt以及实验指导书后，对动态模块仍有很多疑惑，如：
@@ -18,13 +19,13 @@ $@ → target $^ → dep1.o dep2.o （去重） $+ → dep1.o dep2.o （可以�
 <a class=app-header-menu-item href=/about/>About</a></nav><p>电子世界的幽灵</p><div class=app-header-social><a href=https://github.com/xiongyuaay target=_blank rel="noreferrer noopener me"><svg class="icon icon-brand-github" viewBox="0 0 24 24" fill="currentcolor"><title>GitHub</title><path d="M12 .297c-6.63.0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577.0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93.0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176.0.0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22.0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22.0 1.606-.015 2.896-.015 3.286.0.315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
 </a><a href=xiongyuaay@gmail.com target=_blank rel="noreferrer noopener me"><svg class="icon icon-mail" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>mail</title><path d="M4 4h16c1.1.0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1.0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a></div></header><main class=app-container><article class=post><header class=post-header><h1 class=post-title>操作系统实验三--动态模块与设备驱动</h1><div class=post-meta><div><svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
 Nov 12, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-7 min read</div><div><svg class="icon icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+20 min read</div><div><svg class="icon icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
 <a class=tag href=https://xiongyuaay.github.io/tags/os/>Os</a></div></div></header><div class=post-content><p>在进行实验之前，查阅相关Makefile编写教程，链接如下：
 <a href=https://zhuanlan.zhihu.com/p/47390641>Makefile由浅入深&ndash;教程、干货</a></p><p>部分常用的预定义变量记录如下：</p><pre tabindex=0><code>$* 不包含扩展名的目标文件名称 
 $+ 所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件
 $&lt; 第一个依赖文件的名称 
 $? 所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚
-$@ 目标的完整名称 
+$@ 目标的完整名称 ****
 $^ 所有的依赖文件，以空格分开，不包含重复的依赖文件
 $% 如果目标是归档成员，则该变量表示目标的归档成员名称
 </code></pre><p><strong>注意：目标文件，表示最终生成的可执行文件；依赖文件是目标文件生成所需的文件。它们是目标文件的输入，通常是源代码、配置文件或脚本等。</strong></p><p>如以下例子：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-makefile data-lang=makefile><span style=display:flex><span><span style=color:#a6e22e>target</span><span style=color:#f92672>:</span> dep1.o dep2.o
@@ -412,4 +413,985 @@ p_sys_call_table 地址可能导致访问非法内存，引发内核崩溃。
 </span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3812.392056<span style=color:#f92672>]</span> a: 555941568, b: <span style=color:#ae81ff>14352384</span>
 </span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3815.407503<span style=color:#f92672>]</span> No <span style=color:#ae81ff>78</span> syscall has changed to hello
 </span></span><span style=display:flex><span><span style=color:#f92672>[</span> 3815.407839<span style=color:#f92672>]</span> a: 558038720, b: <span style=color:#ae81ff>14352384</span>
-</span></span></code></pre></div><p>成功返回了a+b的值，说明加载内核正确。</p><h1 id=字符设备>字符设备</h1></div><div class=post-footer></div></article></main></body></html>
+</span></span></code></pre></div><p>成功返回了a+b的值，说明加载内核正确。</p><h2 id=配置模块签名>配置模块签名</h2><p>运行以下命令修改模块签名配置：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># make menuconfig</span>
+</span></span><span style=display:flex><span>make: *** No rule to make target <span style=color:#e6db74>&#39;menuconfig&#39;</span>.  Stop.
+</span></span></code></pre></div><p>查阅以下资料了解到该命令需要在完整的内核源码路径（例如 /usr/src/kernels/kernel-version）下执行。</p><ul><li><a href=https://chatgpt.com/share/673ee196-c73c-8005-81d6-d5bde5a92cd9>https://chatgpt.com/share/673ee196-c73c-8005-81d6-d5bde5a92cd9</a></li></ul><p>更改目录后，安装ncurses 开发库，成功解决问题：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>sudo yum install ncurses-devel bison flex elfutils-libelf-devel openssl-devel
+</span></span></code></pre></div><p>下图为命令的图形化界面：</p><p><img src=/images/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/image.png alt="alt text"></p><p>之后生成签名密钥对：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 4.19.90-2110.8.0.0119.oe1.aarch64<span style=color:#f92672>]</span><span style=color:#75715e># scripts/sign-file sha256 ./signing_key.priv .</span>
+</span></span><span style=display:flex><span>Usage: scripts/sign-file <span style=color:#f92672>[</span>-dp<span style=color:#f92672>]</span> &lt;hash algo&gt; &lt;key&gt; &lt;x509&gt; &lt;module&gt; <span style=color:#f92672>[</span>&lt;dest&gt;<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>       scripts/sign-file -s &lt;raw sig&gt; &lt;hash algo&gt; &lt;x509&gt; &lt;module&gt; <span style=color:#f92672>[</span>&lt;dest&gt;<span style=color:#f92672>]</span> 
+</span></span></code></pre></div><p>运行命令报错，查阅资料得知，需要先使用openssl生成私钥和自签名证书：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 4.19.90-2110.8.0.0119.oe1.aarch64<span style=color:#f92672>]</span><span style=color:#75715e># openssl req -new -x509 -newkey rsa:2048 -keyout signing_key.priv -out signing_key.x509 -days 365 -nodes -subj &#34;/CN=Custom Module Signing Key&#34;</span>
+</span></span><span style=display:flex><span>Generating a RSA private key
+</span></span><span style=display:flex><span>.....................................................................................................................................+++++
+</span></span><span style=display:flex><span>.................................................................................................+++++
+</span></span><span style=display:flex><span>writing new private key to <span style=color:#e6db74>&#39;signing_key.priv&#39;</span>
+</span></span><span style=display:flex><span>-----
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 4.19.90-2110.8.0.0119.oe1.aarch64<span style=color:#f92672>]</span><span style=color:#75715e># ls</span>
+</span></span><span style=display:flex><span>arch   certs   Documentation  firmware  include  ipc      kernel  Makefile  Module.symvers  RPM-GPG-KEY-openEuler  scripts   signing_key.priv  sound       tools  virt
+</span></span><span style=display:flex><span>block  crypto  drivers        fs        init     Kconfig  lib     mm        net             samples                security  signing_key.x509  System.map  usr
+</span></span></code></pre></div><p>之后重新执行命令：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 4.19.90-2110.8.0.0119.oe1.aarch64<span style=color:#f92672>]</span><span style=color:#75715e># scripts/sign-file sha256 ./signing_key.priv ./signing_key.x509 ~/exper3/modify_syscall/modify_syscall.ko </span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 4.19.90-2110.8.0.0119.oe1.aarch64<span style=color:#f92672>]</span><span style=color:#75715e># cd ~/exper3/modify_syscall/</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># modinfo ./modify_syscall.ko | grep -i signer</span>
+</span></span><span style=display:flex><span>signer:         Custom Module Signing Key
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># insmod modify_syscall.ko </span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@kp-test01 modify_syscall<span style=color:#f92672>]</span><span style=color:#75715e># lsmod</span>
+</span></span><span style=display:flex><span>Module                  Size  Used by
+</span></span><span style=display:flex><span>modify_syscall        <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>aes_ce_blk            <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>crypto_simd           <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span> aes_ce_blk
+</span></span><span style=display:flex><span>cryptd                <span style=color:#ae81ff>262144</span>  <span style=color:#ae81ff>1</span> crypto_simd
+</span></span></code></pre></div><p>之后破坏签名，重新加载模块：</p><h1 id=字符设备>字符设备</h1><p>查阅以下资料：</p><ul><li><a href=https://www.cnblogs.com/chen-farsight/p/6177870.html>Linux字符设备中的两个重要结构体（file、inode）</a></li><li><a href=https://blog.csdn.net/u012247418/article/details/103332915>linux三大驱动类型：字符设备、块设备、网络设备</a></li><li><a href=https://linuxdevicedriversdoc.readthedocs.io/en/latest/Doc/02.Linux%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/01.%E5%AD%97%E7%AC%A6%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E6%A8%A1%E5%9E%8B.html>字符设备驱动模型</a></li><li><a href=http://yishiyu.world/2020/01/01/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C(%E4%B8%89)/index.html>操作系统实验系列三: 字符设备驱动及进程间聊天程序</a></li><li><a href=https://www.cnblogs.com/zhaoxuguang/p/7810651.html>dmesg七种用法</a></li><li><a href=https://blog.csdn.net/qq_33406883/article/details/100071183>Linux内核模块详解</a></li></ul><p>可知要编写一个字符设备，要完成以下内容：</p><ul><li>实现相关操作函数:open, read, write, close, ioctl</li><li>申请并分配设备号</li><li>初始化设备文件</li><li>绑定 file_operations 与操作函数的具体实现</li></ul><p>考虑到本次实验中所用到的设备数量较少，选择不使用cdev,直接通过register_chrdev函数申请主设备号，并由该函数自动完成操作函数的绑定。对于设备文件，则通过定义的结构体来表示，在获得设备号后，通过kmalloc函数分配需要的内存空间。</p><p>代码编写如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/kernel.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/module.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/fs.h&gt;                                                        </span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;asm/uaccess.h&gt;  </span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/init.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/types.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/errno.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/mm.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/sched.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/cdev.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;asm/io.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/slab.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/device.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>//相关操作函数声明
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_open</span>(<span style=color:#66d9ef>struct</span> inode <span style=color:#f92672>*</span>inode, <span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp);                                                      <span style=color:#75715e>//打开字符设备
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_read</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos);                      <span style=color:#75715e>//读取字符设备(一个字节)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_write</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos);        <span style=color:#75715e>//写入字符设备(一个字节)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>loff_t</span> <span style=color:#a6e22e>dev_llseek</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>loff_t</span> offset, <span style=color:#66d9ef>int</span> whence);       <span style=color:#75715e>//控制指针位置
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_release</span>(<span style=color:#66d9ef>struct</span> inode <span style=color:#f92672>*</span>inode, <span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp);                                                      <span style=color:#75715e>//关闭字符设备
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_ioctl</span>(<span style=color:#66d9ef>int</span> fd, <span style=color:#66d9ef>int</span> cmd);  
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_LICENSE</span>(<span style=color:#e6db74>&#34;GPL&#34;</span>);                                                       
+</span></span><span style=display:flex><span><span style=color:#75715e>#define MAJOR_NUM 290   
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#define DEVICE_NAME &#34;mydev&#34;   
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>//定义字符设备的缓冲区的大小
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>#ifndef DEV_SIZE
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#define DEV_SIZE 1024
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#endif
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>//定义设备存储块结构体
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> Device
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#75715e>/* data */</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>data;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> size;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>//驱动子设备结构体数组的指针
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> Device <span style=color:#f92672>*</span>device;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>//主设备号
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> major<span style=color:#f92672>=</span>MAJOR_NUM;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> file_operations dev_fops <span style=color:#f92672>=</span>{    
+</span></span><span style=display:flex><span>    owner: THIS_MODULE,                                 
+</span></span><span style=display:flex><span>    read: dev_read,                                                       
+</span></span><span style=display:flex><span>    write: dev_write,
+</span></span><span style=display:flex><span>    open: dev_open,
+</span></span><span style=display:flex><span>    llseek: dev_llseek,
+</span></span><span style=display:flex><span>    release: dev_release,
+</span></span><span style=display:flex><span>    ioctl: dev_ioctl                                                      
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>init_mymodule</span>(<span style=color:#66d9ef>void</span>)
+</span></span><span style=display:flex><span>{                                                
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> ret;                                                                  
+</span></span><span style=display:flex><span>    ret <span style=color:#f92672>=</span> <span style=color:#a6e22e>register_chrdev</span>(MAJOR_NUM, DEVICE_NAME, <span style=color:#f92672>&amp;</span>dev_fops);              
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (ret)
+</span></span><span style=display:flex><span>    {                                                                    
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;dev register failure&#34;</span>);                                        
+</span></span><span style=display:flex><span>    }<span style=color:#66d9ef>else</span>                                                                        
+</span></span><span style=display:flex><span>    {                                                                            
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;dev register success&#34;</span>);                                        
+</span></span><span style=display:flex><span>    }    
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    device <span style=color:#f92672>=</span> <span style=color:#a6e22e>kmalloc</span>(<span style=color:#66d9ef>sizeof</span>(<span style=color:#66d9ef>struct</span> Device), GFP_KERNEL);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(<span style=color:#f92672>!</span>device){
+</span></span><span style=display:flex><span>        <span style=color:#75715e>//创建失败,释放设备号并返回
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        result <span style=color:#f92672>=</span> <span style=color:#f92672>-</span>ENOMEM;
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>unregister_chrdev</span>(major, DEVICE_NAME);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> result;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    device<span style=color:#f92672>-&gt;</span>size <span style=color:#f92672>=</span> DEV_SIZE;
+</span></span><span style=display:flex><span>    device<span style=color:#f92672>-&gt;</span>data <span style=color:#f92672>=</span> <span style=color:#a6e22e>kmalloc</span>(DEV_SIZE, GFP_KERNEL);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>memset</span>(device<span style=color:#f92672>-&gt;</span>data, <span style=color:#ae81ff>0</span>, DEV_SIZE);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>//驱动模块启动成功
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;device init success</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>cleanup_mymodule</span>(<span style=color:#66d9ef>void</span>)
+</span></span><span style=display:flex><span>{                                            
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>unregister_chrdev</span>(MAJOR_NUM, <span style=color:#e6db74>&#34;globalvar&#34;</span>); 
+</span></span><span style=display:flex><span>    <span style=color:#75715e>//驱动模块卸载完毕
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>printk</span>(KERN_INFO <span style=color:#e6db74>&#34;device exit success&#34;</span>);
+</span></span><span style=display:flex><span>}  
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_open</span>(inode <span style=color:#f92672>*</span>inode, file <span style=color:#f92672>*</span>filp)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    filp<span style=color:#f92672>-&gt;</span>private_data<span style=color:#f92672>=</span>device;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_read</span>(file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> position<span style=color:#f92672>=*</span>pos;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>int</span> count<span style=color:#f92672>=</span>size;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> result;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> Device <span style=color:#f92672>*</span>dev<span style=color:#f92672>=</span>filp<span style=color:#f92672>-&gt;</span>private_data;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>//如果要求位置非法则直接退出
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span>(position<span style=color:#f92672>&gt;=</span>DEV_SIZE)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#75715e>//调整读取数据长度
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span>(count <span style=color:#f92672>&gt;</span> DEV_SIZE <span style=color:#f92672>-</span> position)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        count <span style=color:#f92672>=</span> DEV_SIZE <span style=color:#f92672>-</span> position;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>//传送数据给用户
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span>(<span style=color:#a6e22e>copy_to_user</span>(buf, (<span style=color:#66d9ef>void</span><span style=color:#f92672>*</span>)(dev<span style=color:#f92672>-&gt;</span>data <span style=color:#f92672>+</span> position), count)) {
+</span></span><span style=display:flex><span>        result <span style=color:#f92672>=</span> <span style=color:#f92672>-</span>EFAULT;
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>        <span style=color:#f92672>*</span>pos <span style=color:#f92672>+=</span> count;
+</span></span><span style=display:flex><span>        result <span style=color:#f92672>=</span> count;
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printk</span>(KERN_INFO <span style=color:#e6db74>&#34;read %d bytes from %lu</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, count, position);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> result;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_write</span>(file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> position <span style=color:#f92672>=</span> <span style=color:#f92672>*</span>pos;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>int</span> count <span style=color:#f92672>=</span> size;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> result <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> Device <span style=color:#f92672>*</span>dev <span style=color:#f92672>=</span> filp<span style=color:#f92672>-&gt;</span>private_data;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>//确保写入安全
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> (position <span style=color:#f92672>&gt;=</span> DEV_SIZE)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (count <span style=color:#f92672>&gt;</span> DEV_SIZE <span style=color:#f92672>-</span> position)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        count <span style=color:#f92672>=</span> DEV_SIZE <span style=color:#f92672>-</span> position;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#75715e>//写入数据
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>copy_from_user</span>(dev<span style=color:#f92672>-&gt;</span>data <span style=color:#f92672>+</span> position, buf, count)) {
+</span></span><span style=display:flex><span>        result <span style=color:#f92672>=</span> <span style=color:#f92672>-</span>EFAULT;
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>        <span style=color:#f92672>*</span>pos <span style=color:#f92672>+=</span> count;
+</span></span><span style=display:flex><span>        result <span style=color:#f92672>=</span> count;
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printk</span>(KERN_INFO <span style=color:#e6db74>&#34;write %d bytes from %lu</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, count, position);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> result;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>loff_t</span> <span style=color:#a6e22e>dev_llseek</span>(file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>loff_t</span> offset, <span style=color:#66d9ef>int</span> whence)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>loff_t</span> newpos;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>//选择操作类型
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>switch</span> (whence) {
+</span></span><span style=display:flex><span>        <span style=color:#75715e>//指定新位置
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>case</span> <span style=color:#ae81ff>0</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>            newpos <span style=color:#f92672>=</span> offset;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>        <span style=color:#75715e>//后移指针
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>case</span> <span style=color:#ae81ff>1</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>            newpos <span style=color:#f92672>=</span> filp<span style=color:#f92672>-&gt;</span>f_pos <span style=color:#f92672>+</span> offset;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>        <span style=color:#75715e>//反向指定新位置
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>case</span> <span style=color:#ae81ff>2</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>            newpos <span style=color:#f92672>=</span> DEV_SIZE <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span> <span style=color:#f92672>+</span> offset;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>default</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EINVAL;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> ((newpos <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) <span style=color:#f92672>||</span> (newpos <span style=color:#f92672>&gt;</span> DEV_SIZE))
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EINVAL;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    filp<span style=color:#f92672>-&gt;</span>f_pos <span style=color:#f92672>=</span> newpos;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> newpos;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_release</span>(inode <span style=color:#f92672>*</span>inode, file <span style=color:#f92672>*</span>filp)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_ioctl</span>(<span style=color:#66d9ef>int</span> fd, <span style=color:#66d9ef>int</span> cmd)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_init</span>(init_mymodule);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_exit</span>(cleanup_mymodule);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_LICENSE</span>(<span style=color:#e6db74>&#34;GPL&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_AUTHOR</span>(<span style=color:#e6db74>&#34;yuaay&#34;</span>);
+</span></span></code></pre></div><p>考虑到以下问题：</p><ul><li>struct file_operations 中的字段名需要显式初始化，通过形式： .read = dev_read。</li><li>ioctl 未被标准 struct file_operations 支持。</li><li>在模块卸载时需要释放所有分配的内存。</li></ul><p>修正代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/kernel.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/module.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/fs.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/uaccess.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/init.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/types.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/errno.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/mm.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/sched.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/cdev.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/slab.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/device.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 相关操作函数声明
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_open</span>(<span style=color:#66d9ef>struct</span> inode <span style=color:#f92672>*</span>inode, <span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_read</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_write</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>loff_t</span> <span style=color:#a6e22e>dev_llseek</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>loff_t</span> offset, <span style=color:#66d9ef>int</span> whence);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_release</span>(<span style=color:#66d9ef>struct</span> inode <span style=color:#f92672>*</span>inode, <span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_LICENSE</span>(<span style=color:#e6db74>&#34;GPL&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_AUTHOR</span>(<span style=color:#e6db74>&#34;yuaay&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#75715e>#define MAJOR_NUM 290
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#define DEVICE_NAME &#34;mydev&#34;
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#define DEV_SIZE 1024
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 定义设备存储块结构体
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> Device {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>data;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span> size;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 驱动子设备结构体指针
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> Device <span style=color:#f92672>*</span>device;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 文件操作结构体
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> file_operations dev_fops <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    .owner <span style=color:#f92672>=</span> THIS_MODULE,
+</span></span><span style=display:flex><span>    .read <span style=color:#f92672>=</span> dev_read,
+</span></span><span style=display:flex><span>    .write <span style=color:#f92672>=</span> dev_write,
+</span></span><span style=display:flex><span>    .open <span style=color:#f92672>=</span> dev_open,
+</span></span><span style=display:flex><span>    .llseek <span style=color:#f92672>=</span> dev_llseek,
+</span></span><span style=display:flex><span>    .release <span style=color:#f92672>=</span> dev_release
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 模块初始化函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> __init <span style=color:#a6e22e>init_mymodule</span>(<span style=color:#66d9ef>void</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> result;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 注册字符设备
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    result <span style=color:#f92672>=</span> <span style=color:#a6e22e>register_chrdev</span>(MAJOR_NUM, DEVICE_NAME, <span style=color:#f92672>&amp;</span>dev_fops);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (result <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printk</span>(KERN_ERR <span style=color:#e6db74>&#34;Failed to register character device</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> result;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 分配设备结构体
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    device <span style=color:#f92672>=</span> <span style=color:#a6e22e>kmalloc</span>(<span style=color:#66d9ef>sizeof</span>(<span style=color:#66d9ef>struct</span> Device), GFP_KERNEL);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>device) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>unregister_chrdev</span>(MAJOR_NUM, DEVICE_NAME);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>ENOMEM;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    device<span style=color:#f92672>-&gt;</span>size <span style=color:#f92672>=</span> DEV_SIZE;
+</span></span><span style=display:flex><span>    device<span style=color:#f92672>-&gt;</span>data <span style=color:#f92672>=</span> <span style=color:#a6e22e>kmalloc</span>(DEV_SIZE, GFP_KERNEL);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>device<span style=color:#f92672>-&gt;</span>data) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>kfree</span>(device);
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>unregister_chrdev</span>(MAJOR_NUM, DEVICE_NAME);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>ENOMEM;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>memset</span>(device<span style=color:#f92672>-&gt;</span>data, <span style=color:#ae81ff>0</span>, DEV_SIZE);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(KERN_INFO <span style=color:#e6db74>&#34;Device initialized successfully</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 模块清理函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> __exit <span style=color:#a6e22e>cleanup_mymodule</span>(<span style=color:#66d9ef>void</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (device) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (device<span style=color:#f92672>-&gt;</span>data)
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>kfree</span>(device<span style=color:#f92672>-&gt;</span>data);
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>kfree</span>(device);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>unregister_chrdev</span>(MAJOR_NUM, DEVICE_NAME);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(KERN_INFO <span style=color:#e6db74>&#34;Device unregistered successfully</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_open</span>(<span style=color:#66d9ef>struct</span> inode <span style=color:#f92672>*</span>inode, <span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp) {
+</span></span><span style=display:flex><span>    filp<span style=color:#f92672>-&gt;</span>private_data <span style=color:#f92672>=</span> device;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_read</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> Device <span style=color:#f92672>*</span>dev <span style=color:#f92672>=</span> filp<span style=color:#f92672>-&gt;</span>private_data;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>size_t</span> to_read;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> ret;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#f92672>*</span>pos <span style=color:#f92672>&gt;=</span> DEV_SIZE)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    to_read <span style=color:#f92672>=</span> <span style=color:#a6e22e>min</span>(size, (<span style=color:#66d9ef>size_t</span>)(DEV_SIZE <span style=color:#f92672>-</span> <span style=color:#f92672>*</span>pos));
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>copy_to_user</span>(buf, dev<span style=color:#f92672>-&gt;</span>data <span style=color:#f92672>+</span> <span style=color:#f92672>*</span>pos, to_read))
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EFAULT;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span>pos <span style=color:#f92672>+=</span> to_read;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> to_read;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_write</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> Device <span style=color:#f92672>*</span>dev <span style=color:#f92672>=</span> filp<span style=color:#f92672>-&gt;</span>private_data;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>size_t</span> to_write;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#f92672>*</span>pos <span style=color:#f92672>&gt;=</span> DEV_SIZE)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    to_write <span style=color:#f92672>=</span> <span style=color:#a6e22e>min</span>(size, (<span style=color:#66d9ef>size_t</span>)(DEV_SIZE <span style=color:#f92672>-</span> <span style=color:#f92672>*</span>pos));
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>copy_from_user</span>(dev<span style=color:#f92672>-&gt;</span>data <span style=color:#f92672>+</span> <span style=color:#f92672>*</span>pos, buf, to_write))
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EFAULT;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span>pos <span style=color:#f92672>+=</span> to_write;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> to_write;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>loff_t</span> <span style=color:#a6e22e>dev_llseek</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>loff_t</span> offset, <span style=color:#66d9ef>int</span> whence) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>loff_t</span> newpos;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>switch</span> (whence) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>case</span> SEEK_SET:
+</span></span><span style=display:flex><span>        newpos <span style=color:#f92672>=</span> offset;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>case</span> SEEK_CUR:
+</span></span><span style=display:flex><span>        newpos <span style=color:#f92672>=</span> filp<span style=color:#f92672>-&gt;</span>f_pos <span style=color:#f92672>+</span> offset;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>case</span> SEEK_END:
+</span></span><span style=display:flex><span>        newpos <span style=color:#f92672>=</span> DEV_SIZE <span style=color:#f92672>+</span> offset;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>default</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EINVAL;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (newpos <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span> <span style=color:#f92672>||</span> newpos <span style=color:#f92672>&gt;</span> DEV_SIZE)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EINVAL;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    filp<span style=color:#f92672>-&gt;</span>f_pos <span style=color:#f92672>=</span> newpos;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> newpos;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_release</span>(<span style=color:#66d9ef>struct</span> inode <span style=color:#f92672>*</span>inode, <span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_init</span>(init_mymodule);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_exit</span>(cleanup_mymodule);
+</span></span></code></pre></div><p>使用的Makefile文件如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Makefile data-lang=Makefile><span style=display:flex><span>obj-m <span style=color:#f92672>+=</span> mydev.o
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>all</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    make -C /lib/modules/<span style=color:#66d9ef>$(</span>shell uname -r<span style=color:#66d9ef>)</span>/build M<span style=color:#f92672>=</span><span style=color:#66d9ef>$(</span>PWD<span style=color:#66d9ef>)</span> modules
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>clean</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    make -C /lib/modules/<span style=color:#66d9ef>$(</span>shell uname -r<span style=color:#66d9ef>)</span>/build M<span style=color:#f92672>=</span><span style=color:#66d9ef>$(</span>PWD<span style=color:#66d9ef>)</span> clean
+</span></span></code></pre></div><p>编译后执行以下命令：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># 加载模块</span>
+</span></span><span style=display:flex><span>insmod mydev.ko 
+</span></span><span style=display:flex><span><span style=color:#75715e># 查看日志信息</span>
+</span></span><span style=display:flex><span>dmesg | tail
+</span></span><span style=display:flex><span><span style=color:#75715e># 创建设备节点</span>
+</span></span><span style=display:flex><span>mknod /dev/mydev c <span style=color:#ae81ff>290</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># /dev/mydev 是设备文件路径</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 290 是主设备号（由代码 #define MAJOR_NUM 290 定义）</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 0 是次设备号，因为代码里程序只能管理一个子设备，故只需要为0即可</span>
+</span></span><span style=display:flex><span>chmod <span style=color:#ae81ff>666</span> /dev/mydev
+</span></span><span style=display:flex><span><span style=color:#75715e># 为设备节点赋予权限</span>
+</span></span></code></pre></div><p>执行结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># insmod mydev.ko </span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># dmesg | tail -5</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>11955.474934<span style=color:#f92672>]</span> mydev: loading out-of-tree module taints kernel.
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>11955.475437<span style=color:#f92672>]</span> mydev: module verification failed: signature and/or required key missing - tainting kernel
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>11955.476600<span style=color:#f92672>]</span> Device initialized successfully
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>12335.485136<span style=color:#f92672>]</span> Device unregistered successfully
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>12549.117348<span style=color:#f92672>]</span> Device initialized successfully
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># mknod /dev/mydev c 290 0</span>
+</span></span><span style=display:flex><span>mknod: /dev/mydev: File exists
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># chmod 666 /dev/mydev</span>
+</span></span></code></pre></div><p>在这里因为已经执行过一次，故不需要再次创建设备节点</p><p>之后，通过终端执行以下操作验证设备操作：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># echo &#34;Hello, Device!&#34; &gt; /dev/mydev</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># cat /dev/mydev</span>
+</span></span><span style=display:flex><span>Hello, Device!
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># echo &#34;1234567890&#34; &gt; /dev/mydev</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># dd if=/dev/mydev bs=1 skip=5 count=5</span>
+</span></span><span style=display:flex><span>678905+0 records in
+</span></span><span style=display:flex><span>5+0 records out
+</span></span><span style=display:flex><span><span style=color:#ae81ff>5</span> bytes copied, 3.9981e-05 s, <span style=color:#ae81ff>125</span> kB/s
+</span></span></code></pre></div><p>可见数据的读取、写入、指针移动均正常。尝试在不同终端中读取、写入。
+在第一个终端中写入，执行以下命令：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># echo &#34;Data from T1&#34; &gt; /dev/mydev</span>
+</span></span></code></pre></div><p>新建另一个终端读取，结果如下图：
+<img src=/images/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/image-1.png alt="alt text">
+可见数据的读取正确。</p><p>将模块卸载，检查日志：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># rmmod mydev</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># dmesg | tail</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>    4.183435<span style=color:#f92672>]</span> systemd-journald<span style=color:#f92672>[</span>473<span style=color:#f92672>]</span>: Received client request to flush runtime journal.
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>    6.611860<span style=color:#f92672>]</span> IPv6: ADDRCONF<span style=color:#f92672>(</span>NETDEV_UP<span style=color:#f92672>)</span>: eth0: link is not ready
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>    7.541671<span style=color:#f92672>]</span> cryptd: max_cpu_qlen set to <span style=color:#ae81ff>1000</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>    9.894592<span style=color:#f92672>]</span> VFS: Open an exclusive opened block device <span style=color:#66d9ef>for</span> write vda2 <span style=color:#f92672>[</span><span style=color:#ae81ff>2137</span> resize2fs<span style=color:#f92672>]</span>.
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>11955.474934<span style=color:#f92672>]</span> mydev: loading out-of-tree module taints kernel.
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>11955.475437<span style=color:#f92672>]</span> mydev: module verification failed: signature and/or required key missing - tainting kernel
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>11955.476600<span style=color:#f92672>]</span> Device initialized successfully
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>12335.485136<span style=color:#f92672>]</span> Device unregistered successfully
+</span></span></code></pre></div><p>可见模块的卸载正常。</p><p>将模块的测试用代码来体现，代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;string.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;fcntl.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unistd.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;errno.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#define DEVICE_PATH &#34;/dev/mydev&#34;
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#define BUFFER_SIZE 256
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>test_open_close</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> fd <span style=color:#f92672>=</span> <span style=color:#a6e22e>open</span>(DEVICE_PATH, O_RDWR);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (fd <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Failed to open device&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Device opened successfully</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>close</span>(fd);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Device closed successfully</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>test_read</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> fd <span style=color:#f92672>=</span> <span style=color:#a6e22e>open</span>(DEVICE_PATH, O_RDWR);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (fd <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Failed to open device&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> buffer[BUFFER_SIZE];
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>memset</span>(buffer, <span style=color:#ae81ff>0</span>, BUFFER_SIZE);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>ssize_t</span> bytes_read <span style=color:#f92672>=</span> <span style=color:#a6e22e>read</span>(fd, buffer, BUFFER_SIZE);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (bytes_read <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Failed to read from device&#34;</span>);
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Read %zd bytes: %s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, bytes_read, buffer);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>close</span>(fd);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>test_write</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> fd <span style=color:#f92672>=</span> <span style=color:#a6e22e>open</span>(DEVICE_PATH, O_RDWR);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (fd <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Failed to open device&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>data <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Hello, kernel device!&#34;</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>ssize_t</span> bytes_written <span style=color:#f92672>=</span> <span style=color:#a6e22e>write</span>(fd, data, <span style=color:#a6e22e>strlen</span>(data));
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (bytes_written <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Failed to write to device&#34;</span>);
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Wrote %zd bytes: %s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, bytes_written, data);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>close</span>(fd);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>test_llseek</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> fd <span style=color:#f92672>=</span> <span style=color:#a6e22e>open</span>(DEVICE_PATH, O_RDWR);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (fd <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Failed to open device&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Seek to position 10
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>off_t</span> new_pos <span style=color:#f92672>=</span> <span style=color:#a6e22e>lseek</span>(fd, <span style=color:#ae81ff>10</span>, SEEK_SET);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (new_pos <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Failed to seek&#34;</span>);
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Seeked to position: %lld</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, (<span style=color:#66d9ef>long</span> <span style=color:#66d9ef>long</span>)new_pos);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>char</span> buffer[BUFFER_SIZE];
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>memset</span>(buffer, <span style=color:#ae81ff>0</span>, BUFFER_SIZE);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>ssize_t</span> bytes_read <span style=color:#f92672>=</span> <span style=color:#a6e22e>read</span>(fd, buffer, BUFFER_SIZE);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (bytes_read <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Failed to read from device&#34;</span>);
+</span></span><span style=display:flex><span>        } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Read %zd bytes: %s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, bytes_read, buffer);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>close</span>(fd);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Starting device tests...</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Testing open/close:</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>test_open_close</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Testing write:</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>test_write</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Testing read:</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>test_read</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>Testing llseek:</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>test_llseek</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>All tests completed.</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># gcc -o test_mydev ./test_mydev.c </span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># ./test_mydev </span>
+</span></span><span style=display:flex><span>Starting device tests...
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Testing open/close:
+</span></span><span style=display:flex><span>Device opened successfully
+</span></span><span style=display:flex><span>Device closed successfully
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Testing write:
+</span></span><span style=display:flex><span>Wrote <span style=color:#ae81ff>21</span> bytes: Hello, kernel device!
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Testing read:
+</span></span><span style=display:flex><span>Read <span style=color:#ae81ff>256</span> bytes: Hello, kernel device!
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Testing llseek:
+</span></span><span style=display:flex><span>Seeked to position: <span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>Read <span style=color:#ae81ff>256</span> bytes: nel device!
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>All tests completed.
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@openeuler-arm dev<span style=color:#f92672>]</span><span style=color:#75715e># </span>
+</span></span></code></pre></div><p>可见运行的结果符合预期。</p><h1 id=聊天程序的设计>聊天程序的设计</h1><h2 id=设计思路>设计思路</h2><p>考虑到在聊天程序中，数据并不适合连续的存储，相反，每一次的发送、读取都是针对一条消息而言的。故修改设备模块的文件结构，将一个device定义为如下结构体：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#66d9ef>struct</span> Message 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pid_t</span> sender_pid;    <span style=color:#75715e>// 发送者进程号
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>pid_t</span> target_pid;    <span style=color:#75715e>// 目标接收者进程号，0 表示群发
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>char</span> content[MAX_MSG_LEN]; <span style=color:#75715e>// 消息内容
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> User
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pid_t</span> pid;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> head;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> count;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> MessageQueue 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> Message messages[MAX_MSG_COUNT];
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// int curr;         //下一个该写入的位置
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// int head;             // 队列头
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> tail;             <span style=color:#75715e>// 队列尾
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>spinlock_t</span> lock;      <span style=color:#75715e>// 自旋锁保护队列
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// int count;            // 队列中消息数量
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> users_num;      <span style=color:#75715e>// 目前用户数量
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>struct</span> User users[USERS_MAX_NUM];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 定义设备存储块结构体，使用消息队列定义
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> Device 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> MessageQueue queue;
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><p>其中，一个设备由消息队列，队列尾（同时指向下一个写入的位置），自旋锁，使用的进程数量，以及用于记录用户信息的数组组成。</p><p>此外，该聊天程序需要实现多对多的消息转发，每一个进程都需要读取其余进程发送的消息。也就是说，对于任何一个进程都需要记录他们对应的读取位置，从而实现在设备内一个消息可以被多个进程读取，而对于任意一个进程而言，任何一个消息同时又只读取一次。</p><p>这里考虑在设备结点文件中记录每个用户的信息，通过User结构体，记录当前进程的pid以及读取的位置、还没有读取的消息数量，之后在read函数中，遍历没有读取的消息，读取能够读取的信息。</p><p>此外，对于多个用户而言，读取、写入时还存在竞争与同步的问题。这个问题一方面可以在聊天程序客户端中使用自旋锁或者信号量解决，一方面也可以在设备模块中，在对应的写入和读取中使用自旋锁解决。这里选用第二种方式，同时由于自旋锁是被施加在写入、读取函数中，在客户端程序中就可以随意调用操作函数。</p><h2 id=字符设备模块代码>字符设备模块代码</h2><p>完整的代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/kernel.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/module.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/fs.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/uaccess.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/init.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/types.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/errno.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/mm.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/sched.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/cdev.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/slab.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/device.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;linux/spinlock.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 相关操作函数声明
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_open</span>(<span style=color:#66d9ef>struct</span> inode <span style=color:#f92672>*</span>inode, <span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_read</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_write</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>loff_t</span> <span style=color:#a6e22e>dev_llseek</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>loff_t</span> offset, <span style=color:#66d9ef>int</span> whence);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_release</span>(<span style=color:#66d9ef>struct</span> inode <span style=color:#f92672>*</span>inode, <span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_LICENSE</span>(<span style=color:#e6db74>&#34;GPL&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>MODULE_AUTHOR</span>(<span style=color:#e6db74>&#34;yuaay&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#75715e>#define MAJOR_NUM 290
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#define DEVICE_NAME &#34;mydev&#34;
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#define DEV_SIZE 1024
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#define MAX_MSG_LEN 256
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#define MAX_MSG_COUNT 64
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#define USERS_MAX_NUM 6
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> Message 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pid_t</span> sender_pid;    <span style=color:#75715e>// 发送者进程号
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>pid_t</span> target_pid;    <span style=color:#75715e>// 目标接收者进程号，0 表示群发
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>char</span> content[MAX_MSG_LEN]; <span style=color:#75715e>// 消息内容
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> User
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pid_t</span> pid;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> head;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> count;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> MessageQueue 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> Message messages[MAX_MSG_COUNT];
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// int curr;         //下一个该写入的位置
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// int head;             // 队列头
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> tail;             <span style=color:#75715e>// 队列尾
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>spinlock_t</span> lock;      <span style=color:#75715e>// 自旋锁保护队列
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// int count;            // 队列中消息数量
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> users_num;      <span style=color:#75715e>// 目前用户数量
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>struct</span> User users[USERS_MAX_NUM];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 定义设备存储块结构体，使用消息队列定义
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> Device 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> MessageQueue queue;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 驱动子设备结构体指针
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> Device <span style=color:#f92672>*</span>device;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 文件操作结构体
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> file_operations dev_fops <span style=color:#f92672>=</span> 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    .owner <span style=color:#f92672>=</span> THIS_MODULE,
+</span></span><span style=display:flex><span>    .read <span style=color:#f92672>=</span> dev_read,
+</span></span><span style=display:flex><span>    .write <span style=color:#f92672>=</span> dev_write,
+</span></span><span style=display:flex><span>    .open <span style=color:#f92672>=</span> dev_open,
+</span></span><span style=display:flex><span>    .llseek <span style=color:#f92672>=</span> dev_llseek,
+</span></span><span style=display:flex><span>    .release <span style=color:#f92672>=</span> dev_release
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 模块初始化函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> __init <span style=color:#a6e22e>init_mymodule</span>(<span style=color:#66d9ef>void</span>) 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> result;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 注册字符设备
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    result <span style=color:#f92672>=</span> <span style=color:#a6e22e>register_chrdev</span>(MAJOR_NUM, DEVICE_NAME, <span style=color:#f92672>&amp;</span>dev_fops);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (result <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) 
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printk</span>(KERN_ERR <span style=color:#e6db74>&#34;Failed to register character device</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> result;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 分配设备结构体
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    device <span style=color:#f92672>=</span> <span style=color:#a6e22e>kmalloc</span>(<span style=color:#66d9ef>sizeof</span>(<span style=color:#66d9ef>struct</span> Device), GFP_KERNEL);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>device) 
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>unregister_chrdev</span>(MAJOR_NUM, DEVICE_NAME);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>ENOMEM;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 初始化消息队列
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>spin_lock_init</span>(<span style=color:#f92672>&amp;</span>device<span style=color:#f92672>-&gt;</span>queue.lock);
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// device-&gt;queue.head = 0;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    device<span style=color:#f92672>-&gt;</span>queue.tail <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// device-&gt;queue.count = 0;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// device-&gt;queue.curr = 0;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    device<span style=color:#f92672>-&gt;</span>queue.users_num <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(KERN_INFO <span style=color:#e6db74>&#34;Device initialized successfully</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 模块清理函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> __exit <span style=color:#a6e22e>cleanup_mymodule</span>(<span style=color:#66d9ef>void</span>) 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (device) 
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>kfree</span>(device);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>unregister_chrdev</span>(MAJOR_NUM, DEVICE_NAME);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(KERN_INFO <span style=color:#e6db74>&#34;Device unregistered successfully</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_open</span>(<span style=color:#66d9ef>struct</span> inode <span style=color:#f92672>*</span>inode, <span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp) 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>spin_lock</span>(<span style=color:#f92672>&amp;</span>device<span style=color:#f92672>-&gt;</span>queue.lock);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (device<span style=color:#f92672>-&gt;</span>queue.users_num <span style=color:#f92672>&gt;=</span> USERS_MAX_NUM)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;open: users max&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>ENOMEM;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    filp<span style=color:#f92672>-&gt;</span>private_data <span style=color:#f92672>=</span> device;
+</span></span><span style=display:flex><span>    device<span style=color:#f92672>-&gt;</span>queue.users[device<span style=color:#f92672>-&gt;</span>queue.users_num].pid <span style=color:#f92672>=</span> current<span style=color:#f92672>-&gt;</span>pid <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>    device<span style=color:#f92672>-&gt;</span>queue.users[device<span style=color:#f92672>-&gt;</span>queue.users_num].head <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    device<span style=color:#f92672>-&gt;</span>queue.users[device<span style=color:#f92672>-&gt;</span>queue.users_num].count <span style=color:#f92672>=</span> device<span style=color:#f92672>-&gt;</span>queue.tail;
+</span></span><span style=display:flex><span>    device<span style=color:#f92672>-&gt;</span>queue.users_num<span style=color:#f92672>++</span>;
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;users_num: %d, new_user_pid: %d, new_user_count: %d&#34;</span>, device<span style=color:#f92672>-&gt;</span>queue.users_num, current<span style=color:#f92672>-&gt;</span>pid, device<span style=color:#f92672>-&gt;</span>queue.tail);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>spin_unlock</span>(<span style=color:#f92672>&amp;</span>device<span style=color:#f92672>-&gt;</span>queue.lock);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_read</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos) 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> Device <span style=color:#f92672>*</span>dev <span style=color:#f92672>=</span> filp<span style=color:#f92672>-&gt;</span>private_data;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> MessageQueue <span style=color:#f92672>*</span>queue <span style=color:#f92672>=</span> <span style=color:#f92672>&amp;</span>dev<span style=color:#f92672>-&gt;</span>queue;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> Message msg;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>size_t</span> copy_size;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> user_num <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pid_t</span> pid <span style=color:#f92672>=</span> current<span style=color:#f92672>-&gt;</span>pid;
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// printk(&#34;read: pid: %d&#34;, pid);
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> i;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> found <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>spin_lock</span>(<span style=color:#f92672>&amp;</span>queue<span style=color:#f92672>-&gt;</span>lock);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> (i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> queue<span style=color:#f92672>-&gt;</span>users_num; i<span style=color:#f92672>++</span>)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (queue<span style=color:#f92672>-&gt;</span>users[i].pid <span style=color:#f92672>==</span> pid)
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#75715e>// printk(&#34;read: find the user: %d&#34;, pid);
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            user_num <span style=color:#f92672>=</span> i;
+</span></span><span style=display:flex><span>            found <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>found)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>spin_unlock</span>(<span style=color:#f92672>&amp;</span>queue<span style=color:#f92672>-&gt;</span>lock);
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// printk(&#34;read: no registered user&#34;);
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    queue<span style=color:#f92672>-&gt;</span>users[user_num].count <span style=color:#f92672>=</span> (queue<span style=color:#f92672>-&gt;</span>tail <span style=color:#f92672>-</span> queue<span style=color:#f92672>-&gt;</span>users[user_num].head <span style=color:#f92672>+</span> MAX_MSG_COUNT) <span style=color:#f92672>%</span> MAX_MSG_COUNT;
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// printk(&#34;read: user_num: %d&#34;, user_num);
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> (queue<span style=color:#f92672>-&gt;</span>users[user_num].count <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) 
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// printk(&#34;read: nomessage!&#34;);
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>spin_unlock</span>(<span style=color:#f92672>&amp;</span>queue<span style=color:#f92672>-&gt;</span>lock);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;  <span style=color:#75715e>// 队列为空
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 查找属于当前进程的消息
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    found <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> index <span style=color:#f92672>=</span> (queue<span style=color:#f92672>-&gt;</span>users[user_num].head) <span style=color:#f92672>%</span> MAX_MSG_COUNT;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (queue<span style=color:#f92672>-&gt;</span>messages[index].target_pid <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span> <span style=color:#f92672>||</span>  <span style=color:#75715e>// 群发消息
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        queue<span style=color:#f92672>-&gt;</span>messages[index].target_pid <span style=color:#f92672>==</span> pid )
+</span></span><span style=display:flex><span>    {  
+</span></span><span style=display:flex><span>        msg <span style=color:#f92672>=</span> queue<span style=color:#f92672>-&gt;</span>messages[index];
+</span></span><span style=display:flex><span>        queue<span style=color:#f92672>-&gt;</span>users[user_num].head <span style=color:#f92672>=</span> (queue<span style=color:#f92672>-&gt;</span>users[user_num].head <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>%</span> MAX_MSG_COUNT;
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// queue-&gt;users[user_num].count--;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        found <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;read: find the message! count: %d&#34;</span>, queue<span style=color:#f92672>-&gt;</span>users[user_num].head);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span>
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        queue<span style=color:#f92672>-&gt;</span>users[user_num].head <span style=color:#f92672>=</span> (queue<span style=color:#f92672>-&gt;</span>users[user_num].head <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>%</span> MAX_MSG_COUNT;
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// queue-&gt;users[user_num].count--;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    }
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>spin_unlock</span>(<span style=color:#f92672>&amp;</span>queue<span style=color:#f92672>-&gt;</span>lock);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>found) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;  <span style=color:#75715e>// 没有可读取的消息
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;read: current is not available message! count: %d&#34;</span>, queue<span style=color:#f92672>-&gt;</span>users[user_num].count);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 将消息内容复制到用户空间
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    copy_size <span style=color:#f92672>=</span> <span style=color:#a6e22e>min</span>(size, <span style=color:#66d9ef>sizeof</span>(msg.content));
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>copy_to_user</span>(buf, <span style=color:#f92672>&amp;</span>msg.content, copy_size))
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EFAULT;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> copy_size;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>ssize_t</span> <span style=color:#a6e22e>dev_write</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> __user <span style=color:#f92672>*</span>buf, <span style=color:#66d9ef>size_t</span> size, <span style=color:#66d9ef>loff_t</span> <span style=color:#f92672>*</span>pos) 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> Device <span style=color:#f92672>*</span>dev <span style=color:#f92672>=</span> filp<span style=color:#f92672>-&gt;</span>private_data;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> MessageQueue <span style=color:#f92672>*</span>queue <span style=color:#f92672>=</span> <span style=color:#f92672>&amp;</span>dev<span style=color:#f92672>-&gt;</span>queue;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> Message msg;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>size_t</span> copy_size;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> temp[MAX_MSG_LEN];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (size <span style=color:#f92672>&gt;</span> MAX_MSG_LEN)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EINVAL;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    copy_size <span style=color:#f92672>=</span> <span style=color:#a6e22e>min</span>(size, <span style=color:#66d9ef>sizeof</span>(temp) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>copy_from_user</span>(temp, buf, copy_size))
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EFAULT;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    temp[copy_size] <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;\0&#39;</span>;  <span style=color:#75715e>// 确保消息是以 NULL 结尾的字符串
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 初始化消息
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    msg.sender_pid <span style=color:#f92672>=</span> current<span style=color:#f92672>-&gt;</span>pid;
+</span></span><span style=display:flex><span>    msg.target_pid <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;  <span style=color:#75715e>// 默认是群发
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 检查是否是私聊消息
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> (temp[<span style=color:#ae81ff>0</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;@&#39;</span>) 
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>endptr;
+</span></span><span style=display:flex><span>        msg.target_pid <span style=color:#f92672>=</span> <span style=color:#a6e22e>simple_strtol</span>(temp <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>, <span style=color:#f92672>&amp;</span>endptr, <span style=color:#ae81ff>10</span>);  <span style=color:#75715e>// 提取目标 PID
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>*</span>endptr <span style=color:#f92672>!=</span> <span style=color:#e6db74>&#39; &#39;</span> <span style=color:#f92672>&amp;&amp;</span> <span style=color:#f92672>*</span>endptr <span style=color:#f92672>!=</span> <span style=color:#e6db74>&#39;\0&#39;</span>) 
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EINVAL;  <span style=color:#75715e>// 如果格式错误，返回无效参数
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        }
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// 消息内容跳过 &#34;@pid &#34;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#a6e22e>memmove</span>(temp, endptr <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>, <span style=color:#a6e22e>strlen</span>(endptr <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;write: This is a &#39;@&#39; message!&#34;</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>strncpy</span>(msg.content, temp, MAX_MSG_LEN <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>    msg.content[MAX_MSG_LEN <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>] <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;\0&#39;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 加入消息队列
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>spin_lock</span>(<span style=color:#f92672>&amp;</span>queue<span style=color:#f92672>-&gt;</span>lock);
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 设计为循环队列，消息满了后重头开始
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// if (queue-&gt;count == MAX_MSG_COUNT) 
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// {
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>//     spin_unlock(&amp;queue-&gt;lock);
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>//     return -ENOMEM;  // 队列已满
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// }
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>    queue<span style=color:#f92672>-&gt;</span>messages[queue<span style=color:#f92672>-&gt;</span>tail] <span style=color:#f92672>=</span> msg;
+</span></span><span style=display:flex><span>    queue<span style=color:#f92672>-&gt;</span>tail <span style=color:#f92672>=</span> (queue<span style=color:#f92672>-&gt;</span>tail <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>%</span> MAX_MSG_COUNT;
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;write: write complete!&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printk</span>(<span style=color:#e6db74>&#34;write: content: %s&#34;</span>, msg.content);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>spin_unlock</span>(<span style=color:#f92672>&amp;</span>queue<span style=color:#f92672>-&gt;</span>lock);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> size;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>loff_t</span> <span style=color:#a6e22e>dev_llseek</span>(<span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp, <span style=color:#66d9ef>loff_t</span> offset, <span style=color:#66d9ef>int</span> whence) 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>loff_t</span> newpos;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>switch</span> (whence) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>case</span> SEEK_SET:
+</span></span><span style=display:flex><span>        newpos <span style=color:#f92672>=</span> offset;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>case</span> SEEK_CUR:
+</span></span><span style=display:flex><span>        newpos <span style=color:#f92672>=</span> filp<span style=color:#f92672>-&gt;</span>f_pos <span style=color:#f92672>+</span> offset;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>case</span> SEEK_END:
+</span></span><span style=display:flex><span>        newpos <span style=color:#f92672>=</span> DEV_SIZE <span style=color:#f92672>+</span> offset;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>default</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EINVAL;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (newpos <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span> <span style=color:#f92672>||</span> newpos <span style=color:#f92672>&gt;</span> DEV_SIZE)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>EINVAL;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    filp<span style=color:#f92672>-&gt;</span>f_pos <span style=color:#f92672>=</span> newpos;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> newpos;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>dev_release</span>(<span style=color:#66d9ef>struct</span> inode <span style=color:#f92672>*</span>inode, <span style=color:#66d9ef>struct</span> file <span style=color:#f92672>*</span>filp) 
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_init</span>(init_mymodule);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>module_exit</span>(cleanup_mymodule);
+</span></span></code></pre></div><h2 id=聊天程序设计>聊天程序设计</h2><p>由于在设备模块代码中已经实现了自旋锁，故在聊天程序只需要通过两个线程，一个负责读取并处理消息，一个负责用户写入消息的处理即可。</p><p>代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;string.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;fcntl.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unistd.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;pthread.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;errno.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#define DEVICE_PATH &#34;/dev/mydev&#34;
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#define MAX_MSG_LEN 256
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// int last = 0; // last = 0表示上一行消息为读取，1表示上一行消息为写入
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// struct Message 
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// {
+</span></span></span><span style=display:flex><span><span style=color:#75715e>//     pid_t sender_pid;    // 发送者进程号
+</span></span></span><span style=display:flex><span><span style=color:#75715e>//     pid_t target_pid;    // 目标接收者进程号，0 表示群发
+</span></span></span><span style=display:flex><span><span style=color:#75715e>//     char content[MAX_MSG_LEN]; // 消息内容
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// };
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>receive_messages</span>(<span style=color:#66d9ef>void</span> <span style=color:#f92672>*</span>arg) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> fd <span style=color:#f92672>=</span> <span style=color:#f92672>*</span>(<span style=color:#66d9ef>int</span> <span style=color:#f92672>*</span>)arg;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> buffer[MAX_MSG_LEN];
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// struct Message *buffer;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>ssize_t</span> len;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>while</span> (<span style=color:#ae81ff>1</span>) {
+</span></span><span style=display:flex><span>        len <span style=color:#f92672>=</span> <span style=color:#a6e22e>read</span>(fd, buffer, <span style=color:#66d9ef>sizeof</span>(buffer));
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (len <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>            buffer[len <span style=color:#f92672>-</span> <span style=color:#ae81ff>8</span>] <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;\0&#39;</span>;  <span style=color:#75715e>// 确保消息以 NULL 结尾
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#75715e>// if (last)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#75715e>// {
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#75715e>//     printf(&#34;\n[Received]: %s\n&#34;, buffer);
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#75715e>// }
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#75715e>// else
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#75715e>// {
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#75715e>//     printf(&#34;[Received]: %s\n&#34;, buffer);
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#75715e>// }
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#75715e>// last = 0;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;[Received]: %s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, buffer);
+</span></span><span style=display:flex><span>        } <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> (len <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Error reading from device&#34;</span>);
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> NULL;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> fd;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> input[MAX_MSG_LEN];
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pthread_t</span> receiver_thread;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 打开字符设备
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    fd <span style=color:#f92672>=</span> <span style=color:#a6e22e>open</span>(DEVICE_PATH, O_RDWR);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (fd <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Failed to open device&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> EXIT_FAILURE;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 启动接收线程
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>pthread_create</span>(<span style=color:#f92672>&amp;</span>receiver_thread, NULL, receive_messages, <span style=color:#f92672>&amp;</span>fd) <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Failed to create receiver thread&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>close</span>(fd);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> EXIT_FAILURE;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Enter messages to send. Type &#39;exit&#39; to quit. Current user: %d</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, <span style=color:#a6e22e>getpid</span>() <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>while</span> (<span style=color:#ae81ff>1</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// printf(&#34;Enter message: &#34;);
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#75715e>// last = 1;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>fgets</span>(input, <span style=color:#66d9ef>sizeof</span>(input), stdin) <span style=color:#f92672>==</span> NULL) {
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Error reading input&#34;</span>);
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// 去掉换行符
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        input[<span style=color:#a6e22e>strcspn</span>(input, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>)] <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;\0&#39;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>strcmp</span>(input, <span style=color:#e6db74>&#34;exit&#34;</span>) <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// 写入消息
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>write</span>(fd, input, <span style=color:#a6e22e>strlen</span>(input)) <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>perror</span>(<span style=color:#e6db74>&#34;Error writing to device&#34;</span>);
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 关闭设备并退出
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>close</span>(fd);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>pthread_cancel</span>(receiver_thread);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>pthread_join</span>(receiver_thread, NULL);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Client exited.</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> EXIT_SUCCESS;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=运行结果>运行结果</h2><p>以下为三个进程的运行结果图：
+<img src=/images/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/image-2.png alt="alt text"></p><p>可见成功实现了多对多的对话，并且经过测试，通过@标识的私聊信息也正常发送。</p></div><div class=post-footer></div></article></main></body></html>
