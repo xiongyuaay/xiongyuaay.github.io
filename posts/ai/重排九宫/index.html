@@ -1,5 +1,5 @@
 <!doctype html><html lang=en><head><title>使用广度优先与启发式搜索算法求解的重排九宫问题 // yuaay</title>
-<link rel="shortcut icon" href=/favicon.ico><meta charset=utf-8><meta name=generator content="Hugo 0.139.4"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="yuaay"><meta name=description content><link rel=stylesheet href=/css/main.min.6ebe00cfa7759a5c422430d5c2a659c696627ccf19379685a28a3aec1859af90.css><meta name=twitter:card content="summary"><meta name=twitter:title content="使用广度优先与启发式搜索算法求解的重排九宫问题"><meta name=twitter:description content="前言 重排九宫就是重新排列九宫图的意思。这是根据当时盛行研究的数学游戏——纵横图（也叫幻方或魔方阵）发展来的，九宫游戏的起源，更可追溯到我国远古神话历史时代的河图、洛书。重排九宫则属滑块类游戏。在使用算术的同时，还必须推动方块使其到相对应的位置。其玩法是在3×3方格盘上，放有1-8八个数，剩下一格为空，每一空格其周围的数字可移至空格。先设定初始排列数字，然后开始思考如何以最少的移动次数来达到目的排列状态。
+<link rel="shortcut icon" href=/favicon.ico><meta charset=utf-8><meta name=generator content="Hugo 0.140.0"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="yuaay"><meta name=description content><link rel=stylesheet href=/css/main.min.6ebe00cfa7759a5c422430d5c2a659c696627ccf19379685a28a3aec1859af90.css><meta name=twitter:card content="summary"><meta name=twitter:title content="使用广度优先与启发式搜索算法求解的重排九宫问题"><meta name=twitter:description content="前言 重排九宫就是重新排列九宫图的意思。这是根据当时盛行研究的数学游戏——纵横图（也叫幻方或魔方阵）发展来的，九宫游戏的起源，更可追溯到我国远古神话历史时代的河图、洛书。重排九宫则属滑块类游戏。在使用算术的同时，还必须推动方块使其到相对应的位置。其玩法是在3×3方格盘上，放有1-8八个数，剩下一格为空，每一空格其周围的数字可移至空格。先设定初始排列数字，然后开始思考如何以最少的移动次数来达到目的排列状态。
 目前，针对该问题的一般解法为广度优先搜索。对于某一个确定的初始状态和目标状态，通过广度优先的方式，遍历所有的可能性，最终找到一条从初始状态到目标状态的路径，或者无解。
 此外，由于广度优先是盲目搜索的，也可以结合启发式算法，如A*算法，在广度优先搜索的基础上，加入一个启发式函数来优化搜索过程，最终常常可以减少找到解时所生成的节点数量，增强算法的性能。
 摘要 本文结合广度优先搜索的思想，编写C++代码成功实现了重排九宫问题的计算机求解。对于任意的初始状态及目的状态，如果有解，代码会输出从初始状态到目标状态最短路径。
@@ -7,17 +7,7 @@
 算法描述 广度优先搜索 算法 将九宫格的每一种可能的摆放方式定义为九宫格的一种状态。初始时，程序读入用户输入的初始状态与目标状态，分别存储在head和target结构中。之后，对于每一次程序执行，定义队列wait表示等待处理的状态，定义集合used表示已经处理过的状态，防止重复处理。在算法正式执行前，将head节点置入wait队列，used清零。
 之后，从wait队列中取出状态，如果该状态为目标状态，算法结束，找到路径；如果该状态不是目标状态，将经由该状态可以抵达、且不再used集合中的状态加入wait队列及used集合。然后，重复从wait队列取出状态进行判断，直到找到目标状态或者wait队列为空时，算法结束。
 程序结构 项目文件结构如下：
-📦root
-┣ 📂include
-┃ ┣ 📜BFS.h
-┃ ┗ 📜Node.h
-┣ 📂src
-┃ ┣ 📜BFS.cpp
-┃ ┣ 📜Node.cpp
-┃ ┗ 📜main.cpp
-┣ 📜CMakeLists.txt
-┣ 📜LICENSE
-┗ 📜README.md
+root ┣ include ┃ ┣ BFS.h ┃ ┗ Node.h ┣ src ┃ ┣ BFS.cpp ┃ ┣ Node.cpp ┃ ┗ main.cpp ┣ CMakeLists.txt ┣ LICENSE ┗ README.md
 其中，在Node.h文件中定义了表示九宫格状态的结构体struct Node,代码如下：
 struct Node { int content[ROW][COL]; // 数据成员 int r; int c; Node* parent; // 构造函数声明 Node(); // 成员函数声明 void print(); void set_value(int row, int col, int value, Node* p=nullptr); Node* up(); Node* left(); Node* right(); Node* down(); bool operator==(const Node& other) const; bool operator!=(const Node& other) const; bool operator<(const Node& other) const; }; content表示该状态内容，r、c表示空格所在位置，parent是指向生成该状态的父状态。对于==、！=、<则定义了忽略父节点指针的重载运算。"><meta property="og:url" content="https://xiongyuaay.github.io/posts/ai/%E9%87%8D%E6%8E%92%E4%B9%9D%E5%AE%AB/"><meta property="og:site_name" content="yuaay"><meta property="og:title" content="使用广度优先与启发式搜索算法求解的重排九宫问题"><meta property="og:description" content="前言 重排九宫就是重新排列九宫图的意思。这是根据当时盛行研究的数学游戏——纵横图（也叫幻方或魔方阵）发展来的，九宫游戏的起源，更可追溯到我国远古神话历史时代的河图、洛书。重排九宫则属滑块类游戏。在使用算术的同时，还必须推动方块使其到相对应的位置。其玩法是在3×3方格盘上，放有1-8八个数，剩下一格为空，每一空格其周围的数字可移至空格。先设定初始排列数字，然后开始思考如何以最少的移动次数来达到目的排列状态。
 目前，针对该问题的一般解法为广度优先搜索。对于某一个确定的初始状态和目标状态，通过广度优先的方式，遍历所有的可能性，最终找到一条从初始状态到目标状态的路径，或者无解。
@@ -27,17 +17,7 @@ struct Node { int content[ROW][COL]; // 数据成员 int r; int c; Node* parent;
 算法描述 广度优先搜索 算法 将九宫格的每一种可能的摆放方式定义为九宫格的一种状态。初始时，程序读入用户输入的初始状态与目标状态，分别存储在head和target结构中。之后，对于每一次程序执行，定义队列wait表示等待处理的状态，定义集合used表示已经处理过的状态，防止重复处理。在算法正式执行前，将head节点置入wait队列，used清零。
 之后，从wait队列中取出状态，如果该状态为目标状态，算法结束，找到路径；如果该状态不是目标状态，将经由该状态可以抵达、且不再used集合中的状态加入wait队列及used集合。然后，重复从wait队列取出状态进行判断，直到找到目标状态或者wait队列为空时，算法结束。
 程序结构 项目文件结构如下：
-📦root
-┣ 📂include
-┃ ┣ 📜BFS.h
-┃ ┗ 📜Node.h
-┣ 📂src
-┃ ┣ 📜BFS.cpp
-┃ ┣ 📜Node.cpp
-┃ ┗ 📜main.cpp
-┣ 📜CMakeLists.txt
-┣ 📜LICENSE
-┗ 📜README.md
+root ┣ include ┃ ┣ BFS.h ┃ ┗ Node.h ┣ src ┃ ┣ BFS.cpp ┃ ┣ Node.cpp ┃ ┗ main.cpp ┣ CMakeLists.txt ┣ LICENSE ┗ README.md
 其中，在Node.h文件中定义了表示九宫格状态的结构体struct Node,代码如下：
 struct Node { int content[ROW][COL]; // 数据成员 int r; int c; Node* parent; // 构造函数声明 Node(); // 成员函数声明 void print(); void set_value(int row, int col, int value, Node* p=nullptr); Node* up(); Node* left(); Node* right(); Node* down(); bool operator==(const Node& other) const; bool operator!=(const Node& other) const; bool operator<(const Node& other) const; }; content表示该状态内容，r、c表示空格所在位置，parent是指向生成该状态的父状态。对于==、！=、<则定义了忽略父节点指针的重载运算。"><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2024-12-04T17:29:50+08:00"><meta property="article:modified_time" content="2024-12-04T17:29:50+08:00"><meta property="article:tag" content="Ai"><meta property="article:tag" content="Course"></head><body><header class=app-header><a href=https://xiongyuaay.github.io/><img class=app-header-avatar src=/avatar.jpg alt=yuaay></a>
 <span class=app-header-title>yuaay</span><nav class=app-header-menu><a class=app-header-menu-item href=/>Home</a>
@@ -49,7 +29,17 @@ struct Node { int content[ROW][COL]; // 数据成员 int r; int c; Node* parent;
 Dec 4, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
 9 min read</div><div><svg class="icon icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
 <a class=tag href=https://xiongyuaay.github.io/tags/ai/>Ai</a>
-<a class=tag href=https://xiongyuaay.github.io/tags/course/>Course</a></div></div></header><div class=post-content><h1 id=前言>前言</h1><p>重排九宫就是重新排列九宫图的意思。这是根据当时盛行研究的数学游戏——纵横图（也叫幻方或魔方阵）发展来的，九宫游戏的起源，更可追溯到我国远古神话历史时代的河图、洛书。重排九宫则属滑块类游戏。在使用算术的同时，还必须推动方块使其到相对应的位置。其玩法是在3×3方格盘上，放有1-8八个数，剩下一格为空，每一空格其周围的数字可移至空格。先设定初始排列数字，然后开始思考如何以最少的移动次数来达到目的排列状态。</p><p>目前，针对该问题的一般解法为广度优先搜索。对于某一个确定的初始状态和目标状态，通过广度优先的方式，遍历所有的可能性，最终找到一条从初始状态到目标状态的路径，或者无解。</p><p>此外，由于广度优先是盲目搜索的，也可以结合启发式算法，如A*算法，在广度优先搜索的基础上，加入一个启发式函数来优化搜索过程，最终常常可以减少找到解时所生成的节点数量，增强算法的性能。</p><h1 id=摘要>摘要</h1><p>本文结合广度优先搜索的思想，编写C++代码成功实现了重排九宫问题的计算机求解。对于任意的初始状态及目的状态，如果有解，代码会输出从初始状态到目标状态最短路径。</p><p>此外，在尝试使用多个示例时，本文也发现使用广度优先搜索的重排九宫算法对某些目标状态的求解产生了大量不必要的节点。在查阅相关资料后，本文在广度优先搜索的基础上，结合了A*算法等启发式思想，成功改进了相关算法，能够在大部分情况下，更好的求解重排九宫问题。</p><h1 id=算法描述>算法描述</h1><h2 id=广度优先搜索>广度优先搜索</h2><h3 id=算法>算法</h3><p>将九宫格的每一种可能的摆放方式定义为九宫格的一种状态。初始时，程序读入用户输入的初始状态与目标状态，分别存储在head和target结构中。之后，对于每一次程序执行，定义队列wait表示等待处理的状态，定义集合used表示已经处理过的状态，防止重复处理。在算法正式执行前，将head节点置入wait队列，used清零。</p><p>之后，从wait队列中取出状态，如果该状态为目标状态，算法结束，找到路径；如果该状态不是目标状态，将经由该状态可以抵达、且不再used集合中的状态加入wait队列及used集合。然后，重复从wait队列取出状态进行判断，直到找到目标状态或者wait队列为空时，算法结束。</p><h3 id=程序结构>程序结构</h3><p>项目文件结构如下：</p><p>📦root</p><p>┣ 📂include</p><p>┃ ┣ 📜BFS.h</p><p>┃ ┗ 📜Node.h</p><p>┣ 📂src</p><p>┃ ┣ 📜BFS.cpp</p><p>┃ ┣ 📜Node.cpp</p><p>┃ ┗ 📜main.cpp</p><p>┣ 📜CMakeLists.txt</p><p>┣ 📜LICENSE</p><p>┗ 📜README.md</p><p>其中，在Node.h文件中定义了表示九宫格状态的结构体struct Node,代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Node</span> {
+<a class=tag href=https://xiongyuaay.github.io/tags/course/>Course</a></div></div></header><div class=post-content><h1 id=前言>前言</h1><p>重排九宫就是重新排列九宫图的意思。这是根据当时盛行研究的数学游戏——纵横图（也叫幻方或魔方阵）发展来的，九宫游戏的起源，更可追溯到我国远古神话历史时代的河图、洛书。重排九宫则属滑块类游戏。在使用算术的同时，还必须推动方块使其到相对应的位置。其玩法是在3×3方格盘上，放有1-8八个数，剩下一格为空，每一空格其周围的数字可移至空格。先设定初始排列数字，然后开始思考如何以最少的移动次数来达到目的排列状态。</p><p>目前，针对该问题的一般解法为广度优先搜索。对于某一个确定的初始状态和目标状态，通过广度优先的方式，遍历所有的可能性，最终找到一条从初始状态到目标状态的路径，或者无解。</p><p>此外，由于广度优先是盲目搜索的，也可以结合启发式算法，如A*算法，在广度优先搜索的基础上，加入一个启发式函数来优化搜索过程，最终常常可以减少找到解时所生成的节点数量，增强算法的性能。</p><h1 id=摘要>摘要</h1><p>本文结合广度优先搜索的思想，编写C++代码成功实现了重排九宫问题的计算机求解。对于任意的初始状态及目的状态，如果有解，代码会输出从初始状态到目标状态最短路径。</p><p>此外，在尝试使用多个示例时，本文也发现使用广度优先搜索的重排九宫算法对某些目标状态的求解产生了大量不必要的节点。在查阅相关资料后，本文在广度优先搜索的基础上，结合了A*算法等启发式思想，成功改进了相关算法，能够在大部分情况下，更好的求解重排九宫问题。</p><h1 id=算法描述>算法描述</h1><h2 id=广度优先搜索>广度优先搜索</h2><h3 id=算法>算法</h3><p>将九宫格的每一种可能的摆放方式定义为九宫格的一种状态。初始时，程序读入用户输入的初始状态与目标状态，分别存储在head和target结构中。之后，对于每一次程序执行，定义队列wait表示等待处理的状态，定义集合used表示已经处理过的状态，防止重复处理。在算法正式执行前，将head节点置入wait队列，used清零。</p><p>之后，从wait队列中取出状态，如果该状态为目标状态，算法结束，找到路径；如果该状态不是目标状态，将经由该状态可以抵达、且不再used集合中的状态加入wait队列及used集合。然后，重复从wait队列取出状态进行判断，直到找到目标状态或者wait队列为空时，算法结束。</p><h3 id=程序结构>程序结构</h3><p>项目文件结构如下：</p><p>root
+┣ include
+┃ ┣ BFS.h
+┃ ┗ Node.h
+┣ src
+┃ ┣ BFS.cpp
+┃ ┣ Node.cpp
+┃ ┗ main.cpp
+┣ CMakeLists.txt
+┣ LICENSE
+┗ README.md</p><p>其中，在Node.h文件中定义了表示九宫格状态的结构体struct Node,代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Node</span> {
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> content[ROW][COL]; <span style=color:#75715e>// 数据成员
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> r;
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> c;
@@ -201,7 +191,7 @@ Dec 4, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="non
 </span></span><span style=display:flex><span><span style=color:#ae81ff>1</span> <span style=color:#ae81ff>2</span> <span style=color:#ae81ff>3</span> 
 </span></span><span style=display:flex><span>  <span style=color:#ae81ff>4</span> <span style=color:#ae81ff>6</span> 
 </span></span><span style=display:flex><span><span style=color:#ae81ff>7</span> <span style=color:#ae81ff>5</span> <span style=color:#ae81ff>8</span> 
-</span></span></code></pre></div><h2 id=启发式搜索>启发式搜索</h2><h3 id=算法-1>算法</h3><p>考虑到广度优先搜索中，节点的添加与处理是盲目的，常常会处理很多不必要的节点。为改善该问题，等待队列中的每一个待处理状态增添一个有启发式函数得到的预估从初始节点经由该节点到目标节点的代价。计算方法如下：</p><p>f(n)=g(n)+h(n)</p><ul><li>g(n) 是从初始状态到当前状态的实际代价（即已移动步数）。</li><li>h(n) 是当前状态到目标状态的估计代价。</li></ul><p>这里采用曼哈顿距离作为启发式函数，即对于每个数字 𝑑，计算它当前位置（x1, y1）和目标位置（x2, y2）的曼哈顿距离（|x1 - x2|+|y1 - y2|），再将这些曼哈顿距离求和得到估计代价。</p><p>之后，在从wait等待队列中取节点时，选择代价最小的节点而不是头部节点。</p><h3 id=程序结构-1>程序结构</h3><p>定义关键数据结构，不仅包含每个状态的Node节点，还包含该状态的生成层级与估计的从初始状态经由该状态到目标状态的代价。代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>pNode</span>
+</span></span></code></pre></div><h2 id=启发式搜索>启发式搜索</h2><h3 id=算法-1>算法</h3><p>考虑到广度优先搜索中，节点的添加与处理是盲目的，常常会处理很多不必要的节点。为改善该问题，等待队列中的每一个待处理状态增添一个有启发式函数得到的预估从初始节点经由该节点到目标节点的代价。计算方法如下：</p><p>f(n)=g(n)+h(n)</p><ul><li>g(n) 是从初始状态到当前状态的实际代价（即已移动步数）。</li><li>h(n) 是当前状态到目标状态的估计代价。</li></ul><p>这里采用曼哈顿距离作为启发式函数，即对于每个数字，计算它当前位置（x1, y1）和目标位置（x2, y2）的曼哈顿距离（|x1 - x2|+|y1 - y2|），再将这些曼哈顿距离求和得到估计代价。</p><p>之后，在从wait等待队列中取节点时，选择代价最小的节点而不是头部节点。</p><h3 id=程序结构-1>程序结构</h3><p>定义关键数据结构，不仅包含每个状态的Node节点，还包含该状态的生成层级与估计的从初始状态经由该状态到目标状态的代价。代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>pNode</span>
 </span></span><span style=display:flex><span>{
 </span></span><span style=display:flex><span>    Node<span style=color:#f92672>*</span> node;
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> depth;

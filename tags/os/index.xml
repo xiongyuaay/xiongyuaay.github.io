@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Os on yuaay</title><link>https://xiongyuaay.github.io/tags/os/</link><description>Recent content in Os on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 12 Nov 2024 17:46:10 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/tags/os/index.xml" rel="self" type="application/rss+xml"/><item><title>操作系统实验三--动态模块与设备驱动</title><link>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/</link><pubDate>Tue, 12 Nov 2024 17:46:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/</guid><description>&lt;p>在进行实验之前，查阅相关Makefile编写教程，链接如下：
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Os on yuaay</title><link>https://xiongyuaay.github.io/tags/os/</link><description>Recent content in Os on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 12 Nov 2024 17:46:10 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/tags/os/index.xml" rel="self" type="application/rss+xml"/><item><title>操作系统实验三--动态模块与设备驱动</title><link>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/</link><pubDate>Tue, 12 Nov 2024 17:46:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/os/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E4%B8%89--%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9D%97%E4%B8%8E%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8/</guid><description>&lt;p>[TOC]&lt;/p>
+&lt;p>在进行实验之前，查阅相关Makefile编写教程，链接如下：
 &lt;a href="https://zhuanlan.zhihu.com/p/47390641">Makefile由浅入深&amp;ndash;教程、干货&lt;/a>&lt;/p>
 &lt;p>部分常用的预定义变量记录如下：&lt;/p>
 &lt;pre tabindex="0">&lt;code>$* 不包含扩展名的目标文件名称 
@@ -50,27 +51,27 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 &lt;h2 id="查看帮助手册">查看帮助手册&lt;/h2>
 &lt;h3 id="fork系统调用">fork系统调用&lt;/h3>
 &lt;p>使用man命令查看fork系统调用结果如下图：&lt;/p>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/377594525772505.png" alt="1">&lt;/p>
+&lt;p>&lt;img src="../../../static/images/377594525772505.png" alt="1">&lt;/p>
 &lt;p>可见结果显示没有相应的条目，猜测可能没有安装man帮助手册，通过以下资料查阅安装man手册。&lt;/p>
 &lt;ul>
 &lt;li>&lt;a href="https://blog.csdn.net/weixin_61939442/article/details/142136016#:~:text=Man%20%E6%89%8B%E5%86%8C%E5%AE%89%E8%A3%851.%E9%85%8D%E7%BD%AEman%20%5Broot%40myEuler%20~%5D%23%20dnf%20-y%20install%20man,https%3A%2F%2Fmirrors.edge.kernel.org%2Fpub%2Flinux%2Fdocs%2Fman-pages%2Fman-pages-6.03.tar.gz%20%5Broot%40myEuler%20~%5D%23%20tar%20-xzvf%20man-pages-6.03.tar.gz4.%E5%AE%89%E8%A3%85man%E6%89%8B%E5%86%8C%23%E8%BF%9B%E5%85%A5%E7%9B%AE%E6%A0%87%E7%9B%AE%E5%BD%95%20%5Br_openeuler%20man%E6%89%8B%E5%86%8C%E5%AE%89%E8%A3%85">man手册安装&lt;/a>&lt;/li>
 &lt;/ul>
 &lt;p>使用的安装命令及结果如下图：&lt;br>
-&lt;img src="https://xiongyuaay.github.io/images/443453311011602.png" alt="2">&lt;/p>
+&lt;img src="../../../static/images/443453311011602.png" alt="2">&lt;/p>
 &lt;p>可见在安装好man手册，成功使用man fork命令，如下图：
-&lt;img src="https://xiongyuaay.github.io/images/167935907718258.png" alt="">&lt;/p>
+&lt;img src="../../../static/images/167935907718258.png" alt="">&lt;/p>
 &lt;h3 id="kill系统调用">kill系统调用&lt;/h3>
 &lt;p>结果如下图：&lt;br>
-&lt;img src="https://xiongyuaay.github.io/images/344455056047998.png" alt="">&lt;/p>
+&lt;img src="../../../static/images/344455056047998.png" alt="">&lt;/p>
 &lt;h3 id="signal系统调用">signal系统调用&lt;/h3>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/116624541508.png" alt="">&lt;/p>
+&lt;p>&lt;img src="../../../static/images/116624541508.png" alt="">&lt;/p>
 &lt;h3 id="sleep系统调用">sleep系统调用&lt;/h3>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/427004511623406.png" alt="">&lt;/p>
+&lt;p>&lt;img src="../../../static/images/427004511623406.png" alt="">&lt;/p>
 &lt;h3 id="exit系统调用">exit系统调用&lt;/h3>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/62306574070474.png" alt="">&lt;/p>
+&lt;p>&lt;img src="../../../static/images/62306574070474.png" alt="">&lt;/p>
 &lt;h2 id="软中断程序">软中断程序&lt;/h2>
 &lt;p>openEuler系统下，使用命令kill -l查看所有信号及其编号的结果如下：
-&lt;img src="https://xiongyuaay.github.io/images/24568132916712.png" alt="">&lt;/p>
+&lt;img src="../../../static/images/24568132916712.png" alt="">&lt;/p>
 &lt;p>补充完成进程软中断的程序代码如下，其中对于等待时间的要求，考虑到sleep过程可以被信号打断，选择通过sleep函数实现：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c" data-lang="c">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;stdio.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;unistd.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">

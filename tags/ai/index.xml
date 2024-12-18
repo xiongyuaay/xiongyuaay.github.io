@@ -12,17 +12,17 @@
 &lt;p>之后，从wait队列中取出状态，如果该状态为目标状态，算法结束，找到路径；如果该状态不是目标状态，将经由该状态可以抵达、且不再used集合中的状态加入wait队列及used集合。然后，重复从wait队列取出状态进行判断，直到找到目标状态或者wait队列为空时，算法结束。&lt;/p>
 &lt;h3 id="程序结构">程序结构&lt;/h3>
 &lt;p>项目文件结构如下：&lt;/p>
-&lt;p>📦root&lt;/p>
-&lt;p>┣ 📂include&lt;/p>
-&lt;p>┃ ┣ 📜BFS.h&lt;/p>
-&lt;p>┃ ┗ 📜Node.h&lt;/p>
-&lt;p>┣ 📂src&lt;/p>
-&lt;p>┃ ┣ 📜BFS.cpp&lt;/p>
-&lt;p>┃ ┣ 📜Node.cpp&lt;/p>
-&lt;p>┃ ┗ 📜main.cpp&lt;/p>
-&lt;p>┣ 📜CMakeLists.txt&lt;/p>
-&lt;p>┣ 📜LICENSE&lt;/p>
-&lt;p>┗ 📜README.md&lt;/p>
+&lt;p>root
+┣ include
+┃ ┣ BFS.h
+┃ ┗ Node.h
+┣ src
+┃ ┣ BFS.cpp
+┃ ┣ Node.cpp
+┃ ┗ main.cpp
+┣ CMakeLists.txt
+┣ LICENSE
+┗ README.md&lt;/p>
 &lt;p>其中，在Node.h文件中定义了表示九宫格状态的结构体struct Node,代码如下：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">Node&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">int&lt;/span> content[ROW][COL]; &lt;span style="color:#75715e">// 数据成员
