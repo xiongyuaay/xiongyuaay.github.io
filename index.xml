@@ -59,7 +59,7 @@
 queries[i] = [ui, vi] 表示新建一条从城市 ui 到城市 vi 的单向道路。每次查询后，你需要找到从城市 0 到城市 n - 1 的最短路径的长度。
 返回一个数组 answer，对于范围 [0, queries.length - 1] 中的每个 i，answer[i] 是处理完前 i + 1 个查询后，从城市 0 到城市 n - 1 的最短路径的长度。&lt;/p>
 &lt;p>有如下示例：&lt;/p>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/image-2.png" alt="alt text">&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/image-2.png" alt="alt text">&lt;/p>
 &lt;h1 id="分析">分析&lt;/h1>
 &lt;p>面对此题，第一时间考虑的是广度优先搜索，一层一层遍历每一种可能的路径，考虑到每一条路径的权重都是1，最先达到终点的即为最短路径。
 此外，考虑到最终的最短路径中，考虑到达终点的前一个节点，从起点到该节点的路径也必须是最短路径，据此可递推得到最终的最短路径，且考虑到在每一次添加数组queries中的边时，只有queries[i][1]及其之后的节点可能被影响，故在每次查询时，也只需重新计算从queries[i][1]之后的节点最短路径。&lt;/p>
@@ -214,14 +214,14 @@ queries[i] = [ui, vi] 表示新建一条从城市 ui 到城市 vi 的单向道�
 &lt;/li>
 &lt;/ul>
 &lt;p>&lt;strong>chat给出的三元可匹配模型示例&lt;/strong>&lt;/p>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/364574038403923.png" alt="1">&lt;/p>
-&lt;p>​&lt;img src="https://xiongyuaay.github.io/images/550871063099798.png" alt="2">&lt;/p></description></item><item><title>LeetCode--判断矩形的两个角落是否可达</title><link>https://xiongyuaay.github.io/posts/leetcode/leetcode--%E5%88%A4%E6%96%AD%E7%9F%A9%E5%BD%A2%E7%9A%84%E4%B8%A4%E4%B8%AA%E8%A7%92%E8%90%BD%E6%98%AF%E5%90%A6%E5%8F%AF%E8%BE%BE/</link><pubDate>Tue, 12 Nov 2024 17:46:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/leetcode/leetcode--%E5%88%A4%E6%96%AD%E7%9F%A9%E5%BD%A2%E7%9A%84%E4%B8%A4%E4%B8%AA%E8%A7%92%E8%90%BD%E6%98%AF%E5%90%A6%E5%8F%AF%E8%BE%BE/</guid><description>&lt;p>来记录一下最近写的LeetCode算法题，以免以后遗忘。“判断矩形的两个角落是否可达”是LeetCode上序号为3235的一道困难题，实现起来颇为复杂，现将整个思考解答过程记录如下：&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/364574038403923.png" alt="1">&lt;/p>
+&lt;p>​&lt;img src="https://xiongyuaay.github.io/images/pre/550871063099798.png" alt="2">&lt;/p></description></item><item><title>LeetCode--判断矩形的两个角落是否可达</title><link>https://xiongyuaay.github.io/posts/leetcode/leetcode--%E5%88%A4%E6%96%AD%E7%9F%A9%E5%BD%A2%E7%9A%84%E4%B8%A4%E4%B8%AA%E8%A7%92%E8%90%BD%E6%98%AF%E5%90%A6%E5%8F%AF%E8%BE%BE/</link><pubDate>Tue, 12 Nov 2024 17:46:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/leetcode/leetcode--%E5%88%A4%E6%96%AD%E7%9F%A9%E5%BD%A2%E7%9A%84%E4%B8%A4%E4%B8%AA%E8%A7%92%E8%90%BD%E6%98%AF%E5%90%A6%E5%8F%AF%E8%BE%BE/</guid><description>&lt;p>来记录一下最近写的LeetCode算法题，以免以后遗忘。“判断矩形的两个角落是否可达”是LeetCode上序号为3235的一道困难题，实现起来颇为复杂，现将整个思考解答过程记录如下：&lt;/p>
 &lt;h2 id="题目">题目&lt;/h2>
 &lt;p>给你两个正整数 xCorner 和 yCorner 和一个二维整数数组 circles ，其中 circles[i] = [xi, yi, ri] 表示一个圆心在 (xi, yi) 半径为 ri 的圆。&lt;/p>
 &lt;p>坐标平面内有一个左下角在原点，右上角在 (xCorner, yCorner) 的矩形。你需要判断是否存在一条从左下角到右上角的路径满足：路径 完全 在矩形内部，不会 触碰或者经过 任何 圆的内部和边界，同时 只 在起点和终点接触到矩形。&lt;/p>
 &lt;p>如果存在这样的路径，请你返回 true ，否则返回 false 。&lt;/p>
 &lt;p>以下是官网给的示例，便于理解题目意思：&lt;/p>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/image.png" alt="alt text">&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/image.png" alt="alt text">&lt;/p>
 &lt;h2 id="解题思路">解题思路&lt;/h2>
 &lt;p>分析题目，我认为可以从两个方面去考虑：&lt;/p>
 &lt;ul>
@@ -234,7 +234,7 @@ queries[i] = [ui, vi] 表示新建一条从城市 ui 到城市 vi 的单向道�
 &lt;p>此时我首先想从数学上找出一些限制条件，或者使得两点间可达的充分必要条件，考虑将整个矩形划分为网格，一个点所能达到的地方便是其四周八个点。但是在考虑的过程中，我发现无论怎样划分网格，下一个节点的可达性总是不一定影响再下一个节点的可达性。&lt;/p>
 &lt;p>此时选择从第二个方向思考，即考虑在怎样的情况下，所有可达的路径被圆覆盖。&lt;/p>
 &lt;p>由于最终所求的路径是从左下角到右上角，可以发现，只要从左边界或者上边界有一个连续的区域直达下边界或者右边界即可以确定不存在路径从左下角到右上角。如下图：&lt;/p>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/image-1.png" alt="alt text">&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/image-1.png" alt="alt text">&lt;/p>
 &lt;p>即只需确定一系列连续的圆从左边界或者上边界出发，可以从圆占据的区域内经过到达下边界或者右边界。这里考虑从左上边界出发（无论从哪边出发不影响结论）。而圆与圆间是否连续，可以通过两圆是否相交或者相切来判断。&lt;/p>
 &lt;p>此外，在编写代码之前，我们可以有以下条件：&lt;/p>
 &lt;ul>
@@ -365,27 +365,27 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 &lt;h2 id="查看帮助手册">查看帮助手册&lt;/h2>
 &lt;h3 id="fork系统调用">fork系统调用&lt;/h3>
 &lt;p>使用man命令查看fork系统调用结果如下图：&lt;/p>
-&lt;p>&lt;img src="../../../static/images/377594525772505.png" alt="1">&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/377594525772505.png" alt="1">&lt;/p>
 &lt;p>可见结果显示没有相应的条目，猜测可能没有安装man帮助手册，通过以下资料查阅安装man手册。&lt;/p>
 &lt;ul>
 &lt;li>&lt;a href="https://blog.csdn.net/weixin_61939442/article/details/142136016#:~:text=Man%20%E6%89%8B%E5%86%8C%E5%AE%89%E8%A3%851.%E9%85%8D%E7%BD%AEman%20%5Broot%40myEuler%20~%5D%23%20dnf%20-y%20install%20man,https%3A%2F%2Fmirrors.edge.kernel.org%2Fpub%2Flinux%2Fdocs%2Fman-pages%2Fman-pages-6.03.tar.gz%20%5Broot%40myEuler%20~%5D%23%20tar%20-xzvf%20man-pages-6.03.tar.gz4.%E5%AE%89%E8%A3%85man%E6%89%8B%E5%86%8C%23%E8%BF%9B%E5%85%A5%E7%9B%AE%E6%A0%87%E7%9B%AE%E5%BD%95%20%5Br_openeuler%20man%E6%89%8B%E5%86%8C%E5%AE%89%E8%A3%85">man手册安装&lt;/a>&lt;/li>
 &lt;/ul>
 &lt;p>使用的安装命令及结果如下图：&lt;br>
-&lt;img src="../../../static/images/443453311011602.png" alt="2">&lt;/p>
+&lt;img src="https://xiongyuaay.github.io/images/pre/443453311011602.png" alt="2">&lt;/p>
 &lt;p>可见在安装好man手册，成功使用man fork命令，如下图：
-&lt;img src="../../../static/images/167935907718258.png" alt="">&lt;/p>
+&lt;img src="https://xiongyuaay.github.io/images/pre/167935907718258.png" alt="">&lt;/p>
 &lt;h3 id="kill系统调用">kill系统调用&lt;/h3>
 &lt;p>结果如下图：&lt;br>
-&lt;img src="../../../static/images/344455056047998.png" alt="">&lt;/p>
+&lt;img src="https://xiongyuaay.github.io/images/pre/344455056047998.png" alt="">&lt;/p>
 &lt;h3 id="signal系统调用">signal系统调用&lt;/h3>
-&lt;p>&lt;img src="../../../static/images/116624541508.png" alt="">&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/116624541508.png" alt="">&lt;/p>
 &lt;h3 id="sleep系统调用">sleep系统调用&lt;/h3>
-&lt;p>&lt;img src="../../../static/images/427004511623406.png" alt="">&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/427004511623406.png" alt="">&lt;/p>
 &lt;h3 id="exit系统调用">exit系统调用&lt;/h3>
-&lt;p>&lt;img src="../../../static/images/62306574070474.png" alt="">&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/62306574070474.png" alt="">&lt;/p>
 &lt;h2 id="软中断程序">软中断程序&lt;/h2>
 &lt;p>openEuler系统下，使用命令kill -l查看所有信号及其编号的结果如下：
-&lt;img src="../../../static/images/24568132916712.png" alt="">&lt;/p>
+&lt;img src="https://xiongyuaay.github.io/images/pre/24568132916712.png" alt="">&lt;/p>
 &lt;p>补充完成进程软中断的程序代码如下，其中对于等待时间的要求，考虑到sleep过程可以被信号打断，选择通过sleep函数实现：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c" data-lang="c">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;stdio.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;unistd.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
@@ -459,9 +459,9 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 &lt;li>根据灰色关联度的大小下结论&lt;/li>
 &lt;/ul>
 &lt;p>部分使用到的公式如下：&lt;br>
-&lt;img src="https://xiongyuaay.github.io/images/443974856105592.png" alt="1">
-&lt;img src="https://xiongyuaay.github.io/images/544484652480945.png" alt="2">
-&lt;img src="https://xiongyuaay.github.io/images/53064102515680.png" alt="3">&lt;/p></description></item><item><title>数学建模 Topsis（一点感悟）</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:21 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="topsis">Topsis&lt;/h1>
+&lt;img src="https://xiongyuaay.github.io/images/pre/443974856105592.png" alt="1">
+&lt;img src="https://xiongyuaay.github.io/images/pre/544484652480945.png" alt="2">
+&lt;img src="https://xiongyuaay.github.io/images/pre/53064102515680.png" alt="3">&lt;/p></description></item><item><title>数学建模 Topsis（一点感悟）</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:21 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--topsis%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="topsis">Topsis&lt;/h1>
 &lt;p>本质上是针对多个指标，通过与最优解与最劣解间的距离来得到某个方案的评分&lt;/p>
 &lt;p>可以很好的得到每个方案间的差距&lt;/p>
 &lt;p>使用步骤：&lt;/p>
@@ -477,9 +477,9 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 &lt;/li>
 &lt;/ul>
 &lt;p>计算最优解、最劣解的公式：
-&lt;img src="https://xiongyuaay.github.io/images/337922171116636.png" alt="1">
+&lt;img src="https://xiongyuaay.github.io/images/pre/337922171116636.png" alt="1">
 带权重的计算公式：
-&lt;img src="https://xiongyuaay.github.io/images/533552640375792.png" alt="2">&lt;/p></description></item><item><title>数学建模 熵权法（一点感悟）</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="熵权法">熵权法&lt;/h1>
+&lt;img src="https://xiongyuaay.github.io/images/pre/533552640375792.png" alt="2">&lt;/p></description></item><item><title>数学建模 熵权法（一点感悟）</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%86%B5%E6%9D%83%E6%B3%95%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid><description>&lt;h1 id="熵权法">熵权法&lt;/h1>
 &lt;p>一种基于数据本身的客观的赋予权重的方法
 利用信息熵，衡量了掌握信息的确切程度
 &lt;strong>值得注意的是，这种信息熵是基于方案的而不是基于指标。衡量了所有方案在这个指标的信息掌握程度。&lt;/strong>&lt;/p>
@@ -506,9 +506,9 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 &lt;li>根据信息熵得到权重&lt;/li>
 &lt;/ul>
 &lt;p>计算信息熵时所用公式：&lt;br>
-&lt;img src="https://xiongyuaay.github.io/images/222104284080536.png" alt="1">&lt;/p>
+&lt;img src="https://xiongyuaay.github.io/images/pre/222104284080536.png" alt="1">&lt;/p>
 &lt;p>标准化时可以用到的一些示例方法：&lt;br>
-&lt;img src="https://xiongyuaay.github.io/images/587765196388639.png" alt="2">&lt;/p></description></item><item><title>数学建模 网络最大流</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/</guid><description>&lt;p>网络最大流都是建立在流网络上的，流网络可以被表示为一个有向图&lt;/p>
+&lt;img src="https://xiongyuaay.github.io/images/pre/587765196388639.png" alt="2">&lt;/p></description></item><item><title>数学建模 网络最大流</title><link>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/</link><pubDate>Sat, 09 Nov 2024 19:08:10 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/math/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1--%E7%BD%91%E7%BB%9C%E6%9C%80%E5%A4%A7%E6%B5%81/</guid><description>&lt;p>网络最大流都是建立在流网络上的，流网络可以被表示为一个有向图&lt;/p>
 &lt;p>并且在这个有向图中，每条边同时有两个属性：&lt;/p>
 &lt;ul>
 &lt;li>当前边的最大容量&lt;/li>
@@ -516,7 +516,7 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 &lt;/ul>
 &lt;p>同时对于图中的每一个节点，所有流入当前节点的容量等于所有流出该节点的容量&lt;/p>
 &lt;p>下边是一个流网络的示例：&lt;/p>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/320496241621225.png" alt="">&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/320496241621225.png" alt="">&lt;/p>
 &lt;p>求解网络最大流问题就是求解网络的一种状态，使得源节点到目标节点的流量最大。&lt;/p>
 &lt;h2 id="求解方法">求解方法&lt;/h2>
 &lt;p>要求解这个问题只须依次找到该网络的所有增广路，并通过合适的方式消除增广路即可。
@@ -536,7 +536,7 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 &lt;strong>注意：这些实际值都只是单个值&lt;/strong>&lt;/p>
 &lt;p>根据这些因素的实际意义，给出这些因素相对于不同评语的隶属函数
 &lt;strong>由F分布得到隶属函数&lt;/strong>
-&lt;img src="https://xiongyuaay.github.io/images/146262814940887.png" alt="隶属函数">
+&lt;img src="https://xiongyuaay.github.io/images/pre/146262814940887.png" alt="隶属函数">
 从而可以得到这些因素对不同评语的隶属度&lt;/p>
 &lt;p>对这些因素之间，可以通过其他方法，&lt;strong>如：层次分析法、熵权法等&lt;/strong>，确定对总体研究对象的权重，
 借由这些权重，可以得到该总体对象在这个评语集的隶属度，
@@ -551,9 +551,9 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 &lt;li>最底层可直接将该层权重作为其相对与上一层指标的得分&lt;/li>
 &lt;/ul>
 &lt;p>&lt;strong>具体计算权重与一致性公式使用时查阅&lt;/strong>&lt;/p>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/111586079287530.png" alt="santy赋值">&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/111586079287530.png" alt="santy赋值">&lt;/p>
 &lt;h2 id="流程">流程&lt;/h2>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/568745427628904.png" alt="流程图">&lt;/p></description></item><item><title>关于我</title><link>https://xiongyuaay.github.io/about/</link><pubDate>Sat, 09 Nov 2024 18:44:47 +0800</pubDate><guid>https://xiongyuaay.github.io/about/</guid><description>&lt;p>这里是小莫，刚刚步入计算机的世界。&lt;/p>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/568745427628904.png" alt="流程图">&lt;/p></description></item><item><title>关于我</title><link>https://xiongyuaay.github.io/about/</link><pubDate>Sat, 09 Nov 2024 18:44:47 +0800</pubDate><guid>https://xiongyuaay.github.io/about/</guid><description>&lt;p>这里是小莫，刚刚步入计算机的世界。&lt;/p>
 &lt;p>小莫来自于游戏《明日方舟》中的角色莫斯提马，有着长长的蓝发与不可捉摸的个性～&lt;/p>
 &lt;p>今后将会越来越多的使用这个平台来记录、展示学到的知识！&lt;/p>
 &lt;p>目前还有很多不完善的地方，在逐步完善中～&lt;/p>

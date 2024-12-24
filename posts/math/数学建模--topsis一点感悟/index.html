@@ -15,6 +15,6 @@
 Nov 9, 2024</div><div><svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
 1 min read</div><div><svg class="icon icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>tag</title><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
 <a class=tag href=https://xiongyuaay.github.io/tags/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/>数学建模</a></div></div></header><div class=post-content><h1 id=topsis>Topsis</h1><p>本质上是针对多个指标，通过与最优解与最劣解间的距离来得到某个方案的评分</p><p>可以很好的得到每个方案间的差距</p><p>使用步骤：</p><ul><li>得到不同方案在不同指标的数据</li><li>将同一指标不同方案的值正向化</li><li>对得到的数据标准化，消除量纲的影响</li><li>得到针对于这些指标的最优解与最劣解</li><li>根据最优解与最劣解得到每个方案的评分<ul><li><strong>注意，如果每个指标的重要程度不一样，可以先通过其他赋予权值方法得到权重，将权重与距离求解结合，得到评分</strong></li></ul></li></ul><p>计算最优解、最劣解的公式：
-<img src=/images/337922171116636.png alt=1>
+<img src=/images/pre/337922171116636.png alt=1>
 带权重的计算公式：
-<img src=/images/533552640375792.png alt=2></p></div><div class=post-footer></div></article></main></body></html>
+<img src=/images/pre/533552640375792.png alt=2></p></div><div class=post-footer></div></article></main></body></html>
