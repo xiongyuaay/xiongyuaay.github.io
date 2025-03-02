@@ -1,39 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on yuaay</title><link>https://xiongyuaay.github.io/posts/</link><description>Recent content in Posts on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sun, 12 Jan 2025 21:50:30 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>ObjectDetection</title><link>https://xiongyuaay.github.io/posts/thesis/objectdetection/</link><pubDate>Sun, 12 Jan 2025 21:50:30 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/thesis/objectdetection/</guid><description>&lt;p>&lt;strong>YOLO-World: Real-Time Open-Vocabulary Object Detection&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>引入了开放词汇检测能力&lt;/li>
-&lt;li>结合视觉-语言建模&lt;/li>
-&lt;li>支持零样本（zero-shot）目标检测，能够检测未训练类别中的目标&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>YolOOD: Utilizing Object Detection Concepts for Multi-Label Out-of-Distribution Detection&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>识别模型在运行时遇到的“非训练数据分布”（OOD样本）&lt;/li>
-&lt;li>借助目标检测模型（如 YOLO）的内在能力来区分图像中的“感兴趣的目标”（ID）和“无关目标”（OOD）。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>Active Domain Adaptation with False Negative Prediction for Object Detection&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>主动领域自适应方法，通过引入新模块和策略解决未检测对象的问题。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>A-Teacher: Asymmetric Network for 3D Semi-Supervised Object Detection&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>结合了强教师模型的能力，同时保留了联合更新整个框架的优势。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>3DiffTection: 3D Object Detection with Geometry-Aware Diffusion Features&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>从单张图像中进行 3D 目标检测&lt;/li>
-&lt;li>利用3D 感知扩散模型进行特征提取&lt;/li>
-&lt;li>调优过程使用 ControlNet 技术，确保模型在调优时保持原有特征能力。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>Few-Shot Object Detection with Foundation Models&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>小样本目标检测&lt;/li>
-&lt;li>采用通过对比学习预训练的 DINOv2 模型，仅使用视觉特征&lt;/li>
-&lt;li>利用大语言模型对小样本学习进行上下文化处理。模型输入包括所有类别和查询图像中的候选框（proposals）。通过精心设计的语言指令，引导大语言模型在上下文中对每个候选框进行分类。
-&lt;ul>
-&lt;li>上下文信息包括：候选框与候选框之间的关系、候选框与类别之间的关系，以及类别与类别之间的关系。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>Commonsense Prototype for Outdoor Unsupervised 3D Object Detection&lt;/strong>&lt;/p></description></item><item><title>使用广度优先与启发式搜索算法求解的重排九宫问题</title><link>https://xiongyuaay.github.io/posts/ai/%E9%87%8D%E6%8E%92%E4%B9%9D%E5%AE%AB/</link><pubDate>Wed, 04 Dec 2024 17:29:50 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/ai/%E9%87%8D%E6%8E%92%E4%B9%9D%E5%AE%AB/</guid><description>&lt;h1 id="前言">前言&lt;/h1>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on yuaay</title><link>https://xiongyuaay.github.io/posts/</link><description>Recent content in Posts on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Wed, 04 Dec 2024 17:29:50 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>使用广度优先与启发式搜索算法求解的重排九宫问题</title><link>https://xiongyuaay.github.io/posts/ai/%E9%87%8D%E6%8E%92%E4%B9%9D%E5%AE%AB/</link><pubDate>Wed, 04 Dec 2024 17:29:50 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/ai/%E9%87%8D%E6%8E%92%E4%B9%9D%E5%AE%AB/</guid><description>&lt;h1 id="前言">前言&lt;/h1>
 &lt;p>重排九宫就是重新排列九宫图的意思。这是根据当时盛行研究的数学游戏——纵横图（也叫幻方或魔方阵）发展来的，九宫游戏的起源，更可追溯到我国远古神话历史时代的河图、洛书。重排九宫则属滑块类游戏。在使用算术的同时，还必须推动方块使其到相对应的位置。其玩法是在3×3方格盘上，放有1-8八个数，剩下一格为空，每一空格其周围的数字可移至空格。先设定初始排列数字，然后开始思考如何以最少的移动次数来达到目的排列状态。&lt;/p>
 &lt;p>目前，针对该问题的一般解法为广度优先搜索。对于某一个确定的初始状态和目标状态，通过广度优先的方式，遍历所有的可能性，最终找到一条从初始状态到目标状态的路径，或者无解。&lt;/p>
 &lt;p>此外，由于广度优先是盲目搜索的，也可以结合启发式算法，如A*算法，在广度优先搜索的基础上，加入一个启发式函数来优化搜索过程，最终常常可以减少找到解时所生成的节点数量，增强算法的性能。&lt;/p>
@@ -588,4 +553,53 @@ $? → 如果 dep1.o 和 dep2.o 中有更新的，列出更新的依赖文件。
 &lt;p>&lt;strong>具体计算权重与一致性公式使用时查阅&lt;/strong>&lt;/p>
 &lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/111586079287530.png" alt="santy赋值">&lt;/p>
 &lt;h2 id="流程">流程&lt;/h2>
-&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/568745427628904.png" alt="流程图">&lt;/p></description></item></channel></rss>
+&lt;p>&lt;img src="https://xiongyuaay.github.io/images/pre/568745427628904.png" alt="流程图">&lt;/p></description></item><item><title/><link>https://xiongyuaay.github.io/posts/unimportant/%E6%96%87%E5%8C%96%E7%BB%8F%E5%85%B8%E4%B8%8E%E7%83%AD%E7%82%B9%E9%80%8F%E8%A7%86%E4%BD%9C%E4%B8%9A%E4%BA%94/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/unimportant/%E6%96%87%E5%8C%96%E7%BB%8F%E5%85%B8%E4%B8%8E%E7%83%AD%E7%82%B9%E9%80%8F%E8%A7%86%E4%BD%9C%E4%B8%9A%E4%BA%94/</guid><description>&lt;p>      《白鹿原》是陈忠实的一部经典小说，以陕西关中平原为背景，通过白、鹿两大家族的兴衰变迁，折射出中国近现代社会的剧烈变革。这部小说不仅为陈忠实自己设置了一座很难以逾越的高峰，也为中国当代现实主义文学创作设置了一道很难跨逾的梁坎。黄立华教授在《走进白鹿原》中提出，《乡约》与“乡约”的较量是一条贯穿小说的重要线索。对此，我表示认同，我认为这种较量揭示了传统伦理与现代变革之间的冲突，是小说主题的重要体现。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted --></description></item><item><title/><link>https://xiongyuaay.github.io/posts/visiontasker/name/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://xiongyuaay.github.io/posts/visiontasker/name/</guid><description>&lt;p>&lt;strong>SmartAssist&lt;/strong>。&lt;/p>
+&lt;ul>
+&lt;li>&amp;ldquo;Smart&amp;rdquo; 表示智能化、自动识别和分析功能。&lt;/li>
+&lt;li>&amp;ldquo;Assist&amp;rdquo; 表示辅助用户完成操作和提供解释的功能，特别是对老年人友好的交互设计。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>SenseAid&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>更突显用户意图识别和风险警告功能&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>智能与辅助的角度：&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>AutoPilot&lt;/li>
+&lt;li>EaseFlow&lt;/li>
+&lt;li>ActionBuddy&lt;/li>
+&lt;li>SwiftGuide&lt;/li>
+&lt;li>HandyHelper&lt;/li>
+&lt;li>AidSphere&lt;/li>
+&lt;li>SenseAssist&lt;/li>
+&lt;li>QuickAid&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>用户意图识别与风险警告的角度：&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>IntentShield&lt;/li>
+&lt;li>SafePath&lt;/li>
+&lt;li>RiskAware&lt;/li>
+&lt;li>MindPilot&lt;/li>
+&lt;li>CautionMate&lt;/li>
+&lt;li>IntentGuardian&lt;/li>
+&lt;li>SmartAlert&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>面向老年用户友好的角度：&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>GentleGuide&lt;/li>
+&lt;li>SeniorEase&lt;/li>
+&lt;li>ElderCompanion&lt;/li>
+&lt;li>KindAssist&lt;/li>
+&lt;li>ClearSteps&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>全面覆盖功能的角度：&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>AllSense&lt;/li>
+&lt;li>OmniAssist&lt;/li>
+&lt;li>NextGenHelper&lt;/li>
+&lt;li>IntelliAid&lt;/li>
+&lt;li>AdaptiveFlow&lt;/li>
+&lt;/ul></description></item></channel></rss>
