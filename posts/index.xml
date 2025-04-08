@@ -1,17 +1,16 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on yuaay</title><link>https://xiongyuaay.github.io/posts/</link><description>Recent content in Posts on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 08 Apr 2025 17:34:25 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Opengauss</title><link>https://xiongyuaay.github.io/posts/database/opengauss/</link><pubDate>Tue, 08 Apr 2025 17:34:25 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/database/opengauss/</guid><description>&lt;h1 id="使用wsl2安装opengauss数据库">使用WSL2安装opengauss数据库&lt;/h1>
-&lt;h2 id="wsl2安装openeuler">wsl2安装openEuler&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on yuaay</title><link>https://xiongyuaay.github.io/posts/</link><description>Recent content in Posts on yuaay</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 08 Apr 2025 17:34:25 +0800</lastBuildDate><atom:link href="https://xiongyuaay.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>使用WSL2安装opengauss数据库</title><link>https://xiongyuaay.github.io/posts/database/opengauss/</link><pubDate>Tue, 08 Apr 2025 17:34:25 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/database/opengauss/</guid><description>&lt;h2 id="wsl2安装openeuler">wsl2安装openEuler&lt;/h2>
 &lt;p>目前windows 11 提供官方的openEuler子系统下载：&lt;/p>
-&lt;p>&lt;img src="../../../static/images/opengauss/image.png" alt="alt text">&lt;/p>
+&lt;p>&lt;img src="images/opengauss/image.png" alt="1">&lt;/p>
 &lt;p>我这里选择安装了24.03版本
 之后再搜索界面搜索openEuler即可打开对应的命令行。
 （注意：如果电脑之前没有配置WSL2，需要首先配置wsl2）
-&lt;img src="../../../static/images/opengauss/image-1.png" alt="alt text">&lt;/p>
+&lt;img src="images/opengauss/image-1.png" alt="2">&lt;/p>
 &lt;h2 id="安装opengauss">安装opengauss&lt;/h2>
 &lt;p>之后开始opengauss的安装&lt;/p>
 &lt;h3 id="下载opengauss">下载opengauss&lt;/h3>
 &lt;p>首先在官网下载对应版本的opengauss
 &lt;a href="https://opengauss.org/zh/download/">opengauss&lt;/a>&lt;/p>
-&lt;p>&lt;img src="../../../static/images/opengauss/image-2.png" alt="alt text">&lt;/p>
+&lt;p>&lt;img src="images/opengauss/image-2.png" alt="3">&lt;/p>
 &lt;p>我这里选择了x86架构的企业版server&lt;/p>
 &lt;p>下载后移动到wsl2 openEuler home文件夹里&lt;/p>
 &lt;h3 id="安装">安装&lt;/h3>
