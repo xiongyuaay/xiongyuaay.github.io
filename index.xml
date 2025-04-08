@@ -43,42 +43,7 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>openEuler@xyy opengauss&lt;span style="color:#f92672">]&lt;/span>$ tar -xvjf openGauss-Server-7.0.0-RC1-openEuler24.03-x86_64.tar.bz2
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>openEuler@xyy opengauss&lt;span style="color:#f92672">]&lt;/span>$ tar -xvzf openGauss-CM-7.0.0-RC1-openEuler24.03-x86_64.tar.gz
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>tar -xvzf openGauss-OM-7.0.0-RC1-openEuler24.03-x86_64.tar.gz
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>依次解压得到的三个tar文件得到以下内容：&lt;/p></description></item><item><title>ObjectDetection</title><link>https://xiongyuaay.github.io/posts/thesis/objectdetection/</link><pubDate>Sun, 12 Jan 2025 21:50:30 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/thesis/objectdetection/</guid><description>&lt;p>&lt;strong>YOLO-World: Real-Time Open-Vocabulary Object Detection&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>引入了开放词汇检测能力&lt;/li>
-&lt;li>结合视觉-语言建模&lt;/li>
-&lt;li>支持零样本（zero-shot）目标检测，能够检测未训练类别中的目标&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>YolOOD: Utilizing Object Detection Concepts for Multi-Label Out-of-Distribution Detection&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>识别模型在运行时遇到的“非训练数据分布”（OOD样本）&lt;/li>
-&lt;li>借助目标检测模型（如 YOLO）的内在能力来区分图像中的“感兴趣的目标”（ID）和“无关目标”（OOD）。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>Active Domain Adaptation with False Negative Prediction for Object Detection&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>主动领域自适应方法，通过引入新模块和策略解决未检测对象的问题。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>A-Teacher: Asymmetric Network for 3D Semi-Supervised Object Detection&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>结合了强教师模型的能力，同时保留了联合更新整个框架的优势。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>3DiffTection: 3D Object Detection with Geometry-Aware Diffusion Features&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>从单张图像中进行 3D 目标检测&lt;/li>
-&lt;li>利用3D 感知扩散模型进行特征提取&lt;/li>
-&lt;li>调优过程使用 ControlNet 技术，确保模型在调优时保持原有特征能力。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>Few-Shot Object Detection with Foundation Models&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>小样本目标检测&lt;/li>
-&lt;li>采用通过对比学习预训练的 DINOv2 模型，仅使用视觉特征&lt;/li>
-&lt;li>利用大语言模型对小样本学习进行上下文化处理。模型输入包括所有类别和查询图像中的候选框（proposals）。通过精心设计的语言指令，引导大语言模型在上下文中对每个候选框进行分类。
-&lt;ul>
-&lt;li>上下文信息包括：候选框与候选框之间的关系、候选框与类别之间的关系，以及类别与类别之间的关系。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>Commonsense Prototype for Outdoor Unsupervised 3D Object Detection&lt;/strong>&lt;/p></description></item><item><title>使用广度优先与启发式搜索算法求解的重排九宫问题</title><link>https://xiongyuaay.github.io/posts/ai/%E9%87%8D%E6%8E%92%E4%B9%9D%E5%AE%AB/</link><pubDate>Wed, 04 Dec 2024 17:29:50 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/ai/%E9%87%8D%E6%8E%92%E4%B9%9D%E5%AE%AB/</guid><description>&lt;h1 id="前言">前言&lt;/h1>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>依次解压得到的三个tar文件得到以下内容：&lt;/p></description></item><item><title>使用广度优先与启发式搜索算法求解的重排九宫问题</title><link>https://xiongyuaay.github.io/posts/ai/%E9%87%8D%E6%8E%92%E4%B9%9D%E5%AE%AB/</link><pubDate>Wed, 04 Dec 2024 17:29:50 +0800</pubDate><guid>https://xiongyuaay.github.io/posts/ai/%E9%87%8D%E6%8E%92%E4%B9%9D%E5%AE%AB/</guid><description>&lt;h1 id="前言">前言&lt;/h1>
 &lt;p>重排九宫就是重新排列九宫图的意思。这是根据当时盛行研究的数学游戏——纵横图（也叫幻方或魔方阵）发展来的，九宫游戏的起源，更可追溯到我国远古神话历史时代的河图、洛书。重排九宫则属滑块类游戏。在使用算术的同时，还必须推动方块使其到相对应的位置。其玩法是在3×3方格盘上，放有1-8八个数，剩下一格为空，每一空格其周围的数字可移至空格。先设定初始排列数字，然后开始思考如何以最少的移动次数来达到目的排列状态。&lt;/p>
 &lt;p>目前，针对该问题的一般解法为广度优先搜索。对于某一个确定的初始状态和目标状态，通过广度优先的方式，遍历所有的可能性，最终找到一条从初始状态到目标状态的路径，或者无解。&lt;/p>
 &lt;p>此外，由于广度优先是盲目搜索的，也可以结合启发式算法，如A*算法，在广度优先搜索的基础上，加入一个启发式函数来优化搜索过程，最终常常可以减少找到解时所生成的节点数量，增强算法的性能。&lt;/p>
